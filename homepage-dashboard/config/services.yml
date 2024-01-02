@@ -1,0 +1,146 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/latest/configs/services
+
+- Containers:
+    - Gitea:
+        icon: gitea.png
+        href: http://unixclient.host:3000/
+        description: Git service
+        server: my-docker
+        container: gitea
+    - Portainer:
+        icon: portainer.png
+        href: https://10.0.0.8:9443/
+        server: my-docker
+        widget:
+          type: portainer
+          url: https://10.0.0.8:9443
+          env: 2
+          key: ptr_aNV9M+pG+5gvqbjZ33P4OI/MLQHWtPMaGLLCqICf+Ng=
+    - Dozzle:
+        icon: dozzle.png
+        href: http://10.0.0.8:9999/
+        server: my-docker
+        container: dozzle
+    - Code-server:
+        icon: code-server.png
+        href: http://10.0.0.8:8443/
+    - Dockge:
+        icon: docker.png
+        href: http://10.0.0.8:5001/
+        ping: http://10.0.0.8:5001/
+    - Netdata:
+        icon: netdata.png
+        href: http://10.0.0.40:19999/
+    - Grafana:
+        icon: grafana.png
+        href: http://10.0.0.85:3000/d/w0PEf_ynk/6-proxmox-server?orgId=1&refresh=5s
+- Media:
+    - Plex:
+        icon: plex.png
+        href: http://10.0.0.43:32400/
+        ping: http://10.0.0.43:32400/
+    - Jellyfin:
+        icon: jellyfin.png
+        href: http://10.0.0.42:8096/
+        ping: http://10.0.0.42:8096/
+        widget:
+          type: jellyfin
+          url: http://10.0.0.42:8096
+          key: 7f9924c4f5a4495482f9b1319aa7eb4b
+          enableBlocks: true # optional, defaults to false
+          enableNowPlaying: true # optional, defaults to true
+- Cluster Mgt:
+    - Proxmox:
+        icon: proxmox.png
+        href: https://10.0.0.40:8006/
+        ping: https://10.0.0.40:8006/
+    - Harvester:
+        icon: harvester.png
+        href: https://10.0.0.195/
+        ping: https://10.0.0.195/
+    - File-server:
+        icon: cockpit.png
+        href: https://10.0.0.41:9090/
+        ping: https://10.0.0.41:9090/
+- Services:
+    - Wireguard:
+        icon: wireguard.png
+        href: http://wireguard.com
+    - AdGuard:
+        icon: adguard-home.png
+        href: http://adguard.com
+    - Openwrt:
+        icon: openwrt.png
+        href: http://10.0.0.176
+        ping: http://10.0.0.176
+    - Deluge:
+        icon: deluge.png
+        href: http://10.0.0.141:8112
+        ping: http://10.0.0.141:8112
+        widget:
+          type: deluge
+          url: http://10.0.0.141:8112
+          password: deluge # webui password
+    - Sonarr:
+        icon: sonarr.png
+        href: http://10.0.0.180:8989
+        ping: http://10.0.0.180:8989
+        widget:
+          type: sonarr
+          url: http://10.0.0.180:8989
+          key: 633a3baa568f404182baf7f5de06c4d8
+          enableQueue: true # optional, defaults to false
+    - Radarr:
+         icon: radarr.png
+         href: http://10.0.0.139:7878
+         ping: http://10.0.0.139:7878
+         widget:
+           type: radarr
+           url: http://10.0.0.139:7878
+           key: dd37e23468d6486795e705ee8d022953
+           enableQueue: true # optional, defaults to false
+    - Prowlarr:
+         icon: prowlarr.png
+         href: http://10.0.0.114:9696
+         ping: http://10.0.0.114:9696
+         widget:
+           type: prowlarr
+           url: http://10.0.0.114:9696
+           key: f3831d005ea84d3e8b7b306d060d2563
+    - Home-Assistant:
+        icon: home-assistant.png
+        href: http://10.0.0.83:8123/
+        ping: http://10.0.0.83:8123/
+      
+    - Traefik:
+        icon: traefik.png
+        href: https://monitor.owarenana.com/dashboard/
+        ping: https://monitor.owarenana.com/dashboard/
+    - Pi-Hole:
+        icon: pi-hole.png
+        href: http://10.0.0.44/admin/
+        ping: http://
+        widget:
+          type: pihole
+          url: http://10.0.0.44/
+          key: 998ed4d621742d0c2d85ed84173db569afa194d4597686cae947324aa58ab4bb # optional
+    - Speedtest:
+        icon: openspeedtest.png
+        href: http://10.0.0.8:8765/
+        ping: http://10.0.0.8:8765/
+    - Uptime-Kuma:
+        icon: uptime-kuma.png
+        href: http://10.0.0.8:3001/
+        widget:
+          type: uptimekuma
+          url: http://10.0.0.8:3001
+          slug: up, down, incident, uptime
+    - Zabbix:
+        icon: zabbix.png
+        href: https://unixclient.host:7000/
+    - Google:
+        icon: google.png
+        href: http://google.com/
+        ping: http://google.com/
