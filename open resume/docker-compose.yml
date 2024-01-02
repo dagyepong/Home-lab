@@ -3,4 +3,4 @@ services:
     open-resume:
         image: 'itsnoted/open-resume:latest'
         ports:
-            - '3000:3000'
+            - '3038:3000'
