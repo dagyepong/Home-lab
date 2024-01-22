@@ -215,3 +215,27 @@
     - Dockge:
         icon: docker.png
         href: "{{HOMEPAGE_VAR_DOCKGE_URL}}"
+    - Nextcloud:
+        icon: nextcloud.png
+        href: "{{HOMEPAGE_VAR_NEXTCLOUD_URL}}"
+    - Glances:
+        icon: glances.png
+        href: http://portainer.owarenana.com:61208/
+    - CPU Usage:
+        widget:
+          type: glances
+          url: http://portainer.owarenana.com:61208/
+          metric: cpu
+    - Network Usage:
+        widget:
+          type: glances
+          url: http://portainer.owarenana.com:61208/
+          metric: eth0
+    - Deluge:
+        icon: deluge.png
+        href: http://10.0.0.141:8112
+        widget:
+          type: deluge
+          url: http://10.0.0.141:8112
+          password: deluge
+
