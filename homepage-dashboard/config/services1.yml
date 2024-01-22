@@ -212,3 +212,6 @@
     - Vault-warden:
         icon: vaultwarden.png
         href: "{{HOMEPAGE_VAR_VAULTWARDEN_URL}}"
+    - Dockge:
+        icon: docker.png
+        href: "{{HOMEPAGE_VAR_DOCKGE_URL}}"
