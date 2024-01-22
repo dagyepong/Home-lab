@@ -101,14 +101,14 @@
             type: uptimekuma
             url: "{{HOMEPAGE_VAR_UPTIME_KUMA_URL}}"
             slug: home
-    - Uptime Robot:
-        icon: https://play-lh.googleusercontent.com/cUrv0t00FYQ1GKLuOTvv8qjo1lSDjqZC16IOp3Fb6ijew6Br5m4o16HhDp0GBu_Bw8Y=w240-h480-rw
-        href: https://uptimerobot.com/dashboard
-        description: external
+    - Openwrt:
+        icon: openwrt.png
+        href: "{{HOMEPAGE_VAR_OPENWRT_URL}}"
+        description: internal
         widget:
-            type: uptimerobot
-            url: https://api.uptimerobot.com
-            key: "{{HOMEPAGE_VAR_UPTIME_ROBOT_API_KEY}}"
+            type: openwrt
+            url: "{{HOMEPAGE_VAR_OPENWRT_URL}}"
+            key: "{{HOMEPAGE_VAR_OPENWRT_API_KEY}}"
 - Storage:
     - TrueNAS:
         icon: truenas.svg
@@ -139,13 +139,14 @@
             type: tautulli
             url: "{{HOMEPAGE_VAR_TAUTULLI_URL}}"
             key: "{{HOMEPAGE_VAR_TAUTULLI_API_KEY}}"
-    - HDHomerun:
-        icon: hdhomerun.png
-        href: "{{HOMEPAGE_VAR_HDHOMERUN_URL}}"
-        description: flex 4k
+    - Jellyfin:
+        icon: jellyfin.png
+        href: "{{HOMEPAGE_VAR_JELLYFIN_URL}}"
+        description: jellyfin
         widget:
-            type: hdhomerun
-            url: "{{HOMEPAGE_VAR_HDHOMERUN_URL}}"
+            type: jellyfin
+            url: "{{HOMEPAGE_VAR_JELLYFIN_URL}}"
+            key: "{{HOMEPAGE_VAR_JELLYFIN_API_TOKEN}}"
 - Remote Access:
     - PiKVM:
         icon: https://avatars.githubusercontent.com/u/41749659?s=200&v=4
