@@ -13,37 +13,33 @@
             url: "{{HOMEPAGE_VAR_PROXMOX_URL}}"
             username:  "{{HOMEPAGE_VAR_PROXMOX_USER}}"
             password:  "{{HOMEPAGE_VAR_PROXMOX_API_KEY}}"
-            node: xing-01
-    - Proxmox:
-        icon: proxmox.svg
+    - Harvester:
+        icon: harvester.svg
         href: "{{HOMEPAGE_VAR_PROXMOX_URL}}"
         description: pve2
         widget:
-            type: proxmox
-            url: "{{HOMEPAGE_VAR_PROXMOX_URL}}"
-            username:  "{{HOMEPAGE_VAR_PROXMOX_USER}}"
-            password:  "{{HOMEPAGE_VAR_PROXMOX_API_KEY}}"
-            node: xing-02
-    - Proxmox:
-        icon: proxmox.svg
-        href: "{{HOMEPAGE_VAR_PROXMOX_URL}}"
+            type: harvester
+            url: "{{HOMEPAGE_VAR_HARVESTER_URL}}"
+            username:  "{{HOMEPAGE_VAR_HARVESTER_USER}}"
+            password:  "{{HOMEPAGE_VAR_HARVESTER_API_KEY}}"
+    - Xcpng:
+        icon: xcpng.svg
+        href: "{{HOMEPAGE_VAR_XCPNG_URL}}"
         description: pve2
         widget:
-            type: proxmox
-            url: "{{HOMEPAGE_VAR_PROXMOX_URL}}"
-            username:  "{{HOMEPAGE_VAR_PROXMOX_USER}}"
-            password:  "{{HOMEPAGE_VAR_PROXMOX_API_KEY}}"
-            node: xing-03
-    - Proxmox:
-        icon: proxmox.svg
-        href: "{{HOMEPAGE_VAR_PROXMOX_URL}}"
+            type: xcpng
+            url: "{{HOMEPAGE_VAR_XCPNG_URL}}"
+            username:  "{{HOMEPAGE_VAR_XCPNG_USER}}"
+            password:  "{{HOMEPAGE_VAR_XCPNG_API_KEY}}"
+    - File-Server:
+        icon: cockpit.svg
+        href: "{{HOMEPAGE_VAR_UBUNTU_URL}}"
         description: pve4
         widget:
-            type: proxmox
-            url: "{{HOMEPAGE_VAR_PROXMOX_URL}}"
-            username:  "{{HOMEPAGE_VAR_PROXMOX_USER}}"
-            password:  "{{HOMEPAGE_VAR_PROXMOX_API_KEY}}"
-            node: storinator
+            type: cockpit
+            url: "{{HOMEPAGE_VAR_UBUNTU_URL}}"
+            username:  "{{HOMEPAGE_VAR_UBUNTU_USER}}"
+            password:  "{{HOMEPAGE_VAR_UBUNTU_API_KEY}}"
 - Containers:
     - Rancher:
         icon: rancher.svg
