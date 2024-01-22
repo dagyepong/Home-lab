@@ -22,15 +22,15 @@
             url: "{{HOMEPAGE_VAR_HARVESTER_URL}}"
             username:  "{{HOMEPAGE_VAR_HARVESTER_USER}}"
             password:  "{{HOMEPAGE_VAR_HARVESTER_API_KEY}}"
-    - Xcpng:
-        icon: xcpng.svg
-        href: "{{HOMEPAGE_VAR_XCPNG_URL}}"
+    - Pibox:
+        icon: kubernetes.svg
+        href: "{{HOMEPAGE_VAR_PIBOX_URL}}"
         description: pve2
         widget:
             type: xcpng
-            url: "{{HOMEPAGE_VAR_XCPNG_URL}}"
-            username:  "{{HOMEPAGE_VAR_XCPNG_USER}}"
-            password:  "{{HOMEPAGE_VAR_XCPNG_API_KEY}}"
+            url: "{{HOMEPAGE_VAR_PIBOX_URL}}"
+            username:  "{{HOMEPAGE_VAR_PIBOX_USER}}"
+            password:  "{{HOMEPAGE_VAR_PIBOX_API_KEY}}"
     - File-Server:
         icon: cockpit.svg
         href: "{{HOMEPAGE_VAR_UBUNTU_URL}}"
@@ -193,7 +193,7 @@
         icon: https://nwzimg.wezhan.net/contents/sitefiles3606/18030899/images/5430245.png
         href: "{{HOMEPAGE_VAR_BROADLINK_CONTROL_URL}}"
         description: light control
-- Other:
+- Services:
     - GitLab:
         icon: gitlab.svg
         href: https://gitlab.com
@@ -202,7 +202,13 @@
         icon: github.svg
         href: https://github.com
         description: source code
-    - Shlink:
-        icon: https://shlink.io/images/shlink-logo-blue.svg
-        href: "{{HOMEPAGE_VAR_SHLINK_URL}}"
+    - Gitea:
+        icon: gitea.svg
+        href: "{{HOMEPAGE_VAR_GITEA_URL}}"
         description: dashboard
+    - Code-Server:
+        icon: codeserver.png
+        href: "{{HOMEPAGE_VAR_CODESERVER_URL}}"
+    - Vault-warden:
+        icon: vaultwarden.png
+        href: "{{HOMEPAGE_VAR_VAULTWARDEN_URL}}"
