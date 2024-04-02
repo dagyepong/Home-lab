@@ -15,4 +15,5 @@
     text_size: xl
     format:
       timeStyle: short
+      hourCycle: h23
    # ^^^ add this block
