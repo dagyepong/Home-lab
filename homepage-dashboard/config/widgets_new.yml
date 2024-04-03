@@ -1,0 +1,27 @@
+- datetime:
+format:
+hour12: false
+timeStyle: short
+text_size: xl
+- weatherapi:
+apiKey: password
+cache: 5
+label: Troyes
+latitude: 0 #obviously not my real latitude
+longitude: 0
+units: metric
+- greeting:
+text: Welcome traveler !
+text_size: 4xl
+- kubernetes:
+cluster:
+cpu: true
+label: cluster
+memory: true
+show: true
+showLabel: true
+nodes:
+cpu: true
+memory: true
+show: true
+showLabel: true
