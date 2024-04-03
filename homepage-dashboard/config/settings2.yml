@@ -2,11 +2,11 @@
 title: My Awesome Homepage
 headerStyle: boxed
 
-background: 
-  image: https://images.unsplash.com/photo-1637825891028-564f672aa42c
-  blur: xl
-  brightness: 90
-  opacity: 60
+background:
+image: https://source.unsplash.com/random/?night,dark
+blur: sm
+brightness: 25
+opacity: 50
 
 cardBlur: sm
 
