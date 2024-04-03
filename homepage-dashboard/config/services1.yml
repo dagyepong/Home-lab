@@ -193,6 +193,25 @@
         icon: https://nwzimg.wezhan.net/contents/sitefiles3606/18030899/images/5430245.png
         href: "{{HOMEPAGE_VAR_BROADLINK_CONTROL_URL}}"
         description: light control
+
+- Calendar:
+    - Calendar:
+        widget:
+          type: calendar
+          view: agenda
+          showtime: true
+          maxEvents: 6
+          showTime: true
+          integrations:
+            - type: sonarr
+              service_group: "*Arr" # group name for service
+              service_name: Sonarr
+            - type: radarr
+              service_group: "*Arr"
+              service_name: Radarr
+            - type: readarr
+              service_group: "*Arr"
+              service_name: Readarr
 - Services:
     - GitLab:
         icon: gitlab.svg
