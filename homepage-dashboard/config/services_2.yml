@@ -1,0 +1,472 @@
+- Proxmox:
+    - PVE1:
+href: https://pve1.lan:8006/
+icon: proxmox.png
+siteMonitor: https://pve1.lan:8006
+    - PVE2:
+href: https://pve2.lan:8006/
+icon: proxmox.png
+siteMonitor: https://pve2.lan:8006
+    - PVE3:
+href: https://pve3.lan:8006/
+icon: proxmox.png
+siteMonitor: https://pve3.lan:8006
+    - PVE4:
+href: https://pve4.lan:8006/
+icon: proxmox.png
+siteMonitor: https://pve4.lan:8006
+    - Backup Server:
+href: https://pbackup.public-domain2.fr:8007/
+icon: proxmox.png
+siteMonitor: https://pbackup.public-domain2.fr:8007
+- Administration:
+    - Adguard:
+href: https://adguard.internal-domain.lan/
+icon: adguard-home.png
+siteMonitor: https://adguard.internal-domain.lan
+description: DNS Server and Ad Blocker
+widget:
+password: password
+type: adguard
+url: https://adguard.internal-domain.lan
+username: admin
+    - Traefik:
+href: https://traefik.internal-domain.lan/dashboard/
+icon: traefik.png
+description: Reverse Proxy
+widget:
+type: traefik
+url: https://traefik.internal-domain.lan
+siteMonitor: https://traefik.internal-domain.lan/dashboard/
+    - Authentik:
+href: https://auth.public-domain.fr/
+description: Authentification provider
+icon: authentik.png
+siteMonitor: https://auth.public-domain.fr
+    - Rancher:
+href: https://rancher.k8s/
+description: Kubernetes Cluster Manager
+icon: rancher.png
+siteMonitor: https://rancher.k8s
+    - ArgoCD:
+href: https://argocd.internal-domain.lan/
+icon: argocd.png
+description: GitOps Continuous Delivery
+siteMonitor: https://argocd.internal-domain.lan
+    - Longhorn:
+href: https://longhorn.internal-domain.lan/
+icon: longhorn.png
+description: Kubernetes Storage
+siteMonitor: https://longhorn.internal-domain.lan
+    - Portainer:
+href: https://portainer.internal-domain.lan/
+icon: portainer.png
+description: Docker Manager
+siteMonitor: https://portainer.internal-domain.lan
+    - Cockpit:
+href: https://cockpit.internal-domain.lan/
+icon: cockpit.png
+description: Server Manager
+siteMonitor: https://cockpit.internal-domain.lan
+    - Minio:
+href: https://minio.internal-domain.lan/
+icon: minio.png
+description: S3 Storage
+siteMonitor: https://minio.internal-domain.lan
+    - Firezone:
+href: https://edge.public-domain2.fr/
+icon: https://s3.public-domain.fr/homepage/firezone.svg
+description: VPN Server
+siteMonitor: https://edge.public-domain2.fr/
+    - Warpgate:
+href: https://warpgate.public-domain.fr/
+icon: https://s3.public-domain.fr/homepage/warpgate.svg
+description: SSH Gateway
+siteMonitor: https://warpgate.public-domain.fr/@warpgate#/login?next=%2F
+    - MotionEye:
+href: https://motioneye.internal-domain.lan/
+description: Video Cameras Manager
+icon: motioneye.png
+siteMonitor: https://motioneye.internal-domain.lan
+    - Mailu:
+href: https://mail.public-domain2.fr/admin
+icon: mailu.png
+description: Mail Server
+siteMonitor: https://mail.public-domain2.fr/admin
+- Personal:
+    - Nextcloud:
+href: https://cloud.public-domain2.fr/
+icon: nextcloud.png
+description: Personal Cloud
+siteMonitor: https://cloud.public-domain2.fr
+widget:
+type: nextcloud
+url: https://cloud.public-domain2.fr
+key: password
+    - Immich:
+href: https://photos.public-domain2.fr/
+icon: immich.png
+description: Photo Manager
+siteMonitor: https://photos.public-domain2.fr/
+widget: 
+type: immich
+url: https://photos.public-domain2.fr
+key: password
+    - Pterodactyl:
+href: https://pterodactyl.internal-domain.lan/
+icon: pterodactyl.png
+description: Game Server Manager
+siteMonitor: https://pterodactyl.internal-domain.lan
+widget:
+key: password
+type: pterodactyl
+url: https://pterodactyl.internal-domain.lan
+    - Paperless:
+href: https://paperless.internal-domain.lan/
+icon: paperless-ngx.png
+description: Paper(less) Document Manager
+siteMonitor: https://paperless.internal-domain.lan
+widget:
+key: password
+type: paperlessngx
+url: https://paperless.internal-domain.lan
+    - Octoprint:
+href: https://octoprint.internal-domain.lan/
+icon: octoprint.png
+siteMonitor: https://octoprint.internal-domain.lan
+description: 3D Printer Manager
+widget:
+type: octoprint
+url: https://octoprint.internal-domain.lan
+key: password
+    - Home-Assistant:
+href: https://homeassistant.internal-domain.lan/
+icon: home-assistant.png
+description: Home Automation
+siteMonitor: https://homeassistant.internal-domain.lan
+    - Grist:
+href: https://grist.public-domain.fr/
+icon: grist.png
+description: Spreadsheet on Steroids
+siteMonitor: https://grist.public-domain.fr
+    - Invidious:
+href: https://invidious.internal-domain.lan/
+icon: invidious.png
+description: Youtube Frontend
+siteMonitor: https://invidious.internal-domain.lan
+    - Firefly:
+href: https://firefly.internal-domain.lan/
+icon: firefly.png
+description: Personal Finance Manager
+siteMonitor: https://firefly.internal-domain.lan
+    - Firefly Importer:
+href: https://fireflydi.internal-domain.lan/
+icon: firefly.png
+description: Bank Importer
+siteMonitor: https://fireflydi.internal-domain.lan
+- UndefinedDev:
+    - Ghost:
+href: https://public-domain.fr/
+icon: ghost.png
+description: Personnal Blog
+siteMonitor: https://public-domain.fr
+    - Matomo:
+href: https://analytics.public-domain.fr/
+icon: matomo.png
+description: Web Analytics
+siteMonitor: https://analytics.public-domain.fr
+    - Typebot:
+href: https://typebot.internal-domain.lan/
+icon: https://s3.public-domain.fr/homepage/typebot.svg
+description: Chatbot tool
+siteMonitor: https://typebot.internal-domain.lan
+    - Shlink:
+href: https://shlink.internal-domain.lan
+icon: shlink.png
+description: URL Shortener
+siteMonitor: https://shlink.internal-domain.lan
+- Work:
+    - Gitea:
+href: https://git.public-domain.fr/
+icon: gitea.png
+description: Git Server
+siteMonitor: https://git.public-domain.fr
+    - Drone:
+href: https://drone.public-domain.fr/
+icon: drone.png
+description: CI/CD
+siteMonitor: https://drone.public-domain.fr
+    - Nexus:
+href: https://nexus.public-domain.fr/
+icon: https://s3.public-domain.fr/homepage/nexus.svg
+description: Artifact Manager
+siteMonitor: https://nexus.public-domain.fr
+    - Asciinema:
+href: https://asciinema.public-domain.fr/
+icon: https://s3.public-domain.fr/homepage/asciinema.svg
+description: Terminal Recorder
+siteMonitor: https://asciinema.public-domain.fr
+    - Outline:
+href: https://wiki.public-domain.fr/
+icon: outline.png
+description: Wiki
+siteMonitor: https://wiki.public-domain.fr
+    - Bookstack:
+href: https://docs.public-domain.fr/
+icon: bookstack.png
+description: Documentation
+siteMonitor: https://docs.public-domain.fr
+    - Rally:
+href: https://rally.public-domain.fr/
+icon: https://s3.public-domain.fr/homepage/rally.svg
+description: Doodle alternative
+siteMonitor: https://rally.public-domain.fr
+    - Overleaf:
+href: https://overleaf.public-domain2.fr/
+icon: https://s3.public-domain.fr/homepage/overleaf.svg
+description: Latex Editor
+siteMonitor: https://overleaf.public-domain2.fr
+    - Excalidraw:
+href: https://draw.public-domain.fr/
+icon: excalidraw-light.png
+description: Collaborative Drawing
+siteMonitor: https://draw.public-domain.fr
+    - n8n:
+href: https://n8n.public-domain.fr/
+icon: n8n.png
+description: Workflow Automation
+siteMonitor: https://n8n.public-domain.fr
+    - Stirling:
+href: https://stirling.internal-domain.lan/
+icon: stirling-pdf.png
+description: PDF Toolbox
+siteMonitor: https://stirling.internal-domain.lan
+    - It-Tools:
+href: https://tools.internal-domain.lan
+icon: it-tools-light.png
+description: IT Toolbox
+siteMonitor: https://tools.internal-domain.lan
+    - Cyberchef:
+href: https://cyberchef.internal-domain.lan
+icon: cyberchef.png
+description: Cryptography Toolbox
+siteMonitor: https://cyberchef.internal-domain.lan
+    - Dolibarr:
+href: https://dolibarr.internal-domain.lan/
+icon: dolibarr.png
+description: ERP
+siteMonitor: https://dolibarr.internal-domain.lan
+    - Hemmelig:
+href: https://secrets.public-domain.fr/
+icon: https://s3.public-domain.fr/homepage/hemmelig.svg
+description: Secrets Sharing
+siteMonitor: https://secrets.public-domain.fr
+- Monitoring:
+    - Uptime Kuma:
+href: http://frontline.public-domain2.fr:3001
+icon: uptime-kuma.png
+description: Uptime Monitoring
+siteMonitor: http://frontline.public-domain2.fr:3001
+widget:
+slug: xs6rnvyn68zaxfdd
+type: uptimekuma
+url: http://frontline.public-domain2.fr:3001
+    - Scrutiny:
+href: https://scrutiny.internal-domain.lan
+siteMonitor: https://scrutiny.internal-domain.lan
+icon: scrutiny.png
+description: S.M.A.R.T Monitoring
+widget:
+type: scrutiny
+url: https://scrutiny.internal-domain.lan
+    - Speedtest:
+href: https://speedtest.internal-domain.lan/
+siteMonitor: https://speedtest.internal-domain.lan
+icon: speedtest-tracker.png
+description: Internet Speed Tracker
+widget:
+type: speedtest
+url: https://speedtest.internal-domain.lan
+    - ChangeDetection:
+href: https://changedetection.internal-domain.lan/
+siteMonitor: https://changedetection.internal-domain.lan
+icon: changedetection-io.png
+description: Website Change Detection
+widget:
+key: password
+type: changedetectionio
+url: https://changedetection.internal-domain.lan
+    - Grafana:
+href: https://grafana.internal-domain.lan/
+icon: grafana.png
+description: Metrics Dashboard
+siteMonitor: https://grafana.internal-domain.lan
+    - Prometheus:
+href: https://prometheus.internal-domain.lan/
+siteMonitor: https://prometheus.internal-domain.lan
+icon: prometheus.png
+description: Metrics Database
+    - InfluxDB:
+href: https://influxdb.internal-domain.lan/
+siteMonitor: https://influxdb.internal-domain.lan
+icon: influxdb.png
+description: Metrics Database
+    - Promtail:
+href: https://promtail.internal-domain.lan/
+icon: https://s3.public-domain.fr/homepage/promtail.png
+siteMonitor: https://promtail.internal-domain.lan
+description: Log Collector
+    - Ntopng:
+href: https://ntop.internal-domain.lan
+icon: ntopng.png
+siteMonitor: https://ntop.internal-domain.lan
+description: Network Monitoring
+    - Ntfy:
+href: https://ntfy.undfnd.dev/
+icon: ntfy.png
+description: Notification Server
+siteMonitor: https://ntfy.undfnd.dev
+- Devices:
+    - Ilo (PVE1):
+href: https://10.10.1.180/
+icon: ilo.png
+description: HP DL380p G8
+    - Ilo (PVE2):
+href: https://10.10.1.181/
+icon: ilo.png
+description: HP DL380 G9
+    - IMM (PVE3):
+href: http://10.10.1.182/
+icon: https://s3.public-domain.fr/homepage/ibmlogo.jpg
+description: IBM x3550 M3
+    - IMM (PVE4):
+href: http://10.10.1.183/
+icon: https://s3.public-domain.fr/homepage/ibmlogo.jpg
+description: IBM x3550 M3
+    - Ilo (GPU0):
+href: https://10.10.1.190/
+icon: ilo.png
+description: HP ML350p G8
+    - Switch:
+href: http://10.10.1.5/
+icon: tp-link.png
+description: Core Switch
+    - Netgear (Wifi):
+href: https://10.10.5.10/
+icon: netgear.png
+description: Wifi Access Point
+- Media:
+    - Jellyfin:
+href: https://jellyfin.public-domain2.fr/
+icon: jellyfin.png
+description: Media Server
+siteMonitor: https://jellyfin.public-domain2.fr
+widget:
+key: password
+type: jellyfin
+url: https://jellyfin.public-domain2.fr
+enableBlocks: false
+enableNowPlaying: true
+    - Jellyseer:
+description: Media Requests
+href: https://jellyseer.public-domain2.fr/
+siteMonitor: https://jellyseer.public-domain2.fr
+icon: jellyseerr.png
+widget:
+key: password
+type: jellyseerr
+url: https://jellyseer.public-domain2.fr
+    - Radarr:
+href: https://radarr.internal-domain.lan/
+icon: radarr.png
+description: Movie Manager
+siteMonitor: https://radarr.internal-domain.lan
+widget:
+key: password
+type: radarr
+url: https://radarr.internal-domain.lan
+    - Sonarr:
+href: https://sonarr.internal-domain.lan/
+icon: sonarr.png
+description: TV Show Manager
+siteMonitor: https://sonarr.internal-domain.lan
+widget:
+key: password
+type: sonarr
+url: https://sonarr.internal-domain.lan
+    - Lidarr:
+href: https://lidarr.internal-domain.lan/
+icon: lidarr.png
+description: Music Manager
+siteMonitor: https://lidarr.internal-domain.lan
+widget:
+key: password
+type: lidarr
+url: https://lidarr.internal-domain.lan
+    - Bazarr:
+href: https://bazarr.internal-domain.lan/
+icon: bazarr.png
+description: Subtitle Manager
+siteMonitor: https://bazarr.internal-domain.lan
+widget:
+key: password
+type: bazarr
+url: https://bazarr.internal-domain.lan
+    - Transmission:
+href: https://transmission.internal-domain.lan/
+icon: transmission.png
+description: Torrent Client
+siteMonitor: https://transmission.internal-domain.lan
+widget:
+type: transmission
+url: https://transmission.internal-domain.lan
+    - Jellystat:
+href: https://stats.internal-domain.lan
+icon: jellystat.png
+description: Jellyfin Statistics
+siteMonitor: https://stats.internal-domain.lan
+widget:
+key: password
+type: jellyfin
+url: https://jellyfin.public-domain2.fr
+enableBlocks: true
+enableNowPlaying: false
+    - Prowlarr:
+href: https://prowlarr.internal-domain.lan/
+icon: prowlarr.png
+description: Indexer Manager
+siteMonitor: https://prowlarr.internal-domain.lan
+widget:
+key: password
+type: prowlarr
+url: https://prowlarr.internal-domain.lan
+    - Kavita:
+href: https://kavita.internal-domain.lan/
+icon: kavita.png
+description: Ebook/Manga Reader
+siteMonitor: https://kavita.internal-domain.lan
+widget:
+type: kavita
+url: https://kavita.internal-domain.lan
+username: admin
+password: password
+    - FileFlows:
+href: https://fileflows.internal-domain.lan/
+icon: fileflows.png
+description: File Manager
+siteMonitor: https://fileflows.internal-domain.lan
+widget:
+type: fileflows
+url: https://fileflows.internal-domain.lan
+username: admin
+password: password
+    - Kaizoku:
+href: https://kaizoku.internal-domain.lan/
+siteMonitor: https://kaizoku.internal-domain.lan
+icon: kaizoku.png
+description: Manga Downloader
+    - Openbooks:
+href: https://openbooks.internal-domain.lan/
+siteMonitor: https://openbooks.internal-domain.lan
+icon: mdi-book
+description: Ebook Downloader
