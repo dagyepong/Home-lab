@@ -1,0 +1,28 @@
+headerStyle: clean
+statusStyle: "dot"
+hideVersion: true
+cardBlur: sm
+language: en
+layout:
+- Proxmox: 
+columns: 5
+style: row
+- Administration: null
+- Personal: null
+- Monitoring: null
+- Work:
+columns: 6
+style: row
+- Medias:
+columns: 4
+style: row
+- UndefinedDev:
+columns: 4
+style: row
+- Devices:
+columns: 4
+style: row
+quicklaunch:
+hideInternetSearch: true
+hideVisitURL: true
+searchDescriptions: true
