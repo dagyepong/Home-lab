@@ -64,6 +64,10 @@
         icon: cockpit.png
         href: https://10.0.0.41:9090/
         ping: https://10.0.0.41:9090/
+    - Pibox:
+        icon: kubernetes.svg
+        href: https://kubesail.com
+        ping: https://kubesail.com
 - Services:
     - Wireguard:
         icon: wireguard.png
