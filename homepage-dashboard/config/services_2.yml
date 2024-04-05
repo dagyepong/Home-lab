@@ -237,10 +237,11 @@
         href: http://10.10.1.5/
         icon: tp-link.png
         description: Core Switch
-    - Netgear (Wifi):
-        href: https://10.10.5.10/
+    - Deeper Connect (Wifi):
+        href: http://local.deeper.network
         icon: netgear.png
         description: Wifi Access Point
+        siteMonitor: http://local.deeper.network
 - Media:
     - Jellyfin:
         href: https://jellyfin.public-domain2.fr/
