@@ -72,6 +72,15 @@
         icon: portainer.png
         description: Docker Manager
         siteMonitor: https://portainer.internal-domain.lan
+        widget:
+            type:
+            url:
+            key:
+    - Dockge:
+        href:
+        siteMonitor:
+        icon: docker.png
+        description: Docker Mgt
     - Cockpit:
         href: https://cockpit.internal-domain.lan/
         icon: cockpit.png
