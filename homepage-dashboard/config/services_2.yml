@@ -26,6 +26,15 @@
             type: adguard
             url: https://adguard.internal-domain.lan
             username: admin
+    - Pi-Hole:
+            href:
+            icon: pihole.png
+            description: DNS Server and Ad Blocker
+            siteMonitor:
+            widget:
+                type:
+                url:
+                key:
     - Traefik:
             href: https://traefik.internal-domain.lan/dashboard/
             icon: traefik.png
@@ -252,7 +261,7 @@
             key: password
             type: jellyfin
             url: https://jellyfin.public-domain2.fr
-            enableBlocks: false
+            enableBlocks: true
             enableNowPlaying: true
     - Jellyseer:
         description: Media Requests
