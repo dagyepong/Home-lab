@@ -173,11 +173,15 @@
         icon: bookstack.png
         description: Documentation
         siteMonitor: https://docs.public-domain.fr
-    - Overleaf:
-        href: https://overleaf.public-domain2.fr/
-        icon: https://s3.public-domain.fr/homepage/overleaf.svg
-        description: Latex Editor
-        siteMonitor: https://overleaf.public-domain2.fr
+    - Code-Server:
+        href: https://code-server.raspberrypi.nana.local.kubegateway.com
+        icon: code-server.png
+        description: Editor
+        siteMonitor: https://code-server.raspberrypi.nana.local.kubegateway.com
+    - Syncthing:
+        href: https://syncthing.raspberrypi.nana.local.kubegateway.com
+        icon: syncthing.png
+        siteMonitor: https://syncthing.raspberrypi.nana.local.kubegateway.com
 - Monitoring:
     - Uptime Kuma:
         href: http://frontline.public-domain2.fr:3001
