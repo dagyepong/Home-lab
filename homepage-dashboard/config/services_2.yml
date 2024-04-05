@@ -7,10 +7,10 @@
         href: https://pve2.lan:8006/
         icon: proxmox.png
         siteMonitor: https://pve2.lan:8006
-    - Xcp-ng:
-        href: https://pve3.lan:8006/
-        icon: proxmox.png
-        siteMonitor: https://pve3.lan:8006
+    - Pibox:
+        href: https://kubesail.com
+        icon: kubernetes.svg
+        siteMonitor: https://kubesail.com
     - Backup Server:
         href: https://pbackup.public-domain2.fr:8007/
         icon: proxmox.png
