@@ -48,6 +48,10 @@
         description: Authentification provider
         icon: authentik.png
         siteMonitor: https://auth.public-domain.fr
+    - Vault-warden:
+        href: https://vaultwarden.raspberrypi.nana.local.kubegateway.com
+        icon: vaultwarden.png
+        siteMonitor: https://vaultwarden.raspberrypi.nana.local.kubegateway.com
     - Rancher:
         href: https://rancher.k8s/
         description: Kubernetes Cluster Manager
