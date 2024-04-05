@@ -205,6 +205,11 @@
             slug: xs6rnvyn68zaxfdd
             type: uptimekuma
             url: http://frontline.public-domain2.fr:3001
+    - Dozzle:
+        href:
+        icon: dozzle.png
+        siteMonitor:
+        description:
     - Scrutiny:
         href: https://scrutiny.internal-domain.lan
         siteMonitor: https://scrutiny.internal-domain.lan
@@ -267,6 +272,15 @@
             url: https://jellyfin.public-domain2.fr
             enableBlocks: true
             enableNowPlaying: true
+    - Plex:
+        href:
+        icon: plex.png
+        description: Media Server
+        siteMonitor:
+        widget:
+            key:
+            type: plex
+            url:
     - Jellyseer:
         description: Media Requests
         href: https://jellyseer.public-domain2.fr/
