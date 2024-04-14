@@ -168,8 +168,13 @@
     - Ghost:
         href: https://public-domain.fr/
         icon: ghost.png
-        description: Personnal Blog
+        description: Personal Blog
         siteMonitor: https://public-domain.fr
+    - Ghost Administration:
+        href:
+        icon: ghost.png
+        description: Admin Page
+        siteMonitor:
     - Matomo:
         href: https://analytics.public-domain.fr/
         icon: matomo.png
