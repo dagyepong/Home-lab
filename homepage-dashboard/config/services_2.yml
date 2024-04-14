@@ -217,7 +217,7 @@
         description: Uptime Monitoring
         siteMonitor: http://frontline.public-domain2.fr:3001
         widget:
-            slug: xs6rnvyn68zaxfdd
+            slug: home
             type: uptimekuma
             url: http://frontline.public-domain2.fr:3001
     - Dozzle:
