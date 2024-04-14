@@ -51,9 +51,11 @@ services:
             interval: 10s
             timeout: 5s
             retries: 5
-        #networks:
-        #    - proxy
+        networks:
+            - proxy
 
-#networks:
-#   proxy:
-#     external: true
+networks:
+   proxy:
+     external: true
+
+## username forte & alternative as password
