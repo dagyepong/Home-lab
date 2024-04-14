@@ -120,7 +120,8 @@
         widget:
             type: nextcloud
             url: https://cloud.public-domain2.fr
-            key: password
+            username: password
+            password:
     - Immich:
         href: https://photos.public-domain2.fr/
         icon: immich.png
