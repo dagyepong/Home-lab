@@ -1,0 +1,9 @@
+version: '3.9'
+services:
+    openbooks:
+        command: '--persist --name rickastley'
+        image: 'evanbuss/openbooks:latest'
+        volumes:
+            - '/docker/openbooks:/books'
+        ports:
+            - '8875:80'
