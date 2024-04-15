@@ -57,7 +57,7 @@ services:
       - proxy # define traefik docker network
     environment:
       - TZ=Europe/Berlin # define timezone
-      - CF_DNS_API_TOKEN=<MY-CF-API-TOKEN> # define your cloudflare api token
+      - CF_DNS_API_TOKEN=31a5c75a55ef98132fac780a82ca70c2 # define your cloudflare api token
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # pass docker socket as read-only
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/traefik:/etc/traefik/ # bind mount volume for persistent traefik data
