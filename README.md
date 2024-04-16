@@ -15,3 +15,5 @@ docker run -d \
   --network web \
   --name traefik \
   traefik:v2.2
+
+  # navigate to https://monitor.nanaoware.online/dashboard/
