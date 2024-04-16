@@ -20,3 +20,7 @@ docker run -d \
   traefik:v2.2
 
   # navigate to https://monitor.nanaoware.online/dashboard/
+
+  # Cloudflare setup
+
+   export TUNNEL_TOKEN=xxxxx
