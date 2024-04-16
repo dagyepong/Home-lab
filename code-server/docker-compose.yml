@@ -20,10 +20,10 @@ services:
       - 8443:8443
     restart: unless-stopped
     networks:
-      - proxy
+      - web
     labels:
       - traefik.enable=true
-      - traefik.docker.network=proxy
+      - traefik.docker.network=web
       - traefik.http.routers.codeserver.rule=Host(`code.example.com`)
       - traefik.http.services.codeserver.loadbalancer.server.port=8443
     #  # Optional part for file upload max sizes
@@ -32,8 +32,8 @@ services:
       - traefik.http.middlewares.limit.buffering.memRequestBodyBytes=50000000
       - traefik.http.middlewares.limit.buffering.memResponseBodyBytes=50000000
       # Optional part for traefik middlewares
-      - traefik.http.routers.codeserver.middlewares=local-ipwhitelist@file,authelia@docker
+      - traefik.http.routers.codeserver.middlewares=simpleAuth@file
 
 networks:
-  proxy:
+  web:
     external: true
