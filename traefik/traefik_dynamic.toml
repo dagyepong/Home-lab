@@ -4,7 +4,7 @@
   ]
 
 [http.routers.api]
-  rule = "Host(`monitor.your_domain`)"
+  rule = "Host(`monitor.nanaoware.online`)"
   entrypoints = ["websecure"]
   middlewares = ["simpleAuth"]
   service = "api@internal"
