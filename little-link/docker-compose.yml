@@ -32,7 +32,7 @@ services:
       # - REDDIT=https://www.reddit.com/
       # - MEDIUM=https://medium.com
       # - PINTEREST=https://www.pinterest.com/
-      # - EMAIL=you@example.com
+       - EMAIL=owarenana06@gmail.com
       # - EMAIL_ALT=you@example.com
       # - SOUND_CLOUD=https://souncloud.com
       # - FIGMA=https://figma.com
@@ -40,12 +40,12 @@ services:
       # - TUMBLR=https://www.tumblr.com/
       # - STEAM=https://steamcommunity.com/
       # - VIMEO=https://vimeo.com/
-      # - WORDPRESS=https://wordpress.com/
+       - GHOST=https://blog.nanaoware.online
       # - GOODREADS=https://www.goodreads.com/
       # - SKOOB=https://www.skoob.com.br/
       - FOOTER=Thanks for stopping by!
     ports:
-      - 8080:3000
+      - 8088:3000
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
