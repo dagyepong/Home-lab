@@ -2,8 +2,11 @@
 This is a collection of my current docker-compose files for my home-lab set-up. Anyone willing to replicate such set-up must have a working docker and docker-compose installed in their system first.
 # Traefik
 1.docker network create web
+
 2.touch acme.json
+
 3.chmod 600 acme.json
+
 
 docker run -d \
   -v /var/run/docker.sock:/var/run/docker.sock \
