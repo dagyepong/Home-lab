@@ -15,15 +15,15 @@ services:
     volumes:
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/gitea/data:/data
     networks:
-      - proxy
+      - web
     labels:
       - traefik.enable=true
       - traefik.http.routers.gitea.rule=Host(`git.example.com`)
       - traefik.http.services.gitea.loadbalancer.server.port=3000
-      - traefik.docker.network=proxy
+      - traefik.docker.network=web
       # Part for local lan services only
-      - traefik.http.routers.gitea.middlewares=local-ipwhitelist@file
+      - traefik.http.routers.gitea.middlewares=simpleAuth@file
 
 networks:
-  proxy:
+  web:
     external: true
