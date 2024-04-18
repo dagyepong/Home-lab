@@ -5,9 +5,9 @@ services:
     image: docker.io/hikariai/littlelink-server:latest
     container_name: littlelink-server
     environment:
-      - META_TITLE=Hikariai
-      - META_DESCRIPTION=Kevin Yu Link page
-      - META_AUTHOR=Kevin Yu
+      - META_TITLE=Nana Oware
+      - META_DESCRIPTION=Nana Oware Link page
+      - META_AUTHOR=Nana Owrae
       - THEME=Dark
       - FAVICON_URL=https://nrmjjlvckvsb.compat.objectstorage.ap-tokyo-1.oraclecloud.com/picgo/2022/10-22-0cdf62d6ef43f5c3ad43827c749f5cdd.jpg
       - AVATAR_URL=https://nrmjjlvckvsb.compat.objectstorage.ap-tokyo-1.oraclecloud.com/picgo/2022/10-22-0cdf62d6ef43f5c3ad43827c749f5cdd.jpg
