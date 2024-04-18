@@ -40,7 +40,7 @@ services:
       # - GOODREADS=https://www.goodreads.com/
       # - SKOOB=https://www.skoob.com.br/
     ports:
-      - 3030:3030
+      - 3030:3000
     restart: always
     security_opt:
       - no-new-privileges:true
