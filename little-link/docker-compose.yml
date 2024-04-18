@@ -1,51 +1,46 @@
 ---
-version: '3'
+version: "3"
 services:
   little-link:
-    image: ghcr.io/techno-tim/littlelink-server:latest
+    image: docker.io/hikariai/littlelink-server:latest
     container_name: littlelink-server
     environment:
-      - META_TITLE=Nana Oware
-      - META_DESCRIPTION=Nana Oware Link page
-      - META_AUTHOR=Nana Oware
+      - META_TITLE=Hikariai
+      - META_DESCRIPTION=Kevin Yu Link page
+      - META_AUTHOR=Kevin Yu
       - THEME=Dark
-      #- FAVICON_URL=https://pbs.twimg.com/profile_images/1286144221217316864/qIAsKOpB_200x200.jpg
-      #- AVATAR_URL=https://pbs.twimg.com/profile_images/1286144221217316864/qIAsKOpB_200x200.jpg
-      #- AVATAR_2X_URL=https://pbs.twimg.com/profile_images/1286144221217316864/qIAsKOpB_400x400.jpg
-      - AVATAR_ALT=Nana Oware Profile Pic
+      - FAVICON_URL=https://nrmjjlvckvsb.compat.objectstorage.ap-tokyo-1.oraclecloud.com/picgo/2022/10-22-0cdf62d6ef43f5c3ad43827c749f5cdd.jpg
+      - AVATAR_URL=https://nrmjjlvckvsb.compat.objectstorage.ap-tokyo-1.oraclecloud.com/picgo/2022/10-22-0cdf62d6ef43f5c3ad43827c749f5cdd.jpg
+      - AVATAR_2X_URL=https://nrmjjlvckvsb.compat.objectstorage.ap-tokyo-1.oraclecloud.com/picgo/2022/10-22-0cdf62d6ef43f5c3ad43827c749f5cdd.jpg
+      - AVATAR_ALT=Kevin Yu Profile Pic
       - NAME=Nana Oware
       - BIO=Hey! Just a place where you can connect with me!
-      - GITHUB=https://github.com/dagyepong/Home-lab/blob/main/little-link/docker-compose.yml
-      - TWITTER=https://@nana50965112/twitter
-      - INSTAGRAM=https://oware84/instagram
-      - YOUTUBE=https://youtube.com
-      - TWITCH=https://
-      - DISCORD=https://nana12/discord
-      - TIKTOK=https://@nanaoware/tiktok
-      #- KIT=https://
-      # - FACEBOOK=https://facebook.com
-      # - FACEBOOK_MESSENGER=https://facebook.com
-      # - LINKED_IN=https://linkedin.com
-      # - PRODUCT_HUNT=https://www.producthunt.com/
-      # - SNAPCHAT=https://www.snapchat.com/
+      - HUGO=https://blog.nanaoware.online
+      - GITHUB=https://github.com/
+      - DISCORD=https://discord.gg/95K3J3a4
+      - TWITCH=https://www.twitch.tv/TheDevOpsNut
+      - TELEGRAM=https://t.me/hikariai_channel
+      - FOOTER=Thanks for stopping by!
+        # EMAIL=
+      # - LINKED_IN=
+      # - TWITTER=
+      # - INSTAGRAM=
+      # - YOUTUBE=
+      # - TIKTOK=
+      # - KIT=
       # - SPOTIFY=https://www.spotify.com/
       # - REDDIT=https://www.reddit.com/
       # - MEDIUM=https://medium.com
       # - PINTEREST=https://www.pinterest.com/
-       - EMAIL=owarenana06@gmail.com
-      # - EMAIL_ALT=you@example.com
       # - SOUND_CLOUD=https://souncloud.com
       # - FIGMA=https://figma.com
-      # - TELEGRAM=https://telegram.org/
       # - TUMBLR=https://www.tumblr.com/
       # - STEAM=https://steamcommunity.com/
       # - VIMEO=https://vimeo.com/
-       - GHOST=https://blog.nanaoware.online
       # - GOODREADS=https://www.goodreads.com/
       # - SKOOB=https://www.skoob.com.br/
-      - FOOTER=Thanks for stopping by!
     ports:
-      - 8088:3000
-    restart: unless-stopped
+      - 3000:3000
+    restart: always
     security_opt:
       - no-new-privileges:true
