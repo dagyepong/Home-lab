@@ -18,10 +18,10 @@ services:
       - BLOG=https://blog.nanaoware.online
       - GITHUB=https://github.com/dagyepong/Home-lab/tree/main
       - DISCORD=https://discord.gg/nana12
-      - TWITCH=https://www.twitch.tv/TheDevOpsNut
-      - TELEGRAM=https://t.me/hikariai_channel
+      - TWITCH=https://www.twitch.tv/
+      - TELEGRAM=https://t.me/
       - FOOTER=Thanks for stopping by!
-        # EMAIL=
+      - EMAIL=nanaoware06@gmail.com
       # - LINKED_IN=
       # - TWITTER=
       # - INSTAGRAM=
@@ -40,7 +40,7 @@ services:
       # - GOODREADS=https://www.goodreads.com/
       # - SKOOB=https://www.skoob.com.br/
     ports:
-      - 3000:3000
+      - 3030:3030
     restart: always
     security_opt:
       - no-new-privileges:true
