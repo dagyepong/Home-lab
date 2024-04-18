@@ -12,12 +12,12 @@ services:
       - FAVICON_URL=https://nrmjjlvckvsb.compat.objectstorage.ap-tokyo-1.oraclecloud.com/picgo/2022/10-22-0cdf62d6ef43f5c3ad43827c749f5cdd.jpg
       - AVATAR_URL=https://nrmjjlvckvsb.compat.objectstorage.ap-tokyo-1.oraclecloud.com/picgo/2022/10-22-0cdf62d6ef43f5c3ad43827c749f5cdd.jpg
       - AVATAR_2X_URL=https://nrmjjlvckvsb.compat.objectstorage.ap-tokyo-1.oraclecloud.com/picgo/2022/10-22-0cdf62d6ef43f5c3ad43827c749f5cdd.jpg
-      - AVATAR_ALT=Kevin Yu Profile Pic
+      - AVATAR_ALT=Nana Oware Profile Pic
       - NAME=Nana Oware
       - BIO=Hey! Just a place where you can connect with me!
-      - HUGO=https://blog.nanaoware.online
-      - GITHUB=https://github.com/
-      - DISCORD=https://discord.gg/95K3J3a4
+      - BLOG=https://blog.nanaoware.online
+      - GITHUB=https://github.com/dagyepong/Home-lab/tree/main
+      - DISCORD=https://discord.gg/nana12
       - TWITCH=https://www.twitch.tv/TheDevOpsNut
       - TELEGRAM=https://t.me/hikariai_channel
       - FOOTER=Thanks for stopping by!
