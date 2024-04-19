@@ -1,46 +1,55 @@
----
-version: "3"
+version: "3.0"
 services:
-  little-link:
-    image: docker.io/hikariai/littlelink-server:latest
+  littlelink-server:
+    image: ghcr.io/techno-tim/littlelink-server:latest
+    # dockerhub is also supported timothystewart6/littlelink-server
+    # image: timothystewart6/littlelink-server:latest
     container_name: littlelink-server
     environment:
-      - META_TITLE=Nana Oware
-      - META_DESCRIPTION=Nana Oware Link page
-      - META_AUTHOR=Nana Oware
+      - META_TITLE=Dennis Agyepong
+      - META_DESCRIPTION=Cyber Security Analyst | Gamer | Tech Hobbyist | Homelab | 🇺🇸   | Full Nerd
+      - META_AUTHOR=Dennis Agyepong
+      - META_KEYWORDS=HomeLab, Python, Linux, Cyber-Security
+      - LANG=en
+      - META_INDEX_STATUS=all
+      - OG_SITE_NAME=Linuxpad
+      - OG_TITLE=Linuxpad
+      - OG_DESCRIPTION=The home of Linuxpad
+      - OG_URL=https://blog.nanaoware.online
+      - OG_IMAGE=http://www.shrinkpictures.com/processed/phpNntjjb_c1AM.jpg
+      - OG_IMAGE_WIDTH=400
+      - OG_IMAGE_HEIGHT=400
       - THEME=Dark
-      - FAVICON_URLhttp://www.shrinkpictures.com/processed/phpNntjjb_c1AM.jpg
-      - AVATAR_URL=http://www.shrinkpictures.com/processed/phpNntjjb_c1AM.jpg
-      - AVATAR_2X_URLhttp://www.shrinkpictures.com/processed/phpNntjjb_c1AM.jpg
-      #- AVATAR_ALT=Nana Oware Profile Pic
-      - NAME=Nana Oware
-      - BIO=Hey! Just a place where you can connect with me!
-      - GITHUB=https://github.com/dagyepong/Home-lab/tree/main
-      - DISCORD=https://discord.gg/nana12
-      - TWITCH=https://www.twitch.tv/
-      - LINUXPAD=https://blog.nanaoware.online
-      - TELEGRAM=https://t.me/nana
-      - FOOTER=Thanks for stopping by!
-      - EMAIL=nanaoware06@gmail.com
-      # - LINKED_IN=
-      # - TWITTER=
-      # - INSTAGRAM=
-      # - YOUTUBE=
-      # - TIKTOK=
-      # - KIT=
-      # - SPOTIFY=https://www.spotify.com/
-      # - REDDIT=https://www.reddit.com/
-      # - MEDIUM=https://medium.com
-      # - PINTEREST=https://www.pinterest.com/
-      # - SOUND_CLOUD=https://souncloud.com
-      # - FIGMA=https://figma.com
-      # - TUMBLR=https://www.tumblr.com/
-      # - STEAM=https://steamcommunity.com/
-      # - VIMEO=https://vimeo.com/
-      # - GOODREADS=https://www.goodreads.com/
-      # - SKOOB=https://www.skoob.com.br/
+      #- FAVICON_URL=https://pbs.twimg.com/profile_images/1286144221217316864/qIAsKOpB_200x200.jpg
+      #- AVATAR_URL=https://pbs.twimg.com/profile_images/1286144221217316864/qIAsKOpB_200x200.jpg
+      #- AVATAR_2X_URL=https://pbs.twimg.com/profile_images/1286144221217316864/qIAsKOpB_400x400.jpg
+      - AVATAR_ALT=Dennis Agyepong Profile Pic
+      - NAME=Dennis Agyepong
+      - BIO=Cyber Security Analyst | Gamer | Tech Hobbyist | Homelab | 🇺🇸  | Full Nerd
+      # use ENV variable names for order, listed buttons will be boosted to the top
+      - BUTTON_ORDER=YOUTUBE,TWITCH,TWITTER,GITHUB,INSTAGRAM,LINKED_IN,DISCORD,FACEBOOK,TIKTOK,PATREON,GEAR,DOCUMENTATION
+      # you can render an unlimited amount of custom buttons by adding 
+      # the CUSTOM_BUTTON_* variables and by using a comma as a separator.
+      - CUSTOM_BUTTON_TEXT=Documentation,Recommended Gear
+      #- CUSTOM_BUTTON_URL=https://l.technotim.live/docs,https://l.technotim.live/gear
+      - CUSTOM_BUTTON_COLOR=#000000,#000000
+      - CUSTOM_BUTTON_TEXT_COLOR=#ffffff,#ffffff
+      - CUSTOM_BUTTON_ALT_TEXT=Tech documentation site for my videos and more,Recommended Gear
+      #- CUSTOM_BUTTON_NAME=DOCUMENTATION,GEAR
+      - CUSTOM_BUTTON_ICON=fas file-alt,fas fa-cog
+      - GITHUB=https://github.com/dagyepong
+      - TWITTER=https:///twitter
+      - INSTAGRAM=https://instagram
+      - LINKED_IN=https:///linkedin
+      - YOUTUBE=https://
+      - TWITCH=https://
+      - DISCORD=https://
+      - TIKTOK=https://l.technotim.live/tiktok
+      - FACEBOOK=https://
+      - PATREON=https://
+      - FOOTER=Linuxpad © 2024
     ports:
-      - 3030:3000
-    restart: always
+      - 8086:3000
+    restart: unless-stopped
     security_opt:
       - no-new-privileges:true
