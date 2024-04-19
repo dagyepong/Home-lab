@@ -9,9 +9,9 @@ services:
       - META_DESCRIPTION=Nana Oware Link page
       - META_AUTHOR=Nana Owrae
       - THEME=Dark
-      - FAVICON_URL=https://nrmjjlvckvsb.compat.objectstorage.ap-tokyo-1.oraclecloud.com/picgo/2022/10-22-0cdf62d6ef43f5c3ad43827c749f5cdd.jpg
-      - AVATAR_URL=https://nrmjjlvckvsb.compat.objectstorage.ap-tokyo-1.oraclecloud.com/picgo/2022/10-22-0cdf62d6ef43f5c3ad43827c749f5cdd.jpg
-      - AVATAR_2X_URL=https://nrmjjlvckvsb.compat.objectstorage.ap-tokyo-1.oraclecloud.com/picgo/2022/10-22-0cdf62d6ef43f5c3ad43827c749f5cdd.jpg
+      - FAVICON_URL=https://www.favicon.cc/?action=icon&file_id=1008318
+      - AVATAR_URL=https://www.favicon.cc/?action=icon&file_id=1008318
+      - AVATAR_2X_URL=https://www.favicon.cc/?action=icon&file_id=1008318
       - AVATAR_ALT=Nana Oware Profile Pic
       - NAME=Nana Oware
       - BIO=Hey! Just a place where you can connect with me!
