@@ -21,12 +21,12 @@ services:
       #- OG_IMAGE_HEIGHT=400
       - GA_TRACKING_ID=G-XXXXXXXXXX
       - THEME=Dark
-      - FAVICON_URL=http://www.shrinkpictures.com/processed/phpNntjjb_c1AM.jpg
-      - AVATAR_URL=http://www.shrinkpictures.com/processed/phpNntjjb_c1AM.jpg
-      - AVATAR_2X_URL=http://www.shrinkpictures.com/processed/phpNntjjb_c1AM.jpg
+      - FAVICON_URL=http://www.shrinkpictures.com/processed/phpbGpAmu_c1PM.jpg
+      - AVATAR_URL=http://www.shrinkpictures.com/processed/phpbGpAmu_c1PM.jpg
+      - AVATAR_2X_URL=http://www.shrinkpictures.com/processed/phpbGpAmu_c1PM.jpg
       - AVATAR_ALT=Dennis AgyepongProfile Pic
       - NAME=Dennis Agyepong
-      - BIO=Cyber-Security Analyst | Gamer | Tech Hobbyist | Linux Enthusiast | Homelab | 🇺🇸  | Full Nerd
+      - BIO=Cyber-Security Analyst | Gamer | Tech Hobbyist | Linux Enthusiast | Homelab | 🇺🇸 🇬🇭 | Full Nerd
       # use ENV variable names for order, listed buttons will be boosted to the top
       - BUTTON_ORDER=YOUTUBE,TWITCH,TWITTER,GITHUB,INSTAGRAM,LINKED_IN,DISCORD,FACEBOOK,TIKTOK,PATREON,GEAR,DOCUMENTATION
       # you can render an unlimited amount of custom buttons by adding 
