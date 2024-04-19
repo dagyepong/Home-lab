@@ -39,16 +39,16 @@ services:
       - CUSTOM_BUTTON_NAME=DOCUMENTATION,GEAR
       - CUSTOM_BUTTON_ICON=fas file-alt,fas fa-cog
       - GITHUB=https://github.com/dagyepong
-      - TWITTER=https://
+      - TWITTER=https://twitter.com/
       - INSTAGRAM=https://
-      - LINKED_IN=https://linkedin.com/nanaoware
-      - YOUTUBE=https://
-      - TWITCH=https://
+      - LINKED_IN=https://www.linkedin.com/in/nana-oware-944bba282/
+      - YOUTUBE=https://youtube.com
+      - TWITCH=https://twich.com
       - DISCORD=https://discord.com/nana12
       - TIKTOK=https://tiktok.com/@nanaoware
       - SITE=https://blog.nanaoware.online
       - FACEBOOK=https://www.facebook.com/profile.php?id=100094076774707&mibextid=ZbWKwL
-      - PATREON=https://
+      - PATREON=https://patreon.com/Linuxpad?utm_medium=clipboard_copy&utm_source=copyLink&utm_campaign=creatorshare_creator&utm_content=join_link
       - FOOTER=Linuxpad © 2024
     ports:
       - 8080:3000
