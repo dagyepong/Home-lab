@@ -49,7 +49,7 @@ services:
       - PATREON=https://
       - FOOTER=Linuxpad © 2024
     ports:
-      - 8086:3000
+      - 3000:3000
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
