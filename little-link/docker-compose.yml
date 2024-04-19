@@ -9,9 +9,9 @@ services:
       - META_DESCRIPTION=Nana Oware Link page
       - META_AUTHOR=Nana Owrae
       - THEME=Dark
-      - FAVICON_URL=https://www.favicon.cc/?action=icon&file_id=1008318
-      - AVATAR_URL=https://www.favicon.cc/?action=icon&file_id=1008318
-      - AVATAR_2X_URL=https://www.favicon.cc/?action=icon&file_id=1008318
+      - FAVICON_URLhttp://www.shrinkpictures.com/processed/phpNntjjb_c1AM.jpg
+      - AVATAR_URL=http://www.shrinkpictures.com/processed/phpNntjjb_c1AM.jpg
+      - AVATAR_2X_URLhttp://www.shrinkpictures.com/processed/phpNntjjb_c1AM.jpg
       - AVATAR_ALT=Nana Oware Profile Pic
       - NAME=Nana Oware
       - BIO=Hey! Just a place where you can connect with me!
@@ -19,7 +19,7 @@ services:
       - GITHUB=https://github.com/dagyepong/Home-lab/tree/main
       - DISCORD=https://discord.gg/nana12
       - TWITCH=https://www.twitch.tv/
-      - TELEGRAM=https://t.me/
+      - TELEGRAM=https://t.me/nana
       - FOOTER=Thanks for stopping by!
       - EMAIL=nanaoware06@gmail.com
       # - LINKED_IN=
