@@ -22,8 +22,8 @@ services:
       - GA_TRACKING_ID=G-XXXXXXXXXX
       - THEME=Dark
       - FAVICON_URL=http://www.shrinkpictures.com/processed/phpNntjjb_c1AM.jpg
-      - AVATAR_URL=http://www.shrinkpictures.com/processed/phpNntjjb_c1AM_200x200.jpg
-      - AVATAR_2X_URL=http://www.shrinkpictures.com/processed/phpNntjjb_c1AM_400x400.jpg
+      - AVATAR_URL=http://www.shrinkpictures.com/processed/phpNntjjb_c1AM.jpg
+      - AVATAR_2X_URL=http://www.shrinkpictures.com/processed/phpNntjjb_c1AM.jpg
       - AVATAR_ALT=Dennis AgyepongProfile Pic
       - NAME=Dennis Agyepong
       - BIO=Cyber-Security Analyst | Gamer | Tech Hobbyist | Linux Enthusiast | Homelab | 🇺🇸  | Full Nerd
@@ -48,7 +48,7 @@ services:
       - TIKTOK=https://
       - FACEBOOK=https://
       - PATREON=https://
-      - FOOTER=Techno Linuxpad © 2024
+      - FOOTER=Linuxpad © 2024
     ports:
       - 8080:3000
     restart: unless-stopped
