@@ -31,22 +31,23 @@ services:
       - BUTTON_ORDER=YOUTUBE,TWITCH,TWITTER,GITHUB,INSTAGRAM,LINKED_IN,DISCORD,FACEBOOK,TIKTOK,PATREON,GEAR,DOCUMENTATION
       # you can render an unlimited amount of custom buttons by adding 
       # the CUSTOM_BUTTON_* variables and by using a comma as a separator.
-      - CUSTOM_BUTTON_TEXT=Documentation,Recommended Gear
-      - CUSTOM_BUTTON_URL=https://l.technotim.live/docs,https://l.technotim.live/gear
+      - CUSTOM_BUTTON_TEXT=Documentation,Homelab
+      - CUSTOM_BUTTON_URL=https://blog.nanaoware.online
       - CUSTOM_BUTTON_COLOR=#000000,#000000
       - CUSTOM_BUTTON_TEXT_COLOR=#ffffff,#ffffff
-      - CUSTOM_BUTTON_ALT_TEXT=Tech documentation site for my videos and more,Recommended Gear
+      - CUSTOM_BUTTON_ALT_TEXT=Homelab documentation site
       - CUSTOM_BUTTON_NAME=DOCUMENTATION,GEAR
       - CUSTOM_BUTTON_ICON=fas file-alt,fas fa-cog
       - GITHUB=https://github.com/dagyepong
       - TWITTER=https://
       - INSTAGRAM=https://
-      - LINKED_IN=https://
+      - LINKED_IN=https://linkedin.com/nanaoware
       - YOUTUBE=https://
       - TWITCH=https://
-      - DISCORD=https://
-      - TIKTOK=https://
-      - FACEBOOK=https://
+      - DISCORD=https://discord.com/nana12
+      - TIKTOK=https://tiktok.com/@nanaoware
+      - SITE=https://blog.nanaoware.online
+      - FACEBOOK=https://www.facebook.com/profile.php?id=100094076774707&mibextid=ZbWKwL
       - PATREON=https://
       - FOOTER=Linuxpad © 2024
     ports:
