@@ -28,7 +28,7 @@ services:
       - NAME=Dennis Agyepong
       - BIO=Cyber-Security Analyst | Gamer | Tech Hobbyist | Linux Enthusiast | Homelab | 🇺🇸 🇬🇭 | Nerd
       # use ENV variable names for order, listed buttons will be boosted to the top
-      - BUTTON_ORDER=REDDIT,GITHUB,GITLAB,SITE,INSTAGRAM,LINKED_IN,DISCORD,FACEBOOK,TIKTOK,PATREON,GEAR,DOCUMENTATION
+      - BUTTON_ORDER=REDDIT,GITHUB,GITLAB,GHOST,INSTAGRAM,LINKED_IN,DISCORD,FACEBOOK,TIKTOK,PATREON,GEAR,DOCUMENTATION
       # you can render an unlimited amount of custom buttons by adding 
       # the CUSTOM_BUTTON_* variables and by using a comma as a separator.
       - CUSTOM_BUTTON_TEXT=Documentation,Homelab
@@ -48,7 +48,7 @@ services:
       #- TWITCH=https://twich.com
       - DISCORD=https://discord.com/nana12
       - TIKTOK=https://tiktok.com/@nanaoware
-      - SITE=https://blog.nanaoware.online
+      - GHOST=https://tech.nanaoware.online
       - FACEBOOK=https://www.facebook.com/profile.php?id=100094076774707&mibextid=ZbWKwL
       - PATREON=https://patreon.com/Linuxpad?utm_medium=clipboard_copy&utm_source=copyLink&utm_campaign=creatorshare_creator&utm_content=join_link
       - FOOTER=Linuxpad © 2024
