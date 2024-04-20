@@ -15,7 +15,7 @@ services:
       - OG_SITE_NAME=Dennis Agyepong
       - OG_TITLE=Dennis Agyepong
       - OG_DESCRIPTION=The home of Dennis Agyepong
-      - OG_URL=https://blog.nanaoware.online
+      - OG_URL=https://tech.nanaoware.online
       - OG_IMAGE=https://pfp.nostr.build/663ce288381c6a1bbf9ee09cccdf8efcc5025ded44e22e50a041543cd4f8f82c.jpg
       - OG_IMAGE_WIDTH=400
       - OG_IMAGE_HEIGHT=400
@@ -32,7 +32,7 @@ services:
       # you can render an unlimited amount of custom buttons by adding 
       # the CUSTOM_BUTTON_* variables and by using a comma as a separator.
       - CUSTOM_BUTTON_TEXT=Documentation,Homelab
-      - CUSTOM_BUTTON_URL=https://blog.nanaoware.online
+      - CUSTOM_BUTTON_URL=https://tech.nanaoware.online
       - CUSTOM_BUTTON_COLOR=#000000,#000000
       - CUSTOM_BUTTON_TEXT_COLOR=#ffffff,#ffffff
       - CUSTOM_BUTTON_ALT_TEXT=Homelab documentation site
