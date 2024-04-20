@@ -41,7 +41,7 @@ services:
       - GITHUB=https://github.com/dagyepong
       - GITLAB=https://gitlab.com/na204
       - TWITTER=https://twitter.com/
-      - INSTAGRAM=https://instagram.com/@oware84
+      - INSTAGRAM=https://instagram.com/oware84?igsh=cjhxOXZwanRiMmhj
       - REDDIT=https://www.reddit.com/user/nanaoware/
       - LINKED_IN=https://www.linkedin.com/in/nana-oware-944bba282/
       #- YOUTUBE=https://youtube.com
