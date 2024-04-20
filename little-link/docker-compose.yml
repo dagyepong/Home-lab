@@ -16,7 +16,7 @@ services:
       - OG_TITLE=Dennis Agyepong
       - OG_DESCRIPTION=The home of Dennis Agyepong
       - OG_URL=https://blog.nanaoware.online
-      - OG_IMAGE=http://www.shrinkpictures.com/processed/phpNntjjb_c1AM.jpg
+      - OG_IMAGE=https://pfp.nostr.build/663ce288381c6a1bbf9ee09cccdf8efcc5025ded44e22e50a041543cd4f8f82c.jpg
       - OG_IMAGE_WIDTH=400
       - OG_IMAGE_HEIGHT=400
       - GA_TRACKING_ID=G-XXXXXXXXXX
@@ -26,7 +26,7 @@ services:
       - AVATAR_2X_URL=https://pfp.nostr.build/663ce288381c6a1bbf9ee09cccdf8efcc5025ded44e22e50a041543cd4f8f82c.jpg
       - AVATAR_ALT=Dennis AgyepongProfile Pic
       - NAME=Dennis Agyepong
-      - BIO=Cyber-Security Analyst | Gamer | Tech Hobbyist | Linux Enthusiast | Homelab | 🇺🇸 🇬🇭 | Full Nerd
+      - BIO=Cyber-Security Analyst | Gamer | Tech Hobbyist | Linux Enthusiast | Homelab | 🇺🇸 🇬🇭 | Nerd
       # use ENV variable names for order, listed buttons will be boosted to the top
       - BUTTON_ORDER=YOUTUBE,TWITCH,TWITTER,GITHUB,INSTAGRAM,LINKED_IN,DISCORD,FACEBOOK,TIKTOK,PATREON,GEAR,DOCUMENTATION
       # you can render an unlimited amount of custom buttons by adding 
@@ -39,11 +39,13 @@ services:
       - CUSTOM_BUTTON_NAME=DOCUMENTATION,GEAR
       - CUSTOM_BUTTON_ICON=fas file-alt,fas fa-cog
       - GITHUB=https://github.com/dagyepong
+      - GITLAB=https://gitlab.com/na204
       - TWITTER=https://twitter.com/
-      - INSTAGRAM=https://
+      - INSTAGRAM=https://instagram.com/@oware84
+      - REDDIT=https://www.reddit.com/user/nanaoware/
       - LINKED_IN=https://www.linkedin.com/in/nana-oware-944bba282/
-      - YOUTUBE=https://youtube.com
-      - TWITCH=https://twich.com
+      #- YOUTUBE=https://youtube.com
+      #- TWITCH=https://twich.com
       - DISCORD=https://discord.com/nana12
       - TIKTOK=https://tiktok.com/@nanaoware
       - SITE=https://blog.nanaoware.online
