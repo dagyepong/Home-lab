@@ -21,6 +21,8 @@ services:
       - traefik.enable=true
       - traefik.http.routers.portainer.rule=Host(`portainer.example.com`)
       - traefik.http.services.portainer.loadbalancer.server.port=9000
+      - traefik.http.routers.portainer.tls=true
+      - traefik.http.routers.portainer.tls.cetresolver=lets-encrypt
       - traefik.docker.network=web
       # Part for local lan services only
       - traefik.http.routers.portainer.middlewares=simpleAuth@file
