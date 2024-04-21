@@ -20,7 +20,7 @@ services:
       - 8443:8443
     restart: unless-stopped
     networks:
-      - proxy
+      - web
     labels:
       - traefik.enable=true
       - traefik.docker.network=web
