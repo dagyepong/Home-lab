@@ -15,9 +15,10 @@ services:
       - PROXY_DOMAIN=code-server.jimsgarage.co.uk #optional
       - DEFAULT_WORKSPACE=/config/workspace #optional
     volumes:
-      - /home/ubuntu/docker/code-server/config:/config
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/vscode/config:/config
+
     networks:
-      proxy:
+      web:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.code-server.entrypoints=http"
