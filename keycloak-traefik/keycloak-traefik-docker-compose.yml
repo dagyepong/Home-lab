@@ -125,7 +125,7 @@ services:
       - "traefik.http.routers.keycloak.entrypoints=websecure"
       - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
       - "traefik.http.routers.keycloak.tls=true"
-      - "traefik.http.routers.keycloak.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.keycloak.tls.certResolver=letsencrypt"
       - "traefik.http.services.keycloak.loadbalancer.passhostheader=true"
       - "traefik.http.routers.keycloak.middlewares=compresstraefik"
       - "traefik.http.middlewares.compresstraefik.compress=true"

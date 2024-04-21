@@ -20,7 +20,7 @@ services:
       - traefik.http.routers.minio.rule=Host(`s3.example.com`)
       - traefik.http.services.minio.loadbalancer.server.port=9001
       - traefik.http.routers.minio.tls=true
-      - traefik.http.routers.minio.tls.cetresolver=lets-encrypt
+      - traefik.http.routers.minio.tls.certResolver=lets-encrypt
       - traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=50000000 # optional, only necessary for enabled file uploads
       - traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=50000000 # optional, only necessary for enabled file uploads
       - traefik.http.middlewares.limit.buffering.memRequestBodyBytes=50000000 # optional, only necessary for enabled file uploads

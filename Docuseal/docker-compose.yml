@@ -25,7 +25,7 @@ services:
       - traefik.http.routers.docuseal.rule=Host(`docuseal.example.com`)
       - traefik.http.services.docuseal.loadbalancer.server.port=3000
       - traefik.http.routers.docuseal.tls=true
-      - traefik.http.routers.docuseal.tls.cetresolver=lets-encrypt
+      - traefik.http.routers.docuseal.tls.certResolver=lets-encrypt
       # Optional part for traefik middlewares
       - traefik.http.routers.docuseal.middlewares=simpleAuth@file
 

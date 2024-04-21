@@ -27,7 +27,7 @@ services:
       - traefik.http.routers.codeserver.rule=Host(`code.example.com`)
       - traefik.http.services.codeserver.loadbalancer.server.port=8443
       - traefik.http.routers.codeserver.tls=true
-      - traefik.http.routers.codeserver.tls.cetresolver=lets-encrypt
+      - traefik.http.routers.codeserver.tls.certResolver=lets-encrypt
     #  # Optional part for file upload max sizes
       - traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=50000000
       - traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=50000000
