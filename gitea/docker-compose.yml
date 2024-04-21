@@ -8,7 +8,7 @@ services:
       - USER_GID=1000
     hostname: gitea
     ports:
-      - 3000:3000 #webgui
+      - 3050:3000 #webgui
       - 2222:22 #ssh
     image: gitea/gitea:latest
     restart: unless-stopped
@@ -20,6 +20,8 @@ services:
       - traefik.enable=true
       - traefik.http.routers.gitea.rule=Host(`git.example.com`)
       - traefik.http.services.gitea.loadbalancer.server.port=3000
+      - traefik.http.routers.gitea.tls=true
+      - traefik.http.routers.gitea.tls.cetresolver=lets-encrypt
       - traefik.docker.network=web
       # Part for local lan services only
       - traefik.http.routers.gitea.middlewares=simpleAuth@file
