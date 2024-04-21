@@ -17,6 +17,8 @@ services:
       - traefik.enable=true
       - traefik.http.routers.homepage.rule=Host(`home.example.com`)
       - traefik.http.services.homepage.loadbalancer.server.port=3000
+      - traefik.http.routers.homepage.tls=true
+      - traefik.http.routers.homepage.tls.cetresolver=lets-encrypt
       - traefik.docker.network=web
     #  # Part for local lan services only
       - traefik.http.routers.homepage.middlewares=simpleAuth@file
