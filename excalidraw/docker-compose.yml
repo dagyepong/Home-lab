@@ -2,33 +2,38 @@ version: "3.8"
 
 services:
   excalidraw:
-    container_name: excalidraw
-    image: excalidraw/excalidraw:latest
-    ports:
-      - "3030:80"
-    restart: unless-stopped
-    stdin_open: true
+    image: kiliandeca/excalidraw
     healthcheck:
       disable: true
+    ports:
+      - "80:80"
     environment:
-      - NODE_ENV=production
-    networks:
-      - web
-    volumes:
-      - ./:/opt/node_app/app:delegated
-      - ./package.json:/opt/node_app/package.json
-      - ./yarn.lock:/opt/node_app/yarn.lock
-      - notused:/opt/node_app/app/node_modules
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.excalidraw.rule=Host(`draw.example.com`)
-      - traefik.http.routers.excalidraw.tls=true
-      - traefik.http.routers.excalidraw.tls.certResolver=lets-encrypt
-      - traefik.http.services.excalidraw.loadbalancer.server.port=80
-      - traefik.docker.network=web
-    #  # Part for local lan services only; disable to expose externally
-      - traefik.http.routers.excalidraw.middlewares=simpleAuth@file
+      BACKEND_V2_GET_URL: http://localhost:8080/api/v2/scenes/
+      BACKEND_V2_POST_URL: http://localhost:8080/api/v2/scenes/
+      LIBRARY_URL: https://libraries.excalidraw.com
+      LIBRARY_BACKEND: https://us-central1-excalidraw-room-persistence.cloudfunctions.net/libraries
+      SOCKET_SERVER_URL: http://localhost:5000/
+      STORAGE_BACKEND: "http"
+      HTTP_STORAGE_BACKEND_URL: "http://localhost:8080/api/v2"
+
+  excalidraw-storage-backend:
+    image: kiliandeca/excalidraw-storage-backend
+    ports:
+      - "8080:8080"
+    environment:
+      STORAGE_URI: redis://redis:6379
+
+  excalidraw-room:
+    image: excalidraw/excalidraw-room
+    ports:
+      - "5000:80"
+
+  redis:
+    image: redis
+    expose:
+      - "6379"
 
 networks:
-  web:
-   external: true
+  default:
+    external:
+      name: excalidraw-net
