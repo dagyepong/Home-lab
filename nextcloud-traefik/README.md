@@ -1,6 +1,5 @@
 # Nextcloud with Let's Encrypt Using Docker Compose
 
-📙 The complete installation guide is available on my [website](https://www.heyvaldemar.com/install-nextcloud-using-docker-compose/).
 
 ❗ Change variables in the `.env` to meet your requirements.
 
