@@ -5,7 +5,7 @@ services:
     container_name: excalidraw
     image: excalidraw/excalidraw:latest
     ports:
-      - "3000:80"
+      - "3030:80"
     restart: unless-stopped
     stdin_open: true
     healthcheck:
