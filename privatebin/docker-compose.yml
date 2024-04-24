@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  privatebin:
+    image: privatebin/nginx-fpm-alpine
+    restart: always
+    read_only: true
+    user: "1000:1000"  # Run the container with the UID:GID of your Docker user
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./privatebin-data:/srv/data
