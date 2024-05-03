@@ -50,3 +50,7 @@ secrets:
 networks:
   proxy:
     external: true
+
+...
+      - ./data/config.yml:/config.yml:ro
+...
