@@ -22,10 +22,10 @@ providers:
 certificatesResolvers:
   cloudflare:
     acme:
-      email: youremail@email.com
+      email: owarenana06@gmail.com.com
       storage: acme.json
-      # caServer: https://acme-v02.api.letsencrypt.org/directory # prod (default)
-      caServer: https://acme-staging-v02.api.letsencrypt.org/directory # staging
+      caServer: https://acme-v02.api.letsencrypt.org/directory # prod (default)
+      #caServer: https://acme-staging-v02.api.letsencrypt.org/directory # staging
       dnsChallenge:
         provider: cloudflare
         #disablePropagationCheck: true # uncomment this if you have issues pulling certificates through cloudflare, By setting this flag to true disables the need to wait for the propagation of the TXT record to all authoritative name servers.
