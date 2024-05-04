@@ -29,7 +29,7 @@ services:
       - traefik.docker.network=web
       - traefik.http.routers.adguard.rule=Host(`dns.example.com`)
       - traefik.http.routers.adguard.tls=true
-      - traefik.http.routers.adguard.tls.certResolver=lets-encrypt
+      - traefik.http.routers.adguard.tls.certResolver=cloudflare
       - traefik.http.services.adguard.loadbalancer.server.port=8080
     #  # Optional part for traefik middlewares
       - traefik.http.routers.adguard.middlewares=simpleAuth@file
