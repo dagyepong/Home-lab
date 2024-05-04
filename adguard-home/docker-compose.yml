@@ -23,17 +23,18 @@ services:
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/adguard-home/work:/opt/adguardhome/work
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/adguard-home/conf:/opt/adguardhome/conf
     networks:
-      - web
+      - proxy
     labels:
       - traefik.enable=true
-      - traefik.docker.network=web
-      - traefik.http.routers.adguard.rule=Host(`dns.example.com`)
+      - traefik.docker.network=proxy
+      - traefik.http.routers.adguard.rule=Host(`dns.local.nanaoware.online`)
       - traefik.http.routers.adguard.tls=true
+      - traefik.http.routers.codeserver.entrypoints=https
       - traefik.http.routers.adguard.tls.certResolver=cloudflare
       - traefik.http.services.adguard.loadbalancer.server.port=8080
     #  # Optional part for traefik middlewares
-      - traefik.http.routers.adguard.middlewares=simpleAuth@file
+      - traefik.http.routers.adguard.middlewares=traefik-https-redirect@docker
 
 networks:
-  web:
+  proxy:
     external: true
