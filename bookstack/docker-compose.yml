@@ -21,13 +21,14 @@ services:
     depends_on:
       - bookstack_db
     networks:
-      - web
+      - proxy
     labels:
       - traefik.enable=true
       - traefik.docker.network=web
-      - traefik.http.routers.bookstack.rule=Host(`bookstack.example.com`)
+      - traefik.http.routers.bookstack.rule=Host(`bookstack.local.nanaoware.online`)
       - traefik.http.routers.bookstack.tls=true
-      - traefik.http.routers.bookstack.tls.certResolver=lets-encrypt
+      - traefik.http.routers.bookstack.entrypoints=https
+      - traefik.http.routers.bookstack.tls.certResolver=cloudflare
       - traefik.http.services.bookstack.loadbalancer.server.port=80
     #  # Optional part for file upload max sizes
       - traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=50000000
@@ -35,7 +36,7 @@ services:
       - traefik.http.middlewares.limit.buffering.memRequestBodyBytes=50000000
       - traefik.http.middlewares.limit.buffering.memResponseBodyBytes=50000000
     #  # Optional part for traefik middlewares
-      - traefik.http.routers.bookstack.middlewares=simpleAuth@file
+      - traefik.http.routers.bookstack.middlewares=traefik-https-redirect@docker
 
   bookstack_db:
     image: linuxserver/mariadb
@@ -53,8 +54,8 @@ services:
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/bookstack/mariadb-config:/config
     restart: unless-stopped
     networks:
-      - web
+      - proxy
 
 networks:
-  web:
+  proxy:
     external: true  
