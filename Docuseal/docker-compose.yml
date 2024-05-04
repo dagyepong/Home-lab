@@ -18,16 +18,17 @@ services:
     expose:
       - 3000
     networks:
-      - web
+      - proxy
     labels:
       - traefik.enable=true
-      - traefik.docker.network=web
-      - traefik.http.routers.docuseal.rule=Host(`docuseal.example.com`)
+      - traefik.docker.network=proxy
+      - traefik.http.routers.docuseal.rule=Host(`docuseal.local.nanaoware.online`)
       - traefik.http.services.docuseal.loadbalancer.server.port=3000
       - traefik.http.routers.docuseal.tls=true
-      - traefik.http.routers.docuseal.tls.certResolver=lets-encrypt
+      - traefik.http.routers.docuseal.entrypoints=https
+      - traefik.http.routers.docuseal.tls.certResolver=cloudflare
       # Optional part for traefik middlewares
-      - traefik.http.routers.docuseal.middlewares=simpleAuth@file
+      - traefik.http.routers.docuseal.middlewares=traefik-https-redirect@docker
 
   postgres:
     image: postgres:15-alpine
@@ -47,8 +48,8 @@ services:
     expose:
       - 5432
     networks:
-      - web
+      - proxy
 
 networks:
-  web:
+  proxy:
     external: true

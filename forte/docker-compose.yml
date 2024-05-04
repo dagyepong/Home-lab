@@ -25,18 +25,19 @@ services:
         volumes:
             - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/forte/library:/library # your music library to import from
         networks:
-            - web
+            - proxy
         labels:
             - traefik.enable=true
-            - traefik.http.routers.forte.rule=Host(`forte.example.com`)
+            - traefik.http.routers.forte.rule=Host(`forte.local.nanaoware.online`)
             - traefik.http.services.forte.loadbalancer.server.port=3000
             - traefik.http.routers.forte.tls=true
-            - traefik.http.routers.forte.tls.certResolver=lets-encrypt
-            - traefik.docker.network=web
+            - traefik.http.routers.forte.tls.certResolver=cloudflare
+            - traefik.docker.network=proxy
+            - traefik.http.routers.forte.entrypoints=https
             - traefik.http.middlewares.cors.headers.customResponseHeaders.Access-Control-Allow-Origin=https://forte.buzl.uk
             - traefik.http.middlewares.cors.headers.customFrameOptionsValue=forte.buzl.uk
             - traefik.http.middlewares.cors.headers.customResponseHeaders.Cross-Origin-Resource-Policy=cross-origin
-            - traefik.http.routers.forte.middlewares=simpleAuth@file
+            - traefik.http.routers.forte.middlewares=traefik-https-redirect@docker
 
     postgres:
         image: kaangiray26/postgres:2.0
@@ -54,10 +55,10 @@ services:
             timeout: 5s
             retries: 5
         networks:
-            - web
+            - proxy
 
 networks:
-   web:
+   proxy:
      external: true
 
 ## username forte & alternative as password
