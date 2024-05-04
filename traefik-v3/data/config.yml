@@ -4,7 +4,7 @@ http:
     proxmox:
       entryPoints:
         - "https"
-      rule: "Host(`proxmox.local.example.com`)"
+      rule: "Host(`proxmox.local.nanaoware.online`)"
       middlewares:
         - default-headers
         - https-redirectscheme
