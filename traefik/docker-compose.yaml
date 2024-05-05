@@ -13,18 +13,18 @@ services:
       #- $PWD/traefik_dynamic.toml:/traefik_dynamic.toml
       - $PWD/acme.json:/acme.json
       - $PWD/traefik.yml
-    environment:
+    #environment:
       #CF_DNS_API_TOKEN_FILE: /run/secrets/cf_api_token # note using _FILE for docker secrets
       # CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN} # if using .env
-      TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
+      #TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
     #secrets:
      # - cf_api_token
-    env_file: .env # use .env
+    #env_file: .env # use .env
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.entrypoints=web"
       - "traefik.http.routers.traefik.rule=Host(`traefik-dashboard.local.nanaoware.online`)"
-      - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_DASHBOARD_CREDENTIALS}"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users==admin:$$2y$$05$$qQPYsw13qJeuwPsiNiwfyOvxkKnborAs9sv7uVmcQPlqXc6snNsTS"
       - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
