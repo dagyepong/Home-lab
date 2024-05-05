@@ -16,23 +16,18 @@ services:
       - 9000
       - 8000
     networks:
-      - proxy
+      - web
     labels:
       - traefik.enable=true
-      - traefik.http.routers.portainer.rule=Host(`portainer.local.nanaoware.online`)
+      - traefik.http.routers.portainer.rule=Host(`portainer.nanaoware.online`)
       - traefik.http.services.portainer.loadbalancer.server.port=9000
       - traefik.http.routers.portainer.tls=true
-      - traefik.http.routers.portainer.entrypoints=https
-      - traefik.http.routers.portainer.tls.certResolver=cloudflare
-      - traefik.docker.network=proxy
+      - traefik.http.routers.portainer.entrypoints=websecure
+      - traefik.http.routers.portainer.tls.certResolver=lets-encrypt
+      - traefik.docker.network=web
       # Part for local lan services only
-      - traefik.http.routers.portainer.middlewares=traefik-https-redirect@docker
+      - traefik.http.routers.portainer.middlewares=simpleAuth@file
 
 networks:
-  proxy:
+  web:
     external: true
-
-volumes:
-  portainer_data:
-      external: true
-      name: portainer_data
