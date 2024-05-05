@@ -36,17 +36,17 @@ services:
       #mail__options__auth__pass: ${SMTP_PASS:-SMTPPassword}
       #mail__from: ${SMTP_MAIL_FROM:-Ghost}
     networks:
-      - proxy
-    #labels:
-     # - traefik.enable=true
-     # - traefik.http.routers.ghost.rule=Host(tech.nanaoware.online`)
-     # - traefik.http.services.ghost.loadbalancer.server.port=2368
-     # - traefik.http.routers.ghost.tls=true
-     # - traefik.http.routers.ghost.entrypoints=https
-     # - traefik.http.routers.ghost.tls.certResolver=cloudflare
-     # - traefik.docker.network=proxy
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ghost.rule=Host(tech.nanaoware.online`)
+      - traefik.http.services.ghost.loadbalancer.server.port=2368
+      - traefik.http.routers.ghost.tls=true
+      - traefik.http.routers.ghost.entrypoints=websecure
+      - traefik.http.routers.ghost.tls.certResolver=lets-encrypt
+      - traefik.docker.network=web
     #   Part for local lan services only
-     # - traefik.http.routers.ghost.middlewares=traefik-https-redirect@docker
+      - traefik.http.routers.ghost.middlewares=simpleAuth@file
 
   database:
     image: mysql:8
@@ -66,8 +66,8 @@ services:
       MYSQL_USER: ${DB_USER:-ghost}
       MYSQL_PASSWORD: ${DB_USER_PASS:-DatabasePassword1234}
     networks:
-      - proxy
+      - web
     
 networks:
-  proxy:
+  web:
     external: true
