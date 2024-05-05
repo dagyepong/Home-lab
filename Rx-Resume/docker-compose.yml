@@ -1,74 +1,121 @@
-version: "3.9"
+version: "3.8"
+
+# In this Docker Compose example, it assumes that you maintain a reverse proxy externally (or chose not to).
+# The only two exposed ports here are from minio (:9000) and the app itself (:3000).
+# If these ports are changed, ensure that the env vars passed to the app are also changed accordingly.
+
 services:
-  resume-db:
-    image: postgres:16
-    container_name: RXRESUME-DB
-    hostname: resume-db
-    security_opt:
-      - no-new-privileges:true
+  # Database (Postgres)
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    volumes:
+      - /srv/appdata/reactiveresume/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     healthcheck:
-      test: ["CMD", "pg_isready", "-q", "-d", "reresume", "-U", "reresumeuser"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
-    volumes:
-      - /volume1/docker/rxv3/db:/var/lib/postgresql/data:rw
-    environment:
-      POSTGRES_DB: reresume
-      POSTGRES_USER: reresumeuser
-      POSTGRES_PASSWORD: reresumepw
-    restart: on-failure:5
 
-  resume-server:
-    image: amruthpillai/reactive-resume:server-3.8.4
-    container_name: RXRESUME-SERVER
-    hostname: resume-server
-    security_opt:
-      - no-new-privileges:true
+  # Storage (for image uploads)
+  minio:
+    image: minio/minio
+    restart: unless-stopped
+    command: server /data
     ports:
-      - 8661:3100
+      - 9000:9000
     volumes:
-      - /volume1/docker/rxv3/exports:/app/server/dist/assets/exports:rw
-      - /volume1/docker/rxv3/uploads:/app/server/dist/assets/uploads:rw
+      - /srv/appdata/reactiveresume/minio:/data
     environment:
-      - PUBLIC_URL=https://rxresume.yourname.synology.me
-      - PUBLIC_SERVER_URL=https://rxresumeserver.yourname.synology.me
-      - POSTGRES_DB=reresume
-      - POSTGRES_USER=reresumeuser
-      - POSTGRES_PASSWORD=reresumepw
-      - SECRET_KEY=MariushostingMariushostingMari13
-      - POSTGRES_HOST=resume-db
-      - POSTGRES_PORT=5432
-      - JWT_SECRET=MariushostingMariushostingMari13
-      - JWT_EXPIRY_TIME=604800
-      - MAIL_FROM_NAME=Reactive Resume
-      - MAIL_FROM_EMAIL=Your-own-gmail-address
-      - MAIL_HOST=smtp.gmail.com
-      - MAIL_PORT=587
-      - MAIL_USERNAME=Your-own-gmail-address
-      - MAIL_PASSWORD=Your-own-app-password
-    restart: on-failure:5
-    depends_on:
-      resume-db:
-        condition: service_started
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
 
-  resume-client:
-    image: amruthpillai/reactive-resume:client-3.8.4
-    container_name: RXRESUME-CLIENT
-    hostname: resume-client
-    security_opt:
-      - no-new-privileges:true
-    healthcheck:
-      test: curl -fSs 127.0.0.1:3000 || exit 1
-      interval: 30s
-      timeout: 5s
-      retries: 3
-    ports:
-      - 8662:3000
+  # Chrome Browser (for printing and previews)
+  chrome:
+    image: browserless/chrome:1.61.0-puppeteer-21.4.1
+    restart: unless-stopped
     environment:
-      - PUBLIC_URL=https://rxresume.yourname.synology.me
-      - PUBLIC_SERVER_URL=https://rxresumeserver.yourname.synology.me
-    restart: on-failure:5
+      TOKEN: chrome_token
+      EXIT_ON_HEALTH_FAILURE: 1
+      PRE_REQUEST_HEALTH_CHECK: 1
+
+  # Redis (for cache & server session management)
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    command: redis-server --requirepass password
+
+  app:
+    image: amruthpillai/reactive-resume:latest
+    restart: unless-stopped
+    ports:
+      - 3000:3000
     depends_on:
-      resume-server:
-        condition: service_started
+      - postgres
+      - minio
+      - redis
+      - chrome
+    environment:
+      # -- Environment Variables --
+      PORT: 3000
+      NODE_ENV: production
+
+      # -- URLs --
+      PUBLIC_URL: http://localhost:3000
+      STORAGE_URL: http://localhost:9000
+
+      # -- Printer (Chrome) --
+      CHROME_TOKEN: chrome_token
+      CHROME_URL: ws://chrome:3000
+
+      # -- Database (Postgres) --
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres
+
+      # -- Auth --
+      ACCESS_TOKEN_SECRET: access_token_secret
+      REFRESH_TOKEN_SECRET: refresh_token_secret
+
+      # -- Emails --
+      MAIL_FROM: noreply@localhost
+      # SMTP_URL: smtp://user:pass@smtp:587 # Optional
+
+      # -- Storage (Minio) --
+      STORAGE_ENDPOINT: minio
+      STORAGE_PORT: 9000
+      #STORAGE_REGION: us-east-1 # Optional
+      STORAGE_BUCKET: default
+      STORAGE_ACCESS_KEY: minioadmin
+      STORAGE_SECRET_KEY: minioadmin
+      STORAGE_USE_SSL: 0
+
+      # -- Cache (Redis) --
+      REDIS_URL: redis://default:password@redis:6379
+
+      # -- Sentry --
+      # VITE_SENTRY_DSN: https://id.sentry.io # Optional
+
+      # -- Crowdin (Optional) --
+      # CROWDIN_PROJECT_ID:
+      # CROWDIN_PERSONAL_TOKEN:
+
+      # -- Email (Optional) --
+      # DISABLE_EMAIL_AUTH: true
+      # VITE_DISABLE_SIGNUPS: true
+
+      # -- GitHub (Optional) --
+      #GITHUB_CLIENT_ID: github_client_id
+      #GITHUB_CLIENT_SECRET: github_client_secret
+      #GITHUB_CALLBACK_URL: http://localhost:3000/api/auth/github/callback
+
+      # -- Google (Optional) --
+      #GOOGLE_CLIENT_ID: google_client_id
+      #GOOGLE_CLIENT_SECRET: google_client_secret
+      #GOOGLE_CALLBACK_URL: http://localhost:3000/api/auth/google/callback
+
+volumes:
+  minio_data:
+  postgres_data:
