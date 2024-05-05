@@ -23,7 +23,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     networks:
-      -proxy
+      - proxy
 
   server:
     image: amruthpillai/reactive-resume:server-latest
