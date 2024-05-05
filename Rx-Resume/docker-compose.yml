@@ -23,7 +23,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     networks:
-      - web
+      -proxy
 
   server:
     image: amruthpillai/reactive-resume:server-latest
@@ -64,14 +64,15 @@ services:
       - STORAGE_SECRET_KEY=
       - PDF_DELETION_TIME=
     networks:
-      - web
+      - proxy
     labels:
       - traefik.enable=true
-      - traefik.http.routers.rxresume-server.rule=Host(`resume.example.com`) && PathPrefix(`/api`) # only change the subdomain, leave /api as is
+      - traefik.http.routers.rxresume-server.rule=Host(`resume.local.nanaoware.online`) && PathPrefix(`/api`) # only change the subdomain, leave /api as is
       - traefik.http.services.rxresume-server.loadbalancer.server.port=3100
       - traefik.http.routers.rxresume.tls=true
-      - traefik.http.routers.rxresume.tls.certResolver=lets-encrypt
-      - traefik.docker.network=web
+      - traefik.http.routers.rxresume.entrypoints=https
+      - traefik.http.routers.rxresume.tls.certResolver=cloudflare
+      - traefik.docker.network=proxy
       # Part for optional traefik middlewares
       - traefik.http.routers.rxresume-server.middlewares=path-strip # may add local-ipwhitelist@file for access control
       - traefik.http.middlewares.path-strip.stripprefix.prefixes=/api 
