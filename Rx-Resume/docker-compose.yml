@@ -1,75 +1,74 @@
-ersion: '3'
-
+version: "3.9"
 services:
-  postgres:
-    image: postgres:14.2-alpine
-    container_name: postgres
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-    ports:
-      - 5432:5432
-    volumes:
-      - /opt/resume/pgdata:/var/lib/postgresql/data
+  resume-db:
+    image: postgres:16
+    container_name: RXRESUME-DB
+    hostname: resume-db
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      start_period: 15s
-      interval: 30s
-      timeout: 30s
-      retries: 3
-    restart: always
-
-  server:
-    image: amruthpillai/reactive-resume:server-latest
-    # build:
-    #   context: .
-    #   dockerfile: ./server/Dockerfile
-    container_name: server
+      test: ["CMD", "pg_isready", "-q", "-d", "reresume", "-U", "reresumeuser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - /volume1/docker/rxv3/db:/var/lib/postgresql/data:rw
     environment:
-      - TZ=CET
-      - PUBLIC_URL=http://rx.domain.tld:3000
-      - PUBLIC_SERVER_URL=http://rx.domain.tld:3000/api
-      - PUBLIC_GOOGLE_CLIENT_ID=
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-      - SECRET_KEY=secret
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-      - POSTGRES_SSL_CERT=
-      - JWT_SECRET=secret
-      - JWT_EXPIRY_TIME=604800
-      - GOOGLE_CLIENT_SECRET=
-      - GOOGLE_API_KEY=
-      - SENDGRID_API_KEY=
-      - SENDGRID_FORGOT_PASSWORD_TEMPLATE_ID=
-      - SENDGRID_FROM_NAME=
-      - SENDGRID_FROM_EMAIL=
-      - STORAGE_BUCKET=
-      - STORAGE_REGION=DE
-      - STORAGE_ENDPOINT=
-      - STORAGE_URL_PREFIX=
-      - STORAGE_ACCESS_KEY=
-      - STORAGE_SECRET_KEY=
-    depends_on:
-      - postgres
-    restart: always
+      POSTGRES_DB: reresume
+      POSTGRES_USER: reresumeuser
+      POSTGRES_PASSWORD: reresumepw
+    restart: on-failure:5
 
-  client:
-    image: amruthpillai/reactive-resume:client-latest
-    # build:
-    #   context: .
-    #   dockerfile: ./client/Dockerfile
-    container_name: client
+  resume-server:
+    image: amruthpillai/reactive-resume:server-3.8.4
+    container_name: RXRESUME-SERVER
+    hostname: resume-server
+    security_opt:
+      - no-new-privileges:true
     ports:
-      - 3000:3000
+      - 8661:3100
+    volumes:
+      - /volume1/docker/rxv3/exports:/app/server/dist/assets/exports:rw
+      - /volume1/docker/rxv3/uploads:/app/server/dist/assets/uploads:rw
     environment:
-      - TZ=CET
-      - PUBLIC_URL=http://rx.domain.tld:3000
-      - PUBLIC_SERVER_URL=http://rx.domain.tld:3000/api
-      - PUBLIC_GOOGLE_CLIENT_ID=
-      - PUBLIC_FLAG_DISABLE_SIGNUPS=false
+      - PUBLIC_URL=https://rxresume.yourname.synology.me
+      - PUBLIC_SERVER_URL=https://rxresumeserver.yourname.synology.me
+      - POSTGRES_DB=reresume
+      - POSTGRES_USER=reresumeuser
+      - POSTGRES_PASSWORD=reresumepw
+      - SECRET_KEY=MariushostingMariushostingMari13
+      - POSTGRES_HOST=resume-db
+      - POSTGRES_PORT=5432
+      - JWT_SECRET=MariushostingMariushostingMari13
+      - JWT_EXPIRY_TIME=604800
+      - MAIL_FROM_NAME=Reactive Resume
+      - MAIL_FROM_EMAIL=Your-own-gmail-address
+      - MAIL_HOST=smtp.gmail.com
+      - MAIL_PORT=587
+      - MAIL_USERNAME=Your-own-gmail-address
+      - MAIL_PASSWORD=Your-own-app-password
+    restart: on-failure:5
     depends_on:
-      - server
-    restart: always
+      resume-db:
+        condition: service_started
+
+  resume-client:
+    image: amruthpillai/reactive-resume:client-3.8.4
+    container_name: RXRESUME-CLIENT
+    hostname: resume-client
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: curl -fSs 127.0.0.1:3000 || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    ports:
+      - 8662:3000
+    environment:
+      - PUBLIC_URL=https://rxresume.yourname.synology.me
+      - PUBLIC_SERVER_URL=https://rxresumeserver.yourname.synology.me
+    restart: on-failure:5
+    depends_on:
+      resume-server:
+        condition: service_started
