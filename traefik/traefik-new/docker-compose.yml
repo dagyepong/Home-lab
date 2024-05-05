@@ -1,19 +1,18 @@
-version: '3'
+version: "3.8"
 services:
-  reverse-proxy:
-    image: traefik:v2.11
-    command: --configFile=/etc/traefik/traefik.yml
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
+  traefik:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./traefik.yml:/etc/traefik/traefik.yml
-      - ./acme.json:/acme.json
+      - $PWD/traefik.toml:/traefik.toml
+      - $PWD/traefik_dynamic.toml:/traefik_dynamic.toml
+      - $PWD/acme.json:/acme.json
+    ports:
+      - 80:80
+      - 443:443
     networks:
-      - traefik
-
+      - web
+    container_name: traefik
+    image: traefik:v3.0
 networks:
-  traefik:
+  web:
     external: true
