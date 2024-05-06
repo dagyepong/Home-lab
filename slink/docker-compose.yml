@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  slink:
+    image: anirdev/slink:latest
+    container_name: slink
+    environment:
+      - ORIGIN=https://mondomaine.com
+      - USER_APPROVAL_REQUIRED=false
+      - STORAGE_PROVIDER=local
+    volumes:
+      - /srv/appdata/slink/var/data:/app/var/data
+      - /srv/appdata/slink/images:/app/slink/images
+    ports:
+      - 3010:3000
+networks: {}
