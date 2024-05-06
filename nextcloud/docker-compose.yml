@@ -7,6 +7,7 @@ services:
     restart: unless-stopped
     networks:
       - cloud
+      - web
     depends_on:
       - nextclouddb
       - redis
@@ -17,6 +18,17 @@ services:
       - /srv/appdata/nextcloud/custom_apps:/var/www/html/custom_apps
       - /srv/appdata/nextcloud/config:/var/www/html/config
       - /srv/appdata/nextcloud/data:/var/www/html/data
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.gitea.rule=Host(`nextcloud.nanaoware.online`)
+      - traefik.http.services.gitea.loadbalancer.server.port=8081
+      - traefik.http.routers.gitea.tls=true
+      - traefik.http.routers.gitea.entrypoints=websecure
+      - traefik.http.routers.gitea.tls.certResolver=lets-encrypt
+      - traefik.docker.network=web
+      # Part for local lan services only
+      - traefik.http.routers.gitea.middlewares=simpleAuth@file
+
     environment:
       - PUID=1000
       - PGID=1000
@@ -57,3 +69,5 @@ networks:
   cloud:
     name: cloud
     driver: bridge
+  web:
+    external: true
