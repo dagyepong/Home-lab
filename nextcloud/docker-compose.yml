@@ -46,6 +46,7 @@ services:
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     networks:
       - cloud
+      - web
     volumes:
       - /srv/appdata/nextcloud/nextclouddb:/var/lib/mysql
     environment:
