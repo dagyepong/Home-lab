@@ -348,7 +348,10 @@
         siteMonitor: https://transmission.internal-domain.lan
         widget:
             type: transmission
-            url: https://transmission.internal-domain.lan
+            url: http://transmission.host.or.ip
+            username: username
+            password: password
+            rpcUrl: /transmission/ # Optional. Matches the value of "rpc-url" in your Transmission's settings.json file
     - Jellystat:
         href: https://stats.internal-domain.lan
         icon: jellystat.png
