@@ -4,7 +4,9 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - 8065:8080
-    image: amir20/dozzle
+      - 9999:8080
+    environment:
+      - DOZZLE_AUTH_PROVIDER=simple
+    image: amir20/dozzle:latest
     command: --username nana --password akosua123
 networks: {}
