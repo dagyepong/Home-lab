@@ -1,6 +1,6 @@
 users:
   admin:
-    name: "admin"
-    password: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    name: "Admin"
+    password: "ea71c25a7a602246b4c39824b855678894a96f43bb9b71319c39700a1e045222"
 
-## psswd akosua123
+## psswd mypass
