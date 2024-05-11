@@ -1,12 +1,13 @@
-version: "3.3"
+version: "3"
 services:
   dozzle:
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    container_name: dozzle
+    image: amir20/dozzle:latest
     ports:
       - 9999:8080
     environment:
       - DOZZLE_AUTH_PROVIDER=simple
-    image: amir20/dozzle:latest
-    command: --username nana --password akosua123
-networks: {}
+      - DOZZLE_HOSTNAME=Lab2 Server
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./dozzle-data:/data

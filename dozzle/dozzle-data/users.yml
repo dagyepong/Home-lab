@@ -1,0 +1,4 @@
+users:
+  admin:
+    name: "Admin"
+    password: ""
