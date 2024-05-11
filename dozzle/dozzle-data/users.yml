@@ -1,4 +1,4 @@
 users:
   admin:
-    name: "Admin"
-    password: ""
+    name: "admin"
+    password: "$apr1$1vi6xle5$GNOTBK8dlwNU.m5G9EEE4/"
