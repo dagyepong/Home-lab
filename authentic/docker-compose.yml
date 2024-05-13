@@ -57,7 +57,7 @@ services:
       - traefik.http.routers.authentik.entrypoints=websecure
       - traefik.http.routers.authentik.tls=true
       - traefik.http.routers.authentik.tls.certResolver=lets-encrypt
-      - traefik.http.services.authentik.loadbalancer.server.port=9000
+      - traefik.http.services.authentik.loadbalancer.server.port=8088
     #  # Optional part for file upload max sizes
       - traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=50000000
       - traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=50000000
