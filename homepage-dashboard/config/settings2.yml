@@ -15,3 +15,19 @@ providers:
   openweathermap: openweathermapapikey
   weatherapi: weatherapiapikey
 
+useEqualHeights: true
+
+layout:
+  - Auto-Discovered1:
+  - Configured1:
+  - Configured2:
+  - Auto-Discovered2:
+  - Configured3:
+      style: row
+      columns: 3
+
+quicklaunch:
+  searchDescriptions: true
+  hideInternetSearch: true
+  showSearchSuggestions: true
+  hideVisitURL: true
