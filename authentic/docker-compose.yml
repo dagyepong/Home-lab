@@ -39,7 +39,7 @@ services:
     networks:
       - authentik-internal
 
-  authentik-proxy:
+  authentik-web:
     image: ghcr.io/goauthentik/server:2024.2
     container_name: authentik
     restart: unless-stopped
@@ -63,7 +63,7 @@ services:
       - postgresql
       - redis
     networks:
-      - proxy
+      -web
       - authentik-internal
     labels:
       - traefik.enable=true
@@ -71,7 +71,7 @@ services:
       - traefik.http.services.authentik.loadbalancer.server.port=9000
       - traefik.http.routers.authentik.tls=true
       - traefik.http.routers.authentik.tls.certResolver=cloudflare
-      - traefik.docker.network=proxy
+      - traefik.docker.network=web
       - traefik.http.routers.codeserver.entrypoints=https
       - traefik.http.middlewares.authentik.forwardauth.address=http://authentik-proxy:9000/outpost.goauthentik.io/auth/traefik
       - traefik.http.middlewares.authentik.forwardauth.trustForwardHeader=true
