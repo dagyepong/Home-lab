@@ -46,7 +46,7 @@ services:
     env_file:
       - .env
     ports:
-      - "${COMPOSE_PORT_HTTP:-9088}:9088"
+      - "${COMPOSE_PORT_HTTP:-9000}:9000"
       - "${COMPOSE_PORT_HTTPS:-9446}:9446"
     depends_on:
       - postgresql
