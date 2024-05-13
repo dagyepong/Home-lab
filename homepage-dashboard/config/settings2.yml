@@ -1,5 +1,5 @@
 ---
-title: My Awesome Homepage
+title: Nana's Homepage
 headerStyle: boxed
 
 background:
@@ -7,6 +7,7 @@ image: https://source.unsplash.com/random/?night,dark
 blur: sm
 brightness: 25
 opacity: 50
+statusStyle: "dot"
 
 cardBlur: sm
 
@@ -14,18 +15,3 @@ providers:
   openweathermap: openweathermapapikey
   weatherapi: weatherapiapikey
 
-layout:
-  Networking:
-    icon: mdi-network-#FFFFFF
-  Infrastructure and Data:
-    icon: mdi-server-#FFFFFF
-  Management:
-    icon: mdi-auto-fix-#FFFFFF
-  Monitoring:
-    icon: mdi-list-status-#FFFFFF
-  Automation:
-    icon: mdi-cog-play-#FFFFFF
-  IoT and Smarthome:
-    icon: mdi-home-#FFFFFF
-  Security and Identity:
-    icon: mdi-shield-lock-#FFFFFF

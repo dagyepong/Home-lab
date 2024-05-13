@@ -26,7 +26,6 @@
             type: adguard
             url: https://adguard.internal-domain.lan
             username: admin
-   
     - Traefik:
             href: https://traefik.internal-domain.lan/dashboard/
             icon: traefik.png
@@ -68,6 +67,7 @@
             type:
             url:
             key:
+            env: 2
     - Dockge:
         href:
         siteMonitor:

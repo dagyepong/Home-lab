@@ -12,6 +12,7 @@ background: https://i.ibb.co/hMWFX6D/mountain-clouds.gif
 
 theme: dark
 color: slate
+statusStyle: "dot"
 
 useEqualHeights: true
 
