@@ -52,7 +52,7 @@ services:
       - web
     labels:
       - traefik.enable=true
-      - traefik.docker.networkweb
+      - traefik.docker.network=web
       - traefik.http.routers.authentik.rule=Host(`authentik.nanaoware.online`)
       - traefik.http.routers.authentik.entrypoints=websecure
       - traefik.http.routers.authentik.tls=true

@@ -23,7 +23,7 @@ services:
       - web
     labels:
       - traefik.enable=true
-      - traefik.docker.networkweb
+      - traefik.docker.network=web
       - traefik.http.routers.codeserver.rule=Host(`code.nanaoware.online`)
       - traefik.http.routers.codeserver.entrypoints=websecure
       - traefik.http.routers.codeserver.tls=true
