@@ -27,13 +27,16 @@
             url: https://adguard.internal-domain.lan
             username: admin
     - Traefik:
-            href: https://traefik.internal-domain.lan/dashboard/
+            href: https://monitor.nanaoware.online/dashboard/
             icon: traefik.png
             description: Reverse Proxy
             widget:
                 type: traefik
-                url: https://traefik.internal-domain.lan
-                siteMonitor: https://traefik.internal-domain.lan/dashboard/
+                url: https://monitor.nanaoware.online
+                siteMonitor: https://monitor.nanaoware.online/dashboard/
+                username: nana
+                password: akosua123
+
     - Authentik:
         href: https://auth.public-domain.fr/
         description: Authentification provider
