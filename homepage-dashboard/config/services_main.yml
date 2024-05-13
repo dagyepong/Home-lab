@@ -5,7 +5,7 @@
         siteMonitor: https://pve1.lan:8006
     - Harvester:
         href: https://pve2.lan:8006/
-        icon: proxmox.png
+        icon: kubernetes.svg
         siteMonitor: https://pve2.lan:8006
     - Pibox:
         href: https://kubesail.com
@@ -26,15 +26,7 @@
             type: adguard
             url: https://adguard.internal-domain.lan
             username: admin
-    - Pi-Hole:
-            href:
-            icon: pihole.png
-            description: DNS Server and Ad Blocker
-            siteMonitor:
-            widget:
-                type:
-                url:
-                key:
+   
     - Traefik:
             href: https://traefik.internal-domain.lan/dashboard/
             icon: traefik.png
@@ -91,16 +83,6 @@
         icon: minio.png
         description: S3 Storage
         siteMonitor: https://minio.internal-domain.lan
-    - Firezone:
-        href: https://edge.public-domain2.fr/
-        icon: https://s3.public-domain.fr/homepage/firezone.svg
-        description: VPN Server
-        siteMonitor: https://edge.public-domain2.fr/
-    - Warpgate:
-        href: https://warpgate.public-domain.fr/
-        icon: https://s3.public-domain.fr/homepage/warpgate.svg
-        description: SSH Gateway
-        siteMonitor: https://warpgate.public-domain.fr/@warpgate#/login?next=%2F
     - MotionEye:
         href: https://motioneye.internal-domain.lan/
         description: Video Cameras Manager
@@ -154,16 +136,6 @@
         icon: home-assistant.png
         description: Home Automation
         siteMonitor: https://homeassistant.internal-domain.lan
-    - Firefly:
-        href: https://firefly.internal-domain.lan/
-        icon: firefly.png
-        description: Personal Finance Manager
-        siteMonitor: https://firefly.internal-domain.lan
-    - Firefly Importer:
-        href: https://fireflydi.internal-domain.lan/
-        icon: firefly.png
-        description: Bank Importer
-        siteMonitor: https://fireflydi.internal-domain.lan
 - UndefinedDev:
     - Ghost:
         href: https://public-domain.fr/
@@ -180,16 +152,6 @@
         icon: matomo.png
         description: Web Analytics
         siteMonitor: https://analytics.public-domain.fr
-    - Typebot:
-        href: https://typebot.internal-domain.lan/
-        icon: https://s3.public-domain.fr/homepage/typebot.svg
-        description: Chatbot tool
-        siteMonitor: https://typebot.internal-domain.lan
-    - Shlink:
-        href: https://shlink.internal-domain.lan
-        icon: shlink.png
-        description: URL Shortener
-        siteMonitor: https://shlink.internal-domain.lan
 - Work:
     - Gitea:
         href: https://git.public-domain.fr/
