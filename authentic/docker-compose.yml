@@ -1,10 +1,8 @@
 version: "3.4"
 
 services:
-
   postgresql:
-    image: docker.io/library/postgres:16-alpine
-    container_name: authentik-psql
+    image: docker.io/library/postgres:12-alpine
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
@@ -13,19 +11,15 @@ services:
       retries: 5
       timeout: 5s
     volumes:
-      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/authentik/psql:/var/lib/postgresql/data
+      - database:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: ${PG_PASS:-authentik}
+      POSTGRES_PASSWORD: ${PG_PASS:?database password required}
       POSTGRES_USER: ${PG_USER:-authentik}
       POSTGRES_DB: ${PG_DB:-authentik}
     env_file:
       - .env
-    networks:
-      - authentik-internal
-
   redis:
     image: docker.io/library/redis:alpine
-    container_name: authentik-redis
     command: --save 60 1 --loglevel warning
     restart: unless-stopped
     healthcheck:
@@ -35,13 +29,9 @@ services:
       retries: 5
       timeout: 3s
     volumes:
-      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/authentik/redis:/data
-    networks:
-      - authentik-internal
-
-  authentik-proxy:
-    image: ghcr.io/goauthentik/server:2023.8
-    container_name: authentik
+      - redis:/data
+  server:
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2023.10.7}
     restart: unless-stopped
     command: server
     environment:
@@ -49,71 +39,42 @@ services:
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
-      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:-authentik}
-      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:-authentiksupersecretkey}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
     volumes:
-      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/authentik/media:/media
-      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/authentik/custom-templates:/templates
-    expose:
-      - 9000
-      - 9443
+      - ./media:/media
+      - ./custom-templates:/templates
     env_file:
       - .env
+    ports:
+      - "${COMPOSE_PORT_HTTP:-9088}:9088"
+      - "${COMPOSE_PORT_HTTPS:-9446}:9446"
     depends_on:
       - postgresql
       - redis
-    networks:
-      - proxy
-      - authentik-internal
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.authentik.rule=Host(`authentik.example.com`) || HostRegexp(`{subdomain:[A-Za-z0-9](?:[A-Za-z0-9\-]{0,61}[A-Za-z0-9])?}.example.com`) && PathPrefix(`/outpost.goauthentik.io/`)
-      - traefik.http.services.authentik.loadbalancer.server.port=9000
-      - traefik.docker.network=proxy
-      - traefik.http.middlewares.authentik.forwardauth.address=http://authentik-proxy:9000/outpost.goauthentik.io/auth/traefik
-      - traefik.http.middlewares.authentik.forwardauth.trustForwardHeader=true
-      - traefik.http.middlewares.authentik.forwardauth.authResponseHeaders=X-authentik-username,X-authentik-groups,X-authentik-email,X-authentik-name,X-authentik-uid,X-authentik-jwt,X-authentik-meta-jwks,X-authentik-meta-outpost,X-authentik-meta-provider,X-authentik-meta-app,X-authentik-meta-version
-
   worker:
-    image: ghcr.io/goauthentik/server:2023.8
-    container_name: authentik-worker
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2023.10.7}
     restart: unless-stopped
     command: worker
-    user: root
     environment:
       AUTHENTIK_REDIS__HOST: redis
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
-      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:-authentik}
-      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:-authentiksupersecretkey}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
+    user: root
     volumes:
-      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/authentik/certs:/certs
-      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/authentik/media:/media
-      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/authentik/custom-templates:/templates
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./media:/media
+      - ./certs:/certs
+      - ./custom-templates:/templates
     env_file:
       - .env
     depends_on:
       - postgresql
-      - redis      
-    networks:
-      - authentik-internal
+      - redis
 
-  
-  whoami:
-    image: traefik/whoami
-    networks:
-      - proxy
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.whoami.rule=Host(`whoami.example.com`)
-      - traefik.http.services.whoami.loadbalancer.server.port=80
-      - traefik.docker.network=proxy
-      - traefik.http.routers.whoami.middlewares=authentik@docker
-
-
-networks:
-  proxy:
-    external: true
-  authentik-internal:
-    external: true
+volumes:
+  database:
+    driver: local
+  redis:
+    driver: local
