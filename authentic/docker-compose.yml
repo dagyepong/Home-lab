@@ -48,6 +48,8 @@ services:
     ports:
       - "${COMPOSE_PORT_HTTP:-9000}:9000"
       - "${COMPOSE_PORT_HTTPS:-9446}:9446"
+    networks:
+      - web
     labels:
       - traefik.enable=true
       - traefik.docker.networkweb
@@ -94,3 +96,9 @@ volumes:
     driver: local
   redis:
     driver: local
+
+
+networks:
+  web:
+    external: true
+
