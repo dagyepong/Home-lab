@@ -17,39 +17,16 @@ statusStyle: "dot"
 useEqualHeights: true
 
 layout:
-  Hypervisor:
-    header: true
-    style: row
-    columns: 4
-  Containers:
-    header: true
-    style: row
-    columns: 4
-  DNS:
-    header: true
-    style: row
-    columns: 4
-  Network:
-    header: true
-    style: row
-    columns: 4
-  Remote Access:
-    header: true
-    style: row
-    columns: 4
-  Storage:
-    header: true
-    style: row
-    columns: 4
-  Media:
-    header: true
-    style: row
-    columns: 4
-  Home Automation:
-    header: true
-    style: row
-    columns: 4
-  Other:
-    header: true
-    style: row
-    columns: 4
+  - Auto-Discovered1:
+  - Configured1:
+  - Configured2:
+  - Auto-Discovered2:
+  - Configured3:
+      style: row
+      columns: 3
+
+quicklaunch:
+  searchDescriptions: true
+  hideInternetSearch: true
+  showSearchSuggestions: true
+  hideVisitURL: true
