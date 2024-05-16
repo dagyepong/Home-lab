@@ -18,6 +18,8 @@ services:
       POSTGRES_DB: ${PG_DB:-authentik}
     env_file:
       - .env
+    networks:
+      web:
   redis:
     image: docker.io/library/redis:alpine
     command: --save 60 1 --loglevel warning
@@ -30,6 +32,8 @@ services:
       timeout: 3s
     volumes:
       - redis:/data
+    networks:
+      web:
   server:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2023.10.7}
     restart: unless-stopped
@@ -52,6 +56,14 @@ services:
     depends_on:
       - postgresql
       - redis
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.authentik.loadbalancer.server.port=9000
+      - traefik.http.routers.authentik.rule=Host(`idp.nanaoware.online`)
+      - traefik.http.routers.authentik.tls.certresolver=letsencrypt
+      - traefik.http.routers.authentik.entrypoints=websecure
+    networks:
+      web:
   worker:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2023.10.7}
     restart: unless-stopped
@@ -73,12 +85,17 @@ services:
     depends_on:
       - postgresql
       - redis
+    networks:
+      web:
 
 volumes:
   database:
     driver: local
   redis:
     driver: local
+networks:
+  web:
+    external: true
 
 
 
