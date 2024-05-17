@@ -1,0 +1,59 @@
+# SPDX-FileCopyrightText: 2023 XWiki CryptPad Team <contact@cryptpad.org> and contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+version: '3.8'
+
+services:
+  cryptpad:
+    image: "cryptpad/cryptpad:version-2024.3.0"
+    container_name: cryptpad
+    hostname: cryptpad
+
+    environment:
+      - CPAD_MAIN_DOMAIN=https://cryptpad.nanaoware.online
+      - CPAD_SANDBOX_DOMAIN=https://sandbox.nanaoware.online
+      - CPAD_CONF=/cryptpad/config/config.js
+      - CPAD_INSTALL_ONLYOFFICE=yes
+    networks:
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.cryptpad.rule=Host(`cryptpad.nanaoware.online`)
+      - traefik.http.routers.cryptpad.entrypoints=websecure
+      - traefik.http.routers.cryptpad.tls=true
+      - traefik.http.routers.cryptpad.tls.certResolver=lets-encrypt
+      - traefik.http.services.cryptpad.loadbalancer.server.port=3000
+    #  # Optional part for file upload max sizes
+      - traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=50000000
+      - traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=50000000
+      - traefik.http.middlewares.limit.buffering.memRequestBodyBytes=50000000
+      - traefik.http.middlewares.limit.buffering.memResponseBodyBytes=50000000
+    #  # Optional part for traefik middlewares
+      - traefik.http.routers.codeserver.middlewares=simpleAuth@file
+
+    volumes:
+      - ./data/blob:/cryptpad/blob
+      - ./data/block:/cryptpad/block
+      - ./customize:/cryptpad/customize
+      - ./data/data:/cryptpad/data
+      - ./data/files:/cryptpad/datastore
+      - ./onlyoffice-dist:/cryptpad/www/common/onlyoffice/dist
+      - ./onlyoffice-conf:/cryptpad/onlyoffice-conf
+      - ./config/config.js:/cryptpad/config/config.js
+
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+      - "3003:3003"
+
+    ulimits:
+      nofile:
+        soft: 1000000
+        hard: 1000000
+networks:
+  web:
+    external: true
+
