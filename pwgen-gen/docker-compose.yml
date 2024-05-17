@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  pwgen:
+    container_name: pwgen
+    image: jocxfin/pwgen:latest
+    environment:
+      - NO_API_CHECK=true
+    ports:
+      - 5069:5069
+    restart: unless-stopped
