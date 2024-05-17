@@ -5,7 +5,7 @@
 
 `Note:` Make sure to point yout domain to the ip in order to register an account
 
-### Acoount Approval
+### Account Approval
 
 Copy the id generated and paste in with these commands:
 
