@@ -1,0 +1,25 @@
+services:
+  lubelogger:
+    image: ghcr.io/hargata/lubelogger:latest
+    container_name: lubelogger
+    ports:
+      - "8881:8080"
+    volumes:
+      - ./config:/App/config
+      - ./data:/App/data
+      - ./documents:/App/wwwroot/documents
+      - ./images:/App/wwwroot/images
+      - ./log:/App/log
+      - ./keys:/root/.aspnet/DataProtection-Keys
+      - ./temp:/App/wwwroot/temp
+      - ./translations:/App/wwwroot/translations
+    environment:
+      - LOGGING__LOGLEVEL__DEFAULT=Error
+      - LC_ALL=fr_FR.UTF-8
+      - LANG=fr_FR.UTF-8
+      - MailConfig__EmailServer=smtp.gmail.com
+      - MailConfig__EmailFrom=dollarsterl@gmail.com #Indiquez votre e-mail complet
+      - MailConfig__UseSSL=true
+      - MailConfig__Port=587
+      - MailConfig__Username=dollarsterl@gmail.com #Indiquez votre e-mail complet
+      - MailConfig__Password=Kafeblitz*123
