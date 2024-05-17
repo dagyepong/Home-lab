@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.5'
 
 services:
   photoprism:
@@ -54,24 +54,6 @@ services:
       # - "/example/family:/photoprism/originals/family" # *Additional* media folders can be mounted like this
       - "/srv/appdata/photoprism/Import:/photoprism/import"                  # *Optional* base folder from which files can be imported to originals
       - "/srv/appdata/photoprism/storage:/photoprism/storage"                  # *Writable* storage folder for cache, database, and sidecar files (DO NOT REMOVE)
-    networks:
-      - web
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=web
-      - traefik.http.routers.photoprism.rule=Host(`photoprism.nanaoware.online`)
-      - traefik.http.routers.photoprism.entrypoints=websecure
-      - traefik.http.routers.photoprism.tls=true
-      - traefik.http.routers.photoprism.tls.certResolver=lets-encrypt
-      - traefik.http.services.photoprism.loadbalancer.server.port=2342
-    #  # Optional part for file upload max sizes
-      - traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=50000000
-      - traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=50000000
-      - traefik.http.middlewares.limit.buffering.memRequestBodyBytes=50000000
-      - traefik.http.middlewares.limit.buffering.memResponseBodyBytes=50000000
-    #  # Optional part for traefik middlewares
-      - traefik.http.routers.codeserver.middlewares=simpleAuth@file
-
 
   mariadb:
     image: mariadb:11
@@ -93,7 +75,3 @@ services:
       MARIADB_USER: "photoprism"
       MARIADB_PASSWORD: "insecure"
       MARIADB_ROOT_PASSWORD: "insecure"
-
-networks:
-  web:
-    external: true
