@@ -16,7 +16,7 @@ services:
       PHOTOPRISM_ADMIN_USER: "nana"                 # choisissez votre login
       PHOTOPRISM_ADMIN_PASSWORD: "akosua123"             # choisissez votre mot de passe(8-72 caractères)
       PHOTOPRISM_AUTH_MODE: "password"               # authentication mode (public, password)
-      PHOTOPRISM_SITE_URL: "https://10.0.0.15:2342/"  # server URL in the format "http(s)://domain.name(:port)/(path)"
+      PHOTOPRISM_SITE_URL: "https://photoprism.nanaoware.online/"  # server URL in the format "http(s)://domain.name(:port)/(path)"
       PHOTOPRISM_DISABLE_TLS: "false"                # disables HTTPS/TLS even if the site URL starts with https:// and a certificate is available
       PHOTOPRISM_DEFAULT_TLS: "true"                 # defaults to a self-signed HTTPS/TLS certificate if no other certificate is available
       PHOTOPRISM_ORIGINALS_LIMIT: 5000               # file size limit for originals in MB (increase for high-res video)
@@ -54,6 +54,24 @@ services:
       # - "/example/family:/photoprism/originals/family" # *Additional* media folders can be mounted like this
       - "/srv/appdata/photoprism/Import:/photoprism/import"                  # *Optional* base folder from which files can be imported to originals
       - "/srv/appdata/photoprism/storage:/photoprism/storage"                  # *Writable* storage folder for cache, database, and sidecar files (DO NOT REMOVE)
+    networks:
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.photoprism.rule=Host(`photoprism.nanaoware.online`)
+      - traefik.http.routers.photoprism.entrypoints=websecure
+      - traefik.http.routers.photoprism.tls=true
+      - traefik.http.routers.photoprism.tls.certResolver=lets-encrypt
+      - traefik.http.services.photoprism.loadbalancer.server.port=2342
+    #  # Optional part for file upload max sizes
+      - traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=50000000
+      - traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=50000000
+      - traefik.http.middlewares.limit.buffering.memRequestBodyBytes=50000000
+      - traefik.http.middlewares.limit.buffering.memResponseBodyBytes=50000000
+    #  # Optional part for traefik middlewares
+      - traefik.http.routers.codeserver.middlewares=simpleAuth@file
+
 
   mariadb:
     image: mariadb:11
@@ -75,3 +93,7 @@ services:
       MARIADB_USER: "photoprism"
       MARIADB_PASSWORD: "insecure"
       MARIADB_ROOT_PASSWORD: "insecure"
+
+networks:
+  web:
+    external: true
