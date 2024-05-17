@@ -38,10 +38,14 @@
                 password: akosua123
 
     - Authentik:
-        href: https://auth.public-domain.fr/
+        href: https://idp.nanaoware.online
         description: Authentification provider
         icon: authentik.png
-        siteMonitor: https://auth.public-domain.fr
+        siteMonitor: https://idp.nanaoware.online
+        widget:
+            type: authentik
+            url: https://idp.nanaoware.online
+            key:
     - Vault-warden:
         href: https://vaultwarden.raspberrypi.nana.local.kubegateway.com
         icon: vaultwarden.png
