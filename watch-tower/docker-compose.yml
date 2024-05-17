@@ -20,8 +20,24 @@ services:
       - WATCHTOWER_SCHEDULE=0 0 6 * * * # requires a go cron syntax of 6 space-separated fields; see https://containrrr.dev/watchtower/arguments/#scheduling
       - WATCHTOWER_CLEANUP=true # remove unused images afterwards
     image: containrrr/watchtower:latest
+    networks:
+      - web
     labels:
-      com.centurylinklabs.watchtower: true
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.watchtower.rule=Host(`watchtower.nanaoware.online`)
+      - traefik.http.routers.watchtower.entrypoints=websecure
+      - traefik.http.routers.watchtower.tls=true
+      - traefik.http.routers.watchtower.tls.certResolver=lets-encrypt
+      - traefik.http.services.watchtower.loadbalancer.server.port=8080
+    #  # Optional part for file upload max sizes
+      - traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=50000000
+      - traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=50000000
+      - traefik.http.middlewares.limit.buffering.memRequestBodyBytes=50000000
+      - traefik.http.middlewares.limit.buffering.memResponseBodyBytes=50000000
+    #  # Optional part for traefik middlewares
+      - traefik.http.routers.codeserver.middlewares=simpleAuth@file
+
     restart: always
     network_mode: "host"
     volumes:
@@ -30,3 +46,6 @@ services:
     ports:
       - 8080:8080
     working_dir: /
+networks:
+  web:
+    external: true
