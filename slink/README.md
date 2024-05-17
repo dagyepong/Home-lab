@@ -3,7 +3,7 @@
 
 ### Domain
 
-`Note:` Make sure to point yout doamin to the ip in order to register an account
+`Note:` Make sure to point yout domain to the ip in order to register an account
 
 ### Acoount Approval
 
