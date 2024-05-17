@@ -1,0 +1,155 @@
+---
+# Homepage configuration
+# See https://fontawesome.com/icons for icons options
+
+title: "Cude Web Services"
+subtitle: "Dashboard"
+#logo: "logo.png"
+# icon: "fas fa-skull-crossbones" # Optional icon
+
+header: true
+footer: false 
+columns: "4"
+
+# Optional theme customization
+theme: default
+colors:
+  light:
+    highlight-primary: "#3367d6"
+    highlight-secondary: "#4285f4"
+    highlight-hover: "#5a95f5"
+    background: "#f5f5f5"
+    card-background: "#ffffff"
+    text: "#363636"
+    text-header: "#ffffff"
+    text-title: "#303030"
+    text-subtitle: "#424242"
+    card-shadow: rgba(0, 0, 0, 0.1)
+    link-hover: "#363636"
+  dark:
+    highlight-primary: "#3367d6"
+    highlight-secondary: "#4285f4"
+    highlight-hover: "#5a95f5"
+    background: "#131313"
+    card-background: "#2b2b2b"
+    text: "#eaeaea"
+    text-header: "#ffffff"
+    text-title: "#fafafa"
+    text-subtitle: "#f5f5f5"
+    card-shadow: rgba(0, 0, 0, 0.4)
+    link-hover: "#ffdd57"
+
+# Optional message
+#message:
+#  #url: https://b4bz.io
+#  style: "is-dark" # See https://bulma.io/documentation/components/message/#colors for styling options.
+#  title: "Demo !"
+#  icon: "fa fa-grin"
+#  content: "This is a dummy homepage demo. <br /> Find more information on <a href='https://github.com/bastienwirtz/homer'>github.com/bastienwirtz/homer</a>"
+
+# Optional navbar
+# links: [] # Allows for navbar (dark mode, layout, and search) without any links
+links:
+  - name: "Github"
+    icon: "fab fa-github"
+    url: "https://github.com/tanner4137"
+    target: "_blank" # optional html a tag target attribute
+  - name: "Wiki"
+    icon: "fas fa-book"
+    url: "https://www.wikipedia.org/"
+  # this will link to a second homer page that will load config from additionnal-page.yml and keep default config values as in config.yml file
+  # see url field and assets/additionnal-page.yml.dist used in this example:
+  - name: "Blog"
+    icon: "fas fa-file-alt"
+    url: "https://tcude.net" 
+
+# Services
+# First level array represent a group.
+# Leave only a "items" key if not using group (group name, icon & tagstyle are optional, section separation will not be displayed).
+services:
+  - name: "Server Monitoring"
+    icon: "fas fa-cloud"
+    items:
+      - name: "Elmer - iDrac"
+        logo: "assets/tools/sample.png"
+        subtitle: "Lights Out Monitoring"
+        tag: "app"
+        url: "https://10.10.30.13/login.html/"
+        target: "_blank" # optional html a tag target attribute
+      - name: "Daffy - iLO"
+        logo: "assets/tools/sample.png"
+        subtitle: "Lights Out Monitoring"
+        tag: "app"
+        url: "https://10.10.0.102/"
+      - name: "Scrutiny"
+        logo: "assets/tools/sample.png"
+        subtitle: "SMART data at a glance"
+        tag: "app"
+        url: "https://10.10.0.102/"
+  - name: "Virtualization"
+    icon: "fas fa-cloud"
+    items:
+      - name: "vCenter"
+        logo: "assets/tools/sample.png"
+        subtitle: "vCenter Appliance"
+        tag: "app"
+        url: "https://vcenter.tcudelocal.net"
+        target: "_blank" # optional html a tag target attribute
+      - name: "ESXi - Elmer"
+        logo: "assets/tools/sample.png"
+        subtitle: "ESXi Management Page"
+        tag: "app"
+        url: "https://elmer.tcudelocal.net"
+      - name: "ESXi - Daffy"
+        logo: "assets/tools/sample.png"
+        subtitle: "ESXi Management Page"
+        tag: "app"
+        url: "https://daffy.tcudelocal.net"
+  - name: "Media Server"
+    icon: "fas fa-cloud"
+    items:
+      - name: "Plex"
+        logo: "assets/tools/sample.png"
+        subtitle: "Plex Media Server"
+        tag: "app"
+        url: "https://10.10.2.101:32400"
+        target: "_blank" # optional html a tag target attribute
+      - name: "Tautulli"
+        logo: "assets/tools/sample.png"
+        subtitle: "Plex Monitoring and Management"
+        tag: "app"
+        url: "https://10.10.2.101:8181"
+      - name: "Scrutiny"
+        logo: "assets/tools/sample.png"
+        subtitle: "SMART Info at a Glance"
+        tag: "app"
+        url: "10.10.2.101:8080/web/dashboard"
+      - name: "Portainer - svr-plex-01"
+        logo: "assets/tools/sample.png"
+        subtitle: "Portainer instance residing on svr-plex-01"
+        tag: "app"
+        url: "http://10.10.2.101:9000/#!/home"
+  - name: "Management"
+    icon: "fas fa-cloud"
+    items:
+      - name: "Unifi"
+        logo: "assets/tools/sample.png"
+        subtitle: "Personal Unifi Network"
+        tag: "app"
+        url: "https://10.10.0.1/login?redirect=%2F"
+        target: "_blank" # optional html a tag target attribute
+      - name: "UptimeRobot"
+        logo: "assets/tools/sample.png"
+        subtitle: "Monitor Service Uptime"
+        tag: "app"
+        url: "https://stats.uptimerobot.com/onVGVcXOB6"
+      - name: "Cloudflare"
+        logo: "assets/tools/sample.png"
+        subtitle: "DNS and WAF"
+        tag: "app"
+        url: "https://dash.cloudflare.com/login"
+      - name: "Portainer - svr-docker-01"
+        logo: "assets/tools/sample.png"
+        subtitle: "Portainer instance residing on svr-docker-01"
+        tag: "app"
+        url: "http://10.10.80.192:9000/#!/home"
