@@ -1,15 +1,40 @@
-version: "3.9"
+version: '3.9'
 services:
   slink:
     image: anirdev/slink:latest
     container_name: slink
     environment:
-      - ORIGIN=https://slink.nanaoware.online
+      - ORIGIN=https://mondomaine.com
       - USER_APPROVAL_REQUIRED=false
       - STORAGE_PROVIDER=local
+      #- STORAGE_PROVIDER=smb
+      #- SMB_HOSTSMB_HOST=
+      #- SMB_USERNAME=
+      #- SMB_PASSWORD=
+      #- SMB_SHARE=
     volumes:
       - /srv/appdata/slink/var/data:/app/var/data
       - /srv/appdata/slink/images:/app/slink/images
     ports:
-      - 3010:3000
-networks: {}
+      - "3010:3000"
+    networks:
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.slink.rule=Host(`slink.nanaoware.online`)
+      - traefik.http.routers.slink.entrypoints=websecure
+      - traefik.http.routers.slink.tls=true
+      - traefik.http.routers.slink.tls.certResolver=lets-encrypt
+      - traefik.http.services.slink.loadbalancer.server.port=3010
+    #  # Optional part for file upload max sizes
+      - traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=50000000
+      - traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=50000000
+      - traefik.http.middlewares.limit.buffering.memRequestBodyBytes=50000000
+      - traefik.http.middlewares.limit.buffering.memResponseBodyBytes=50000000
+    #  # Optional part for traefik middlewares
+      - traefik.http.routers.codeserver.middlewares=simpleAuth@file
+
+networks:
+  web:
+    external: true
