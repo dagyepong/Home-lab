@@ -1,0 +1,13 @@
+version: '3.9'
+services:
+    psitransfer:
+        image: psitrax/psitransfer
+        restart: unless-stopped
+        volumes:
+            - /srv/appdata/psitransfer/data:/data
+        environment:
+            - PSITRANSFER_ADMIN_PASS=secret
+        ports:
+            - 3060:3000
+
+            
