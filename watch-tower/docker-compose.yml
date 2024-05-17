@@ -39,7 +39,7 @@ services:
       - traefik.http.routers.codeserver.middlewares=simpleAuth@file
 
     restart: always
-    network_mode: "host"
+    #network_mode: "host"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
