@@ -1,4 +1,4 @@
-### Welcome to self-hoated image for your websites!!
+### Welcome to self-hosted image for your websites!!
 
 
 ### Domain
