@@ -4,7 +4,7 @@ services:
     image: anirdev/slink:latest
     container_name: slink
     environment:
-      - ORIGIN=https://mondomaine.com
+      - ORIGIN=https://slink.nanaoware.online
       - USER_APPROVAL_REQUIRED=false
       - STORAGE_PROVIDER=local
     volumes:
