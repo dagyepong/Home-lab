@@ -14,6 +14,9 @@ services:
       #- WATCHTOWER_HTTP_API_TOKEN=${API_TOKEN:-SecureApiToken}
       #- WATCHTOWER_NOTIFICATIONS=email
       #- WATCHTOWER_MONITOR_ONLY=true
+      - WATCHTOWER_DEBUG=true
+      - WATCH_TOWER_HTTP_API_METRICS=true
+      - WATCH_TOWER_HTTP_API_TOKEN="mytoken"
       - WATCHTOWER_SCHEDULE=0 0 6 * * * # requires a go cron syntax of 6 space-separated fields; see https://containrrr.dev/watchtower/arguments/#scheduling
       - WATCHTOWER_CLEANUP=true # remove unused images afterwards
     image: containrrr/watchtower:latest
@@ -24,4 +27,6 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 8080:8080
     working_dir: /
