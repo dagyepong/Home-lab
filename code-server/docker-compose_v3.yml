@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    container_name: code-server
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+      - PASSWORD=akosua123
+      - SUDO_PASSWORD=akosua123 #optional
+      #- SUDO_PASSWORD_HASH= #optional
+      - PROXY_DOMAIN=vscode.example.com #optional
+      - DEFAULT_WORKSPACE=/config/workspace #optional
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/vscode/config:/config
+    ports:
+      - 8443:8443
+    restart: unless-stopped
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.codeserver.rule=Host(`code.local.nanaoware.online`)
+      - traefik.http.routers.codeserver.entrypoints=http
+      - traefik.http.routers.codeserver.tls=true
+      - traefik.http.routers.coderserver.middlewares=traefik-https-redirect
+      - traefik.http.routers.codeserver.tls.certResolver=cloudflare
+      - traefik.http.routers.codeserver-secure.entrypoints=https
+      - traefik.http.middlewares.codeserver-https-redirect.redirectscheme.scheme=https
+      - traefik.http.services.codeserver.loadbalancer.server.port=8443
+      - "traefik.http.routers.codeserver-secure.tls.domains[0].main=local.nanaoware.online"
+      - "traefik.http.routers.codeserver-secure.tls.domains[0].sans=*.local.nanaoware.online"
+      - "traefik.http.routers.codeserver-secure.service=api@internal"
+      - traefik.http.routers.codeserver-secure.middlewares=traefik-auth
+
+networks:
+  proxy:
+    external: true
