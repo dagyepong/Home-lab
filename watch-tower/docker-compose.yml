@@ -11,32 +11,27 @@ services:
       #- WATCHTOWER_NOTIFICATION_EMAIL_FROM=${SMTP_MAIL_FROM:-watchtower@example.com}
       #- WATCHTOWER_NOTIFICATION_EMAIL_TO=${SMTP_MAIL_TO:-watchtower@example.com}
       #- WATCHTOWER_NOTIFICATION_EMAIL_SERVER=${SMTP_SERVER:-smtp.google.com}
-      #- WATCHTOWER_HTTP_API_TOKEN=${API_TOKEN:-SecureApiToken}
+      - WATCHTOWER_HTTP_API_TOKEN=${API_TOKEN:-SecureApiToken}
       #- WATCHTOWER_NOTIFICATIONS=email
       #- WATCHTOWER_MONITOR_ONLY=true
       - WATCHTOWER_DEBUG=true
       - WATCH_TOWER_HTTP_API_METRICS=true
-      - WATCH_TOWER_HTTP_API_TOKEN="mytoken"
+      #- WATCH_TOWER_HTTP_API_TOKEN="mytoken"
       - WATCHTOWER_SCHEDULE=0 0 6 * * * # requires a go cron syntax of 6 space-separated fields; see https://containrrr.dev/watchtower/arguments/#scheduling
       - WATCHTOWER_CLEANUP=true # remove unused images afterwards
     image: containrrr/watchtower:latest
     networks:
-      - web
+      - proxy
     labels:
       - traefik.enable=true
-      - traefik.docker.network=web
-      - traefik.http.routers.watchtower.rule=Host(`watchtower.nanaoware.online`)
-      - traefik.http.routers.watchtower.entrypoints=websecure
-      - traefik.http.routers.watchtower.tls=true
-      - traefik.http.routers.watchtower.tls.certResolver=lets-encrypt
+      - traefik.http.routers.watchtower.rule=Host(`watchtower.nanaoware.online`) || Host(`www.watchtower.nanaoware.online`)
       - traefik.http.services.watchtower.loadbalancer.server.port=8080
-    #  # Optional part for file upload max sizes
-      - traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=50000000
-      - traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=50000000
-      - traefik.http.middlewares.limit.buffering.memRequestBodyBytes=50000000
-      - traefik.http.middlewares.limit.buffering.memResponseBodyBytes=50000000
-    #  # Optional part for traefik middlewares
-      - traefik.http.routers.codeserver.middlewares=simpleAuth@file
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.mywatchtower.middlewares=mywwwredirect
+      - traefik.http.routers.mywatchtower.middlewares=myauth
+      - traefik.http.routers.mywatchtower.service=api@internal
+
 
     restart: always
     #network_mode: "host"
@@ -47,5 +42,5 @@ services:
       - 8080:8080
     working_dir: /
 networks:
-  web:
+  proxy:
     external: true
