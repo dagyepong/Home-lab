@@ -27,8 +27,10 @@ services:
       - traefik.http.services.codeserver.loadbalancer.server.port=8443
       - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
       - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.mywhoami.middlewares=mywwwredirect
-      - traefik.http.routers.mydashboard.middlewares=myauth
+      - traefik.http.routers.mycodeserver.middlewares=mywwwredirect
+      - traefik.http.routers.mycodeserver.middlewares=myauth
+      - traefik.http.routers.mycodeserver.service=api@internal
+
 
 networks:
   proxy:
