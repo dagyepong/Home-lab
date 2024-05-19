@@ -10,22 +10,17 @@ services:
     volumes:
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/answer/data:/data
     networks:
-      - web
+      - proxy
     labels:
       - traefik.enable=true
-      - traefik.docker.network=web
-      - traefik.http.routers.answer.rule=Host(`faq.example.com`)
-      - traefik.http.services.answer.loadbalancer.server.port=80
-      - traefik.http.routers.answer.tls=true
-      - traefik.http.routers.answer.tls.certResolver=lets-encrypt
-    #  # Optional part for file upload max sizes
-      - traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=50000000
-      - traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=50000000
-      - traefik.http.middlewares.limit.buffering.memRequestBodyBytes=50000000
-      - traefik.http.middlewares.limit.buffering.memResponseBodyBytes=50000000
-      # Optional part for traefik middlewares
-      - traefik.http.routers.answer.middlewares=simpleAuth@file
+      - traefik.http.routers.answer.rule=Host(`answer.nanaoware.online`) || Host(`www.answer.nanaoware.online`)
+      - traefik.http.services.answer.loadbalancer.server.port=9080
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.myanswer.middlewares=mywwwredirect
+      - traefik.http.routers.myanswer.middlewares=myauth
+      - traefik.http.routers.myanswer.service=api@internal
 
 networks:
-  web:
+  proxy:
     external: true

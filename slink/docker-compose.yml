@@ -18,23 +18,17 @@ services:
     ports:
       - "3010:3000"
     networks:
-      - web
+      - proxy
     labels:
       - traefik.enable=true
-      - traefik.docker.network=web
-      - traefik.http.routers.slink.rule=Host(`slink.nanaoware.online`)
-      - traefik.http.routers.slink.entrypoints=websecure
-      - traefik.http.routers.slink.tls=true
-      - traefik.http.routers.slink.tls.certResolver=lets-encrypt
+      - traefik.http.routers.slink.rule=Host(`slink.nanaoware.online`) || Host(`www.slink.nanaoware.online`)
       - traefik.http.services.slink.loadbalancer.server.port=3010
-    #  # Optional part for file upload max sizes
-      - traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=50000000
-      - traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=50000000
-      - traefik.http.middlewares.limit.buffering.memRequestBodyBytes=50000000
-      - traefik.http.middlewares.limit.buffering.memResponseBodyBytes=50000000
-    #  # Optional part for traefik middlewares
-      - traefik.http.routers.codeserver.middlewares=simpleAuth@file
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.myslink.middlewares=mywwwredirect
+      - traefik.http.routers.myslink.middlewares=myauth
+      - traefik.http.routers.myslink.service=api@internal
 
 networks:
-  web:
+  proxy:
     external: true
