@@ -24,7 +24,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=web
-      - traefik.http.routers.codeserver.rule=Host(`code.local.nanaoware.online`)
+      - traefik.http.routers.codeserver.rule=Host(`code.nanaoware.online`)
       - traefik.http.routers.codeserver.entrypoints=http
       - traefik.http.routers.codeserver.tls=true
       - traefik.http.routers.coderserver.middlewares=traefik-https-redirect
