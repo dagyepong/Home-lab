@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 services:
     app:
@@ -28,16 +28,13 @@ services:
             - proxy
         labels:
             - traefik.enable=true
-            - traefik.http.routers.forte.rule=Host(`forte.local.nanaoware.online`)
+            - traefik.http.routers.forte.rule=Host(`forte.nanaoware.online`) || Host(`www.forte.nanaoware.online`)
             - traefik.http.services.forte.loadbalancer.server.port=3000
-            - traefik.http.routers.forte.tls=true
-            - traefik.http.routers.forte.tls.certResolver=cloudflare
-            - traefik.docker.network=proxy
-            - traefik.http.routers.forte.entrypoints=https
-            - traefik.http.middlewares.cors.headers.customResponseHeaders.Access-Control-Allow-Origin=https://forte.buzl.uk
-            - traefik.http.middlewares.cors.headers.customFrameOptionsValue=forte.buzl.uk
-            - traefik.http.middlewares.cors.headers.customResponseHeaders.Cross-Origin-Resource-Policy=cross-origin
-            - traefik.http.routers.forte.middlewares=traefik-https-redirect@docker
+            - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+            - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+            - traefik.http.routers.myforte.middlewares=mywwwredirect
+            - traefik.http.routers.myforte.middlewares=myauth
+            - traefik.http.routers.myforte.service=api@internal
 
     postgres:
         image: kaangiray26/postgres:2.0

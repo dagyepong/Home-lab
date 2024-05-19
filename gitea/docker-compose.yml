@@ -15,18 +15,18 @@ services:
     volumes:
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/gitea/data:/data
     networks:
-      - web
+      - proxy
     labels:
       - traefik.enable=true
-      - traefik.http.routers.gitea.rule=Host(`git.nanaoware.online`)
-      - traefik.http.services.gitea.loadbalancer.server.port=3000
-      - traefik.http.routers.gitea.tls=true
-      - traefik.http.routers.gitea.entrypoints=websecure
-      - traefik.http.routers.gitea.tls.certResolver=lets-encrypt
-      - traefik.docker.network=web
-      # Part for local lan services only
-      - traefik.http.routers.gitea.middlewares=simpleAuth@file
+      - traefik.http.routers.gitea.rule=Host(`gitea.nanaoware.online`) || Host(`www.gitea.nanaoware.online`)
+      - traefik.http.services.gitea.loadbalancer.server.port=3050
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.mygitea.middlewares=mywwwredirect
+      - traefik.http.routers.mygitea.middlewares=myauth
+      - traefik.http.routers.mygitea.service=api@internal
+
 
 networks:
-  web:
+  proxy:
     external: true
