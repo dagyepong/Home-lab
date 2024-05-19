@@ -32,8 +32,8 @@ services:
       - traefik.http.routers.codeserver-secure.entrypoints=https
       - traefik.http.middlewares.codeserver-https-redirect.redirectscheme.scheme=https
       - traefik.http.services.codeserver.loadbalancer.server.port=8443
-      - traefik.http.routers.codeserver-secure.tls.domains[0].main=local.nanaoware.online
-      - traefik.http.routers.codeserver-secure.tls.domains[0].sans=*.local.nanaoware.online
+      - traefik.http.routers.codeserver-secure.tls.domains[0].main=nanaoware.online
+      - traefik.http.routers.codeserver-secure.tls.domains[0].sans=*.nanaoware.online
       - traefik.http.routers.codeserver-secure.service=api@internal
       - traefik.http.routers.codeserver-secure.middlewares=traefik-auth
 
