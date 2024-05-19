@@ -4,21 +4,20 @@ http:
     proxmox:
       entryPoints:
         - "https"
-      rule: "Host(`proxmox.local.nanaoware.online`)"
+      rule: "Host(`proxmox.nanaoware.online`)"
       middlewares:
         - default-headers
         - https-redirectscheme
       tls: {}
       service: proxmox
-    pihole:
-  
+
 #endregion
 #region services
   services:
     proxmox:
       loadBalancer:
         servers:
-          - url: "https://192.168.0.17:8006"
+          - url: "https://10.0.0.40:8006"
         passHostHeader: true
 #endregion
   middlewares:
@@ -42,8 +41,8 @@ http:
     default-whitelist:
       ipAllowList:
         sourceRange:
-        - "10.0.0.0/8"
-        - "192.168.0.0/16"
+        - "10.0.0.1/24"
+        - "10.0.0.40/24"
         - "172.16.0.0/12"
 
     secured:
