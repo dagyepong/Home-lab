@@ -23,20 +23,11 @@ services:
       - proxy
     labels:
       - traefik.enable=true
-      - traefik.docker.network=proxy
-      - traefik.http.routers.codeserver.rule=Host(`code.nanaoware.online`)
-      - traefik.http.routers.codeserver.entrypoints=http
-      - traefik.http.routers.codeserver.tls=true
-      - traefik.http.routers.coderserver.middlewares=traefik-https-redirect
-      - traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https
-      - traefik.http.routers.codeserver.tls.certResolver=cloudflare
-      - traefik.http.routers.codeserver-secure.entrypoints=https
-      - traefik.http.middlewares.codeserver-https-redirect.redirectscheme.scheme=https
+      - traefik.http.routers.codeserver.rule=Host(`code.nanaoware.online`) || Host(`www.code.nanaoware.online`)
       - traefik.http.services.codeserver.loadbalancer.server.port=8443
-      - traefik.http.routers.codeserver-secure.tls.domains[0].main=nanaoware.online
-      - traefik.http.routers.codeserver-secure.tls.domains[0].sans=*.nanaoware.online
-      - traefik.http.routers.codeserver-secure.service=api@internal
-      - traefik.http.routers.codeserver-secure.middlewares=traefik-auth
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.mywhoami.middlewares=mywwwredirect
 
 networks:
   proxy:
