@@ -14,7 +14,8 @@ Tika: Offers content analysis and metadata extraction, further extending support
 * media
 * pgdata
 * redisdata
-
+* consume
+* export
 ### Login credentials:
 To login, create a superuser with this command:
 ```bash
