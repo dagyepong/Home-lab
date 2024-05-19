@@ -6,7 +6,7 @@ services:
     container_name: nextcloud
     restart: unless-stopped
     networks:
-      - cloud
+      #- cloud
       - proxy
     depends_on:
       - nextclouddb
@@ -44,7 +44,7 @@ services:
     restart: unless-stopped
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     networks:
-      - cloud
+     # - cloud
       - proxy
     volumes:
       - /srv/appdata/nextcloud/nextclouddb:/var/lib/mysql
@@ -63,11 +63,12 @@ services:
     volumes:
       - /srv/appdata/nextcloud/redis:/data
     networks:
-      - cloud
+      #- cloud
+      - proxy
 
 networks:
-  cloud:
-    name: cloud
-    driver: bridge
+  #cloud:
+    #name: cloud
+    #driver: bridge
   proxy:
     external: true
