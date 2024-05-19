@@ -11,3 +11,17 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./dozzle-data:/data
+    networks:
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.dozzle.rule=Host(`dozzle.nanaoware.online`) || Host(`www.dozzle.nanaoware.online`)
+      - traefik.http.services.dozzle.loadbalancer.server.port=9999
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.mydozzle.middlewares=mywwwredirect
+      - traefik.http.routers.mydozzle.middlewares=myauth
+      - traefik.http.routers.mydozzle.service=api@internal
+networks:
+  proxy:
+    external: true

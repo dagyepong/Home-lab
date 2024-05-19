@@ -14,21 +14,21 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - 3000:3000
+      - 3060:3000
     expose:
-      - 3000
+      - 3060
     networks:
       - proxy
     labels:
       - traefik.enable=true
-      - traefik.docker.network=proxy
-      - traefik.http.routers.docuseal.rule=Host(`docuseal.local.nanaoware.online`)
-      - traefik.http.services.docuseal.loadbalancer.server.port=3000
-      - traefik.http.routers.docuseal.tls=true
-      - traefik.http.routers.docuseal.entrypoints=https
-      - traefik.http.routers.docuseal.tls.certResolver=cloudflare
-      # Optional part for traefik middlewares
-      - traefik.http.routers.docuseal.middlewares=traefik-https-redirect@docker
+      - traefik.http.routers.docuseal.rule=Host(`docuseal.nanaoware.online`) || Host(`www.docuseal.nanaoware.online`)
+      - traefik.http.services.docuseal.loadbalancer.server.port=3060
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.mydocuseal.middlewares=mywwwredirect
+      - traefik.http.routers.mydocuseal.middlewares=myauth
+      - traefik.http.routers.mydocuseal.service=api@internal
+
 
   postgres:
     image: postgres:15-alpine
