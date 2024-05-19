@@ -1,4 +1,4 @@
-version: "2.1"
+version: "3.9"
 services:
   changedetection:
     image: lscr.io/linuxserver/changedetection.io:latest
@@ -13,17 +13,17 @@ services:
       - 5000:5000
     restart: unless-stopped
     networks:
-      - web
+      - proxy
     labels:
       - traefik.enable=true
-      - traefik.http.routers.changedetection.rule=Host(`changedetection.example.com`)
-      - traefik.http.routers.changedetection.tls=true
-      - traefik.http.routers.changedetection.tls.certResolver=lets-encrypt
+      - traefik.http.routers.changedetection.rule=Host(`cd.nanaoware.online`) || Host(`www.cd.nanaoware.online`)
       - traefik.http.services.changedetection.loadbalancer.server.port=5000
-      - traefik.docker.network=web
-    #  # Part for local lan services only; disable to expose externally
-      - traefik.http.routers.changedetection.middlewares=simpleAuth@file
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.mychangedetection.middlewares=mywwwredirect
+      - traefik.http.routers.mychangedetection.middlewares=myauth
+      - traefik.http.routers.mychangedetection.service=api@internal
 
 networks:
-  web:
+  proxy:
     external: true
