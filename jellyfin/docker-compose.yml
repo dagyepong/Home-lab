@@ -8,9 +8,9 @@ services:
       - PGID=1000
       - TZ=Pacific/Auckland
     volumes:
-      - /home/server/jellyfin/library:/config
-      - /home/server/jellyfin/tvseries:/data/tvshows
-      - /home/server/jellyfin/movies:/data/movies
+      - /mnt/media:/config
+      - /mnt/media/Tv-Shows:/data/Tv-Shows
+      - /mnt/media/Movies:/data/Movies
     networks:
       - proxy
     labels:
