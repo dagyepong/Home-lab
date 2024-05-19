@@ -28,6 +28,7 @@ services:
       - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
       - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
       - traefik.http.routers.mywhoami.middlewares=mywwwredirect
+      - traefik.http.routers.mydashboard.middlewares=myauth
 
 networks:
   proxy:
