@@ -15,24 +15,18 @@ services:
       - 3005:3001
     restart: unless-stopped
     networks:
-      - web
+      - proxy
     labels:
       - traefik.enable=true
-      - traefik.docker.network=web
-      - traefik.http.routers.keepassxc.rule=Host(`keepassxc.nanaoware.online`)
-      - traefik.http.routers.keepassxc.entrypoints=websecure
-      - traefik.http.routers.keepassxc.tls=true
-      - traefik.http.routers.keepassxc.tls.certResolver=lets-encrypt
-      - traefik.http.services.keepassxc.loadbalancer.server.port=3005
-    #  # Optional part for file upload max sizes
-      - traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=50000000
-      - traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=50000000
-      - traefik.http.middlewares.limit.buffering.memRequestBodyBytes=50000000
-      - traefik.http.middlewares.limit.buffering.memResponseBodyBytes=50000000
-    #  # Optional part for traefik middlewares
-      - traefik.http.routers.codeserver.middlewares=simpleAuth@file
+      - traefik.http.routers.keepassxc.rule=Host(`keepassxc.nanaoware.online`) || Host(`www.keepassxc.nanaoware.online`)
+      - traefik.http.services.keepassxc.loadbalancer.server.port=3004
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.mykeepassxc.middlewares=mywwwredirect
+      - traefik.http.routers.mykeepassxc.middlewares=myauth
+      - traefik.http.routers.mykeepassxc.service=api@internal
 
 networks:
-  web:
+  proxy:
     external: true
 

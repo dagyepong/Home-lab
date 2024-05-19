@@ -11,9 +11,24 @@ services:
       - /home/server/jellyfin/library:/config
       - /home/server/jellyfin/tvseries:/data/tvshows
       - /home/server/jellyfin/movies:/data/movies
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.jellyfin.rule=Host(`jellyfin.nanaoware.online`) || Host(`www.jellyfin.nanaoware.online`)
+      - traefik.http.services.jellyfin.loadbalancer.server.port=8096
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.myjellyfin.middlewares=mywwwredirect
+      - traefik.http.routers.myjellyfin.middlewares=myauth
+      - traefik.http.routers.myjellyfin.service=api@internal
+
     ports:
       - 8096:8096
       - 8920:8920 #optional
       - 7359:7359/udp #optional
       - 1900:1900/udp #optional
     restart: unless-stopped
+networks:
+  proxy:
+    external: true

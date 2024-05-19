@@ -1,4 +1,4 @@
-version: "3"
+version: "3.9"
 
 services:
   minio-s3:
@@ -14,21 +14,17 @@ services:
     volumes:
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/minio/data:/data
     networks:
-      - web
+      - proxy
     labels:
       - traefik.enable=true
-      - traefik.http.routers.minio.rule=Host(`s3.example.com`)
+      - traefik.http.routers.minio.rule=Host(`minio.nanaoware.online`) || Host(`www.minio.nanaoware.online`)
       - traefik.http.services.minio.loadbalancer.server.port=9001
-      - traefik.http.routers.minio.tls=true
-      - traefik.http.routers.minio.tls.certResolver=lets-encrypt
-      - traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=50000000 # optional, only necessary for enabled file uploads
-      - traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=50000000 # optional, only necessary for enabled file uploads
-      - traefik.http.middlewares.limit.buffering.memRequestBodyBytes=50000000 # optional, only necessary for enabled file uploads
-      - traefik.http.middlewares.limit.buffering.memResponseBodyBytes=50000000 # optional, only necessary for enabled file uploads    
-      - traefik.docker.network=web
-    #  # Part for optional traefik middlewares
-      - traefik.http.routers.minio.middlewares=simpleAuth@file
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.myminio.middlewares=mywwwredirect
+      - traefik.http.routers.myminio.middlewares=myauth
+      - traefik.http.routers.myminio.service=api@internal
 
 networks:
-  web:
+  proxy:
     external: true

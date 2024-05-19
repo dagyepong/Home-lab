@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 
 services:
   nextcloud:
@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     networks:
       - cloud
-      - web
+      - proxy
     depends_on:
       - nextclouddb
       - redis
@@ -20,14 +20,13 @@ services:
       - /srv/appdata/nextcloud/data:/var/www/html/data
     labels:
       - traefik.enable=true
-      - traefik.http.routers.gitea.rule=Host(`nextcloud.nanaoware.online`)
-      - traefik.http.services.gitea.loadbalancer.server.port=8081
-      - traefik.http.routers.gitea.tls=true
-      - traefik.http.routers.gitea.entrypoints=websecure
-      - traefik.http.routers.gitea.tls.certResolver=lets-encrypt
-      - traefik.docker.network=web
-      # Part for local lan services only
-      - traefik.http.routers.gitea.middlewares=simpleAuth@file
+      - traefik.http.routers.nextcloud.rule=Host(`nextcloud.nanaoware.online`) || Host(`www.nextcloud.nanaoware.online`)
+      - traefik.http.services.nextcloud.loadbalancer.server.port=8081
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.mynextcloud.middlewares=mywwwredirect
+      - traefik.http.routers.mynextcloud.middlewares=myauth
+      - traefik.http.routers.mynextcloud.service=api@internal
 
     environment:
       - PUID=1000
@@ -46,7 +45,7 @@ services:
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     networks:
       - cloud
-      - web
+      - proxy
     volumes:
       - /srv/appdata/nextcloud/nextclouddb:/var/lib/mysql
     environment:
@@ -70,5 +69,5 @@ networks:
   cloud:
     name: cloud
     driver: bridge
-  web:
+  proxy:
     external: true
