@@ -12,7 +12,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./dozzle-data:/data
     networks:
-      - web
+      - proxy
     labels:
       - traefik.enable=true
       - traefik.http.routers.dozzle.rule=Host(`dozzle.nanaoware.online`) || Host(`www.dozzle.nanaoware.online`)
