@@ -23,11 +23,12 @@ services:
       - proxy
     labels:
       - traefik.enable=true
-      - traefik.docker.network=web
+      - traefik.docker.network=proxy
       - traefik.http.routers.codeserver.rule=Host(`code.nanaoware.online`)
       - traefik.http.routers.codeserver.entrypoints=http
       - traefik.http.routers.codeserver.tls=true
       - traefik.http.routers.coderserver.middlewares=traefik-https-redirect
+      - traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https
       - traefik.http.routers.codeserver.tls.certResolver=cloudflare
       - traefik.http.routers.codeserver-secure.entrypoints=https
       - traefik.http.middlewares.codeserver-https-redirect.redirectscheme.scheme=https
