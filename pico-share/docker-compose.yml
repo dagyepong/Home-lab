@@ -1,4 +1,4 @@
-version: "3.2"
+version: "3.9"
 services:
   picoshare:
     image: mtlynch/picoshare
@@ -10,3 +10,19 @@ services:
     command: -db /data/store.db
     volumes:
       - ./data:/data
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.picoshare.rule=Host(`pico.nanaoware.online`) || Host(`www.pico.nanaoware.online`)
+      - traefik.http.services.picoshare.loadbalancer.server.port=4001
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.mypicoshare.middlewares=mywwwredirect
+      - traefik.http.routers.mypicoshare.middlewares=myauth
+      - traefik.http.routers.mypicoshare.service=api@internal
+
+
+networks:
+  proxy:
+    external: true
