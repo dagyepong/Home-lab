@@ -68,8 +68,7 @@ services:
 
 networks:
   cloud:
-    #name: cloud
-    #driver: bridge
-    external: true
+    name: cloud
+    driver: bridge
   proxy:
     external: true
