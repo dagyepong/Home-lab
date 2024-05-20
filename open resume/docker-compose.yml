@@ -4,3 +4,20 @@ services:
         image: 'itsnoted/open-resume:latest'
         ports:
             - '3038:3000'
+        restart: unless-stopped
+        networks:
+            - proxy
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.open-resume.rule=Host(`resume.nanaoware.online`) || Host(`www.resume.nanaoware.online`)
+            - traefik.http.services.open-resume.loadbalancer.server.port=3038
+            - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+            - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+            - traefik.http.routers.myopen-resume.middlewares=mywwwredirect
+            - traefik.http.routers.myopen-resume.middlewares=myauth
+            - traefik.http.routers.myopen-resume.service=api@internal
+
+
+networks:
+  proxy:
+    external: true
