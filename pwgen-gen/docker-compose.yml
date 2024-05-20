@@ -6,5 +6,5 @@ services:
     environment:
       - NO_API_CHECK=true
     ports:
-      - 5066:5066
+      - 5069:5069
     restart: unless-stopped
