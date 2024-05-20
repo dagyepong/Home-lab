@@ -13,7 +13,7 @@ services:
     environment:
       - PGID=1000
       - PUID=1000
-      - CF_API_TOKEN=9FWC219u3T_9luxcbKYgdhvHRmgm1a0932SOJVIg# pls adjust
+      - CF_API_TOKEN=3d0a5d703e84b8899754804f88318a47c385a# pls adjust
       - DOMAINS=nanaoware.online # pls adjust; a list of fully qualified domain names separated by commas
       - PROXIED=false # instructs Cloudflare to cache webpages on your machine and hide its actual IP addresses
       - TZ=Europe/Berlin
