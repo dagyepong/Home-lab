@@ -15,7 +15,7 @@ services:
       - OG_SITE_NAME=Dennis Agyepong
       - OG_TITLE=Dennis Agyepong
       - OG_DESCRIPTION=The home of Dennis Agyepong
-      - OG_URL=https://tech.nanaoware.online
+      - OG_URL=https://linuxpad.nanaoware.online
       - OG_IMAGE=https://pfp.nostr.build/663ce288381c6a1bbf9ee09cccdf8efcc5025ded44e22e50a041543cd4f8f82c.jpg
       - OG_IMAGE_WIDTH=400
       - OG_IMAGE_HEIGHT=400
@@ -40,7 +40,7 @@ services:
       - CUSTOM_BUTTON_ICON=fas file-alt,fas fa-cog
       - GITHUB=https://github.com/dagyepong
       - GITLAB=https://gitlab.com/na204
-      - GHOST=https://tech.nanaoware.online
+      - GHOST=https://linuxpad.nanaoware.online
       - TWITTER=https://twitter.com/
       - INSTAGRAM=https://instagram.com/oware84?igsh=cjhxOXZwanRiMmhj
       - REDDIT=https://www.reddit.com/user/nanaoware/
@@ -49,7 +49,7 @@ services:
       #- TWITCH=https://twich.com
       - DISCORD=https://discord.com/nana12
       - TIKTOK=https://tiktok.com/@nanaoware
-      - GHOST=https://tech.nanaoware.online
+      - GHOST=https://linuxpad.nanaoware.online
       - FACEBOOK=https://www.facebook.com/profile.php?id=100094076774707&mibextid=ZbWKwL
       - PATREON=https://patreon.com/Linuxpad?utm_medium=clipboard_copy&utm_source=copyLink&utm_campaign=creatorshare_creator&utm_content=join_link
       - FOOTER=Linuxpad © 2024
