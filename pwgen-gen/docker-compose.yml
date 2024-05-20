@@ -6,5 +6,21 @@ services:
     environment:
       - NO_API_CHECK=true
     ports:
-      - 5069:5069
+      - 5066:5066
     restart: unless-stopped
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pwgen.rule=Host(`pwgen.nanaoware.online`) || Host(`www.pwgen.nanaoware.online`)
+      - traefik.http.services.pwgen.loadbalancer.server.port=5069
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.mypwgen.middlewares=mywwwredirect
+      - traefik.http.routers.mypwgen.middlewares=myauth
+      - traefik.http.routers.mypwgen.service=api@internal
+
+
+networks:
+  proxy:
+    external: true
