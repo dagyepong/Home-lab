@@ -6,14 +6,14 @@ version: '3.8'
 
 services:
   traefik:
-    image: traefik:v3.0
+    image: traefik:2.11
     container_name: traefik
     command:
       - --providers.docker=true # enable docker provider
       - --providers.docker.network=proxy # define default network to monitor for docker provider
       - --providers.docker.exposedbydefault=false # do not expose docker hosts per default
       - --providers.file.watch=true # monitor file provider for changes
-      - --providers.file.filename=$PWD/fileConfig.yml # location of the dynamic configuration
+      - --providers.file.filename=/etc/traefik/fileConfig.yml # location of the dynamic configuration
       - --entrypoints.http.address=:80 # entrypoint for unencrypted http
       - --entrypoints.http.forwardedHeaders.trustedIPs=103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,104.16.0.0/13,104.24.0.0/14,108.162.192.0/18,131.0.72.0/22,141.101.64.0/18,162.158.0.0/15,172.64.0.0/13,173.245.48.0/20,188.114.96.0/20,190.93.240.0/20,197.234.240.0/22,198.41.128.0/17,2400:cb00::/32,2606:4700::/32,2803:f800::/32,2405:b500::/32,2405:8100::/32,2a06:98c0::/29,2c0f:f248::/32 # define cloudflare ip ranges as trusted
       - --entrypoints.http.http.redirections.entryPoint.to=https # automatic redirect from http to https
@@ -33,7 +33,7 @@ services:
       #- --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=http # define entrypoint for http challenge
       - --certificatesresolvers.myresolver.acme.dnschallenge=true # enable dns challenge to obtain wildcard certificates
       - --certificatesresolvers.myresolver.acme.dnschallenge.provider=cloudflare # define provider for certificates
-      - --certificatesresolvers.myresolver.acme.storage=$PWD/acme.json # define acme path for certificate information
+      - --certificatesresolvers.myresolver.acme.storage=/etc/traefik/acme.json # define acme path for certificate information
       - --certificatesresolvers.myresolver.acme.dnschallenge.resolvers=1.1.1.1:53,1.0.0.1:53 # define dns servers for your resolver, here cloudflare
       ####################################################
       - --log.level=INFO # enable log level
@@ -46,7 +46,7 @@ services:
       - --serversTransport.insecureSkipVerify=true # set insecureSkipVerify to true to allow self-signed certificates
     labels:
       - traefik.enable=true # enable traefik
-      - traefik.http.routers.api.rule=Host(`traefik-dashboard.nanaoware.online`) # define subdomain for the traefik api dashboard
+      - traefik.http.routers.api.rule=Host(`traefik.example.com`) # define subdomain for the traefik api dashboard
       - traefik.http.routers.api.service=api@internal # enable traefik api dashboard
       - traefik.http.routers.api.middlewares=local-ipwhitelist@file,basic-auth@file # protect dashboard with basic auth and restrict access to private class subnets only    
     ports:
@@ -57,15 +57,11 @@ services:
       - proxy # define traefik docker network
     environment:
       - TZ=Europe/Berlin # define timezone
-      - CF_DNS_API_TOKEN=9FWC219u3T_9luxcbKYgdhvHRmgm1a0932SOJVIg
- # define your cloudflare api token
+      - CF_DNS_API_TOKEN=<MY-CF-API-TOKEN> # define your cloudflare api token
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # pass docker socket as read-only
-      #- ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/traefik:/etc/traefik/ # bind mount volume for persistent traefik data
-      #- ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/traefik/logs:/logs # bind mount volume for persistent traefik logs
-      - $PWD/acme.json:/acme.json
-      - $PWD/fileConfig.yml
-      - /var/log:/var/log
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/traefik:/etc/traefik/ # bind mount volume for persistent traefik data
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/traefik/logs:/logs # bind mount volume for persistent traefik logs
     restart: always # always restart traefik
     extra_hosts:
       - host.docker.internal:172.17.0.1 # define internal ip; helps traefik to resolve containers running in host network mode
