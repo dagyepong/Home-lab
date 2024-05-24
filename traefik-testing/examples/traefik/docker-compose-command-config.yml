@@ -46,7 +46,7 @@ services:
       - --serversTransport.insecureSkipVerify=true # set insecureSkipVerify to true to allow self-signed certificates
     labels:
       - traefik.enable=true # enable traefik
-      - traefik.http.routers.api.rule=Host(`traefik.nanaoware.online`) # define subdomain for the traefik api dashboard
+      - traefik.http.routers.api.rule=Host(`traefik-dashboard.nanaoware.online`) # define subdomain for the traefik api dashboard
       - traefik.http.routers.api.service=api@internal # enable traefik api dashboard
       - traefik.http.routers.api.middlewares=local-ipwhitelist@file,basic-auth@file # protect dashboard with basic auth and restrict access to private class subnets only    
     ports:
