@@ -1,0 +1,104 @@
+---
+###############################################################
+#                   Authelia configuration                    #
+###############################################################
+
+server:
+  address: 'tcp://:9091/'
+  
+log:
+  level: debug
+
+theme: dark
+
+identity_validation:
+  reset_password:
+    jwt_secret: unsecure_jwt_secret
+
+totp:
+  issuer: authelia.com
+
+# duo_api:
+#  hostname: api-123456789.example.com
+#  integration_key: ABCDEF
+#  # This secret can also be set using the env variables AUTHELIA_DUO_API_SECRET_KEY_FILE
+#  secret_key: 1234567890abcdefghifjkl
+
+password_policy:
+  standard:
+    enabled: true
+    min_length: 16
+    max_length: 0
+    require_uppercase: true
+    require_lowercase: true
+    require_number: true
+    require_special: true
+
+authentication_backend:
+  file:
+    path: /config/users_database.yml
+    password:
+      algorithm: argon2id
+      iterations: 1
+      salt_length: 16
+      parallelism: 8
+      memory: 64
+
+access_control:
+  default_policy: deny
+  rules:
+    # Rules applied to everyone
+    # chose from bypass, one_factor and two_factor
+    - domain: public.example.com
+      policy: bypass
+    - domain: subdomain1.example.com
+      policy: one_factor
+    - domain: subdomain2.example.com
+      policy: two_factor
+
+session:
+  name: authelia_session
+  # This secret can also be set using the env variables AUTHELIA_SESSION_SECRET_FILE
+  secret: unsecure_session_secret
+  expiration: 1h  # 1 hour
+  inactivity: 5m  # 5 minutes
+  cookies:
+    - domain: lrvt.de
+      authelia_url: 'https://example.com'
+      default_redirection_url: 'https://www.example.com'  # must be diffent to authelia_url
+      
+  redis:
+    host: authelia-redis
+    port: 6379
+    # This secret can also be set using the env variables AUTHELIA_SESSION_REDIS_PASSWORD_FILE
+    password: SuperSecureRedisAuthPassword # must be the same as in the docker-compose.yml defined for the redis service
+
+regulation:
+  max_retries: 3
+  find_time: 120
+  ban_time: 300
+
+# yubikey support
+webauthn:
+  disable: false
+  display_name: Authelia
+  attestation_conveyance_preference: indirect
+  user_verification: preferred
+  timeout: 60s
+
+storage:
+  encryption_key: a_very_important_secret # Now required
+  local:
+    path: /config/db.sqlite3
+
+notifier:
+  # smtp:
+  #   username: test
+  #   # This secret can also be set using the env variables AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE
+  #   password: password
+  #   host: smtp.gmail.com
+  #   port: 465
+  #   sender: "MySender <admin@example.com>"
+  filesystem:
+    filename: /config/notifications.txt
+...
