@@ -1,18 +1,17 @@
-version: '3.8'
-
+---
 services:
-    pms-docker:
-        image: plexinc/pms-docker
-        container_name: plex
-        environment:
-            - TZ=Europe/Berlin
-            - PLEX_CLAIM=claim-dvmURANy9Z7MbJhmY7V7 # pls adjust
-        volumes:
-            - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/plex/config:/config
-            - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/plex/transcode:/transcode
-            - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/plex/media:/data
-            - /mnt/media/Movies:movies
-            - /mnt/media/Tv-Shows:shows
-        restart: unless-stopped
-        ports:
-            - '32400:32400'
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    network_mode: host
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - VERSION=docker
+      - PLEX_CLAIM= #optional
+    volumes:
+      - /mnt/media/library:/config
+      - /mnt/media/Tv-Shows:/tv
+      - /mnt/media/Movies:/movies
+    restart: unless-stopped
