@@ -1,0 +1,263 @@
+version: "3.6"
+
+services:
+
+  # image used to index torrent links from the internet
+  prowlarr:
+    image: linuxserver/prowlarr:latest
+    container_name: arr-suite-prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/arr-suite/configs/prowlarr:/config # database and Prowlarr configs
+    expose:
+      - 9696/tcp # web ui
+    ports:
+      - 9696:9696/tcp # web ui
+    restart: unless-stopped
+    #networks:
+    #  - proxy
+    #labels:
+    #  - traefik.enable=true
+    #  - traefik.docker.network=proxy
+    #  - traefik.http.routers.prowlarr.rule=Host(`prowlarr.example.com`)
+    #  - traefik.http.services.prowlarr.loadbalancer.server.port=9696
+    #  # Optional part for traefik middlewares
+    #  - traefik.http.routers.prowlarr.middlewares=local-ipwhitelist@file
+
+  # image used to scan for tv shows
+  sonarr:
+    image: linuxserver/sonarr:latest
+    container_name: arr-suite-sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/arr-suite/configs/sonarr:/config # database and Radarr configs
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/arr-suite/media:/media # location of media and qbittorrent download folder
+    expose:
+      - 8989/tcp # web ui
+    ports:
+      - 8989:8989/tcp # web ui
+    restart: unless-stopped
+    #networks:
+    #  - proxy
+    #labels:
+    #  - traefik.enable=true
+    #  - traefik.docker.network=proxy
+    #  - traefik.http.routers.sonarr.rule=Host(`sonarr.example.com`)
+    #  - traefik.http.services.sonarr.loadbalancer.server.port=8989
+    #  # Optional part for traefik middlewares
+    #  - traefik.http.routers.sonarr.middlewares=local-ipwhitelist@file
+
+  # image used to scan for movies
+  radarr:
+    image: linuxserver/radarr:latest
+    container_name: arr-suite-radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/arr-suite/configs/radarr:/config
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/arr-suite/media:/media # location of media and qbittorrent download folder
+    expose:
+      - 7878/tcp # web ui
+    ports:
+      - 7878:7878/tcp # web ui
+    restart: unless-stopped
+    #networks:
+    #  - proxy
+    #labels:
+    #  - traefik.enable=true
+    #  - traefik.docker.network=proxy
+    #  - traefik.http.routers.radarr.rule=Host(`radarr.example.com`)
+    #  - traefik.http.services.radarr.loadbalancer.server.port=7878
+    #  # Optional part for traefik middlewares
+    #  - traefik.http.routers.radarr.middlewares=local-ipwhitelist@file
+
+  # image used to scan for music
+  lidarr:
+    image: linuxserver/lidarr:latest
+    container_name: arr-suite-lidarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/arr-suite/configs/lidarr:/config
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/arr-suite/media:/media # location of media and qbittorrent download folder
+    expose:
+      - 8686/tcp # web ui
+    ports:
+      - 8686:8686/tcp # web ui
+    restart: unless-stopped
+    #networks:
+    #  - proxy
+    #labels:
+    #  - traefik.enable=true
+    #  - traefik.docker.network=proxy
+    #  - traefik.http.routers.lidarr.rule=Host(`lidarr.example.com`)
+    #  - traefik.http.services.lidarr.loadbalancer.server.port=8686
+    #  # Optional part for traefik middlewares
+    #  - traefik.http.routers.lidarr.middlewares=local-ipwhitelist@file
+
+  # image used to scan for books
+  readarr:
+    image: linuxserver/readarr:develop
+    container_name: arr-suite-readarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/arr-suite/configs/readarr:/config
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/arr-suite/media:/media # location of media and qbittorrent download folder
+    expose:
+      - 8787/tcp # web ui
+    ports:
+      - 8787:8787/tcp # web ui
+    restart: unless-stopped
+    #networks:
+    #  - proxy
+    #labels:
+    #  - traefik.enable=true
+    #  - traefik.docker.network=proxy
+    #  - traefik.http.routers.readarr.rule=Host(`readarr.example.com`)
+    #  - traefik.http.services.readarr.loadbalancer.server.port=8787
+    #  # Optional part for traefik middlewares
+    #  - traefik.http.routers.readarr.middlewares=local-ipwhitelist@file
+
+  # image used to bypass cloudflare for prowlarr
+  flaresolverr:
+    image: flaresolverr/flaresolverr:latest
+    container_name: arr-suite-flaresolverr
+    environment:
+      - LOG_LEVEL=info
+      - LOG_HTML=false
+      - CAPTCHA_SOLVER=none
+      - TZ=Europe/Berlin
+    expose:
+      - 8191/tcp # listening port for selenium
+    restart: unless-stopped
+    #networks:
+    #  - proxy    
+
+  # image used for vpn killswitch network
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: arr-suite-gluetun
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 8080:8080 # qbittorrent http web ui
+    environment:
+      # see https://github.com/qdm12/gluetun-wiki for more details
+      # example envs based on https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/mullvad.md
+      - VPN_SERVICE_PROVIDER=mullvad # define the vpn provider
+      - VPN_TYPE=wireguard # define the vpn protocol to use
+      - WIREGUARD_PRIVATE_KEY=wOEI9rqqbDwnN8/Bpp22sVz48T71vJ4fYmFWujulwUU= # define your wireguard private key here
+      - WIREGUARD_ADDRESSES=10.64.222.21/32 # define the ipv4 vpn network subnet here
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/arr-suite/configs/gluetun:/gluetun
+    restart: unless-stopped
+    #networks:
+    #  - proxy
+    #labels:
+    #  - traefik.enable=true
+    #  - traefik.docker.network=proxy
+    #  - traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.example.com`)
+    #  - traefik.http.services.qbittorrent.loadbalancer.server.port=8080
+    #  # Optional part for traefik middlewares
+    #  - traefik.http.routers.qbittorrent.middlewares=local-ipwhitelist@file
+
+  # image used to download stuff; run over gluetun network (vpn killswitch)
+  qbittorrent:
+    image: linuxserver/qbittorrent:latest
+    container_name: arr-suite-qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+      - WEBUI_PORT=8080
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/arr-suite/configs/qbittorrent:/config
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/arr-suite/media/downloads:/media/downloads
+    depends_on:
+      - gluetun
+    network_mode: container:arr-suite-gluetun # use the gluetun container network (vpn killswitch)
+    restart: unless-stopped
+
+  # image used to manage media and stream it
+  emby:
+    image: linuxserver/emby:latest
+    container_name: arr-suite-emby
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/arr-suite/configs/emby:/config # emby data storage location; can grow very large
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/arr-suite/media:/data # media goes here
+      #- ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/arr-suite/configs/emby/lib:/opt/vc/lib # optional; path for Raspberry Pi OpenMAX libs
+    expose:
+      - 8096/tcp # http web ui
+      - 8920/tcp # https web ui
+    ports:
+      - 8096:8096/tcp # http web ui
+    #devices:
+    #  - /dev/dri:/dev/dri #optional
+    #  - /dev/vchiq:/dev/vchiq #optional
+    #  - /dev/video10:/dev/video10 #optional
+    #  - /dev/video11:/dev/video11 #optional
+    #  - /dev/video12:/dev/video12 #optional
+    restart: unless-stopped
+    #networks:
+    #  - proxy
+    #labels:
+    #  - traefik.enable=true
+    #  - traefik.docker.network=proxy
+    #  - traefik.http.routers.emby.rule=Host(`emby.example.com`)
+    #  - traefik.http.services.emby.loadbalancer.server.port=8096
+    #  # Optional part for traefik middlewares
+    #  - traefik.http.routers.emby.middlewares=local-ipwhitelist@file
+
+  # image used to manage media and stream it
+  #jellyfin:
+  #  image: linuxserver/jellyfin:latest
+  #  container_name: arr-suite-jellyfin
+  #  environment:
+  #    - PUID=1000
+  #    - PGID=1000
+  #    - TZ=Europe/Berlin
+  #  volumes:
+  #    - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/arr-suite/configs/jellyfin:/config # emby data storage location; can grow very large
+  #    - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/arr-suite/media:/data # media goes here
+  #    #- ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/arr-suite/configs/jellyfin/lib:/opt/vc/lib # optional; path for Raspberry Pi OpenMAX libs
+  #  expose:
+  #    - 8096/tcp # http web ui
+  #  ports:
+  #    - 8096:8096/tcp # http web ui
+  #  #devices:
+  #  #  - /dev/dri:/dev/dri #optional
+  #  #  - /dev/vchiq:/dev/vchiq #optional
+  #  #  - /dev/video10:/dev/video10 #optional
+  #  #  - /dev/video11:/dev/video11 #optional
+  #  #  - /dev/video12:/dev/video12 #optional
+  #  restart: unless-stopped
+  #  #networks:
+  #  #  - proxy
+  #  #labels:
+  #  #  - traefik.enable=true
+  #  #  - traefik.docker.network=proxy
+  #  #  - traefik.http.routers.jellyfin.rule=Host(`jellyfin.example.com`)
+  #  #  - traefik.http.services.jellyfin.loadbalancer.server.port=8096
+  #  #  # Optional part for traefik middlewares
+  #  #  - traefik.http.routers.jellyfin.middlewares=local-ipwhitelist@file    
+
+#networks:
+#  proxy:
+#    external: true
