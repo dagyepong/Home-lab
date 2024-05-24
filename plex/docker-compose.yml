@@ -11,6 +11,8 @@ services:
             - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/plex/config:/config
             - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/plex/transcode:/transcode
             - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/plex/media:/data
+            - /mnt/media/Movies:movies
+            - /mnt/media/Tv-Shows:shows
         restart: unless-stopped
         ports:
             - '32400:32400'
