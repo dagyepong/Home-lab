@@ -61,8 +61,10 @@ services:
  # define your cloudflare api token
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # pass docker socket as read-only
-      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/traefik:/etc/traefik/ # bind mount volume for persistent traefik data
-      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/traefik/logs:/logs # bind mount volume for persistent traefik logs
+      #- ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/traefik:/etc/traefik/ # bind mount volume for persistent traefik data
+      #- ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/traefik/logs:/logs # bind mount volume for persistent traefik logs
+      - traefik:traefik
+      - /var/logs:/var/logs
     restart: always # always restart traefik
     extra_hosts:
       - host.docker.internal:172.17.0.1 # define internal ip; helps traefik to resolve containers running in host network mode
