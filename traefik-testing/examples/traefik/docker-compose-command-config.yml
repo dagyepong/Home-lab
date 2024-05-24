@@ -28,7 +28,7 @@ services:
       - --entrypoints.https.http.tls.certresolver=myresolver # define default cert resolver
       - --entrypoints.https.http.tls.domains[0].main=nanaoware.online # define main domain, change to your domain
       - --entrypoints.https.http.tls.domains[0].sans=*.nanaoware.online # define sans domain, change to your domain
-      - --certificatesresolvers.myresolver.acme.email=owarenana062gmail.com # define your email address
+      - --certificatesresolvers.myresolver.acme.email=owarenana06@gmail.com # define your email address
       #- --certificatesresolvers.myresolver.acme.httpchallenge=true # use http challenge
       #- --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=http # define entrypoint for http challenge
       - --certificatesresolvers.myresolver.acme.dnschallenge=true # enable dns challenge to obtain wildcard certificates
