@@ -13,16 +13,17 @@ services:
       - 8.8.8.8
     volumes:
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/uptimekuma:/app/data
-    #networks:
-    #  - proxy
-    #labels:
-    #  - traefik.enable=true
-    #  - traefik.http.routers.uptimekuma.rule=Host(`uptimekuma.example.com`)
-    #  - traefik.http.services.uptimekuma.loadbalancer.server.port=3001
-    #  - traefik.docker.network=proxy
-    #  # Part for local lan services only
-    #  #- traefik.http.routers.uptimekuma.middlewares=local-ipwhitelist@file
-
-#networks:
-#  proxy:
-#    external: true
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.uptimekuma.rule=Host(`uptime.nanaoware.online`) || Host(`www.uptime.nanaoware.online`)
+      - traefik.http.services.uptimekuma.loadbalancer.server.port=3001
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.myuptimekuma.middlewares=mywwwredirect
+      - traefik.http.routers.myuptimekuma.middlewares=myauth
+      - traefik.http.routers.myuptimekuma.service=api@internal
+networks:
+  proxy:
+    external: true
