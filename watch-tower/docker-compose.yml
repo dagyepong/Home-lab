@@ -16,7 +16,7 @@ services:
       - WATCHTOWER_DEBUG=true
       - WATCH_TOWER_HTTP_API_METRICS=true
       #- WATCH_TOWER_HTTP_API_TOKEN="mytoken"
-      - TZ=$TZ
+      #new- TZ=$TZ
       - WATCHTOWER_MONITOR_ONLY=false
       - WATCHTOWER_CLEANUP=true
       - WATCHTOWER_NOTIFICATIONS=shoutrrr
