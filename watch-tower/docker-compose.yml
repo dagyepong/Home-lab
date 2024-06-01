@@ -13,12 +13,18 @@ services:
       #- WATCHTOWER_NOTIFICATION_EMAIL_SERVER=${SMTP_SERVER:-smtp.google.com}
       - WATCHTOWER_HTTP_API_TOKEN=${API_TOKEN:-SecureApiToken}
       #- WATCHTOWER_NOTIFICATIONS=email
-      #- WATCHTOWER_MONITOR_ONLY=true
       - WATCHTOWER_DEBUG=true
       - WATCH_TOWER_HTTP_API_METRICS=true
       #- WATCH_TOWER_HTTP_API_TOKEN="mytoken"
+      - TZ=$TZ
+      - WATCHTOWER_MONITOR_ONLY=false
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_NOTIFICATIONS=shoutrrr
+      - WATCHTOWER_NOTIFICATION_URL=telegram://$TELEGRAM_AUTH_TOKEN@telegram?channels=$TELEGRAM_CHAT_ID&parseMode=HTML
+      - WATCHTOWER_NOTIFICATION_TEMPLATE=🆕🔔💻 <b>Servidor:</b> <code>NAS</code>{{println}}{{range .}}{{.Message}}{{println}}{{end}}
+      - WATCHTOWER_NOTIFICATION_SKIP_TITLE=true
       - WATCHTOWER_SCHEDULE=0 0 6 * * * # requires a go cron syntax of 6 space-separated fields; see https://containrrr.dev/watchtower/arguments/#scheduling
-      - WATCHTOWER_CLEANUP=true # remove unused images afterwards
+      #- WATCHTOWER_CLEANUP=true # remove unused images afterwards
     image: containrrr/watchtower:latest
     networks:
       - proxy
