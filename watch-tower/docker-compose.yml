@@ -21,7 +21,7 @@ services:
       - WATCHTOWER_CLEANUP=true
       - WATCHTOWER_NOTIFICATIONS=shoutrrr
       - WATCHTOWER_NOTIFICATION_URL=telegram://$TELEGRAM_AUTH_TOKEN@telegram?channels=$TELEGRAM_CHAT_ID&parseMode=HTML
-      - WATCHTOWER_NOTIFICATION_TEMPLATE=🆕🔔💻 <b>Servidor:</b> <code>NAS</code>{{println}}{{range .}}{{.Message}}{{println}}{{end}}
+      - WATCHTOWER_NOTIFICATION_TEMPLATE=📊🔔⚡️ <b>Server:</b> <code>Update</code>{{println}}{{range .}}{{.Message}}{{println}}{{end}}
       - WATCHTOWER_NOTIFICATION_SKIP_TITLE=true
       - WATCHTOWER_SCHEDULE=0 0 6 * * * # requires a go cron syntax of 6 space-separated fields; see https://containrrr.dev/watchtower/arguments/#scheduling
       #- WATCHTOWER_CLEANUP=true # remove unused images afterwards
