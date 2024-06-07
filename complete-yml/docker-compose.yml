@@ -1,0 +1,172 @@
+version: '3.9'
+
+services:
+  traefik:
+    image: traefik:v3.0
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - letsencrypt:/letsencrypt
+      - /var/log:/var/log
+    command:
+      - --api.dashboard=true
+      - --log.level=INFO
+      - --log.filepath=/var/log/traefik.log
+      - --accesslog=true
+      - --accesslog.filepath=/var/log/traefik-access.log
+      - --providers.docker.network=proxy
+      - --providers.docker.exposedByDefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entryPoints.web.http.redirections.entrypoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      # remove next line when using Traefik v2
+      - --entrypoints.websecure.asDefault=true 
+      - --entrypoints.websecure.http.tls.certresolver=myresolver
+      - --certificatesresolvers.myresolver.acme.email=owarenana06@gmail.com
+      - --certificatesresolvers.myresolver.acme.tlschallenge=true
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.mydashboard.rule=Host(`traefik.nanaoware.online`)
+      - traefik.http.routers.mydashboard.service=api@internal
+      - traefik.http.routers.mydashboard.middlewares=myauth
+      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+
+  whoami:
+    image: traefik/whoami:v1.8
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.mywhoami.rule=Host(`whoami.nanaoware.online`) || Host(`www.whoami.nanaoware.online`)
+      - traefik.http.services.mywhoami.loadbalancer.server.port=80
+
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.mywhoami.middlewares=mywwwredirect
+
+networks:
+  proxy:
+    external: true
+
+
+volumes:
+  letsencrypt:
+    name: letsencrypt
+
+### Code-server##
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    container_name: code-server
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+      - PASSWORD=akosua123
+      - SUDO_PASSWORD=akosua123 #optional
+      #- SUDO_PASSWORD_HASH= #optional
+      - PROXY_DOMAIN=vscode.example.com #optional
+      - DEFAULT_WORKSPACE=/config/workspace #optional
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/vscode/config:/config
+    ports:
+      - 8443:8443
+    restart: unless-stopped
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.codeserver.rule=Host(`code.nanaoware.online`) || Host(`www.code.nanaoware.online`)
+      - traefik.http.services.codeserver.loadbalancer.server.port=8443
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.mycodeserver.middlewares=mywwwredirect
+      - traefik.http.routers.mycodeserver.middlewares=myauth
+      - traefik.http.routers.mycodeserver.service=api@internal
+
+
+networks:
+  proxy:
+    external: true
+
+## Fail2ban##
+  fail2ban:
+    container_name: fail2ban
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    environment:
+      - TZ=Europe/Berlin
+      - F2B_DB_PURGE_AGE=14d
+    image: crazymax/fail2ban:latest
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/fail2Ban/data:/data
+      - /path/to/my/logs/to/monitor:/var/log
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/traefik/logs:/var/log/traefik
+
+### Little Link##
+  littlelink-server:
+    image: ghcr.io/techno-tim/littlelink-server:latest
+    # dockerhub is also supported timothystewart6/littlelink-server
+    # image: timothystewart6/littlelink-server:latest
+    container_name: littlelink-server
+    environment:
+      - META_TITLE=Dennis Agyepong
+      - META_DESCRIPTION=Cyber Security | Gamer | Linux Enthusiast | Homelab | 🇺🇸 🇬🇭   | Full Nerd
+      - META_AUTHOR=Dennis Agyepong
+      - META_KEYWORDS=HomeLab, Python, Docker, Engineering
+      - LANG=en
+      - META_INDEX_STATUS=all
+      - OG_SITE_NAME=Dennis Agyepong
+      - OG_TITLE=Dennis Agyepong
+      - OG_DESCRIPTION=The home of Dennis Agyepong
+      - OG_URL=https://linuxpad.nanaoware.online
+      - OG_IMAGE=https://pfp.nostr.build/663ce288381c6a1bbf9ee09cccdf8efcc5025ded44e22e50a041543cd4f8f82c.jpg
+      - OG_IMAGE_WIDTH=400
+      - OG_IMAGE_HEIGHT=400
+      - GA_TRACKING_ID=G-XXXXXXXXXX
+      - THEME=Dark
+      - FAVICON_URL=https://pfp.nostr.build/663ce288381c6a1bbf9ee09cccdf8efcc5025ded44e22e50a041543cd4f8f82c.jpg
+      - AVATAR_URL=https://pfp.nostr.build/663ce288381c6a1bbf9ee09cccdf8efcc5025ded44e22e50a041543cd4f8f82c.jpg
+      - AVATAR_2X_URL=https://pfp.nostr.build/663ce288381c6a1bbf9ee09cccdf8efcc5025ded44e22e50a041543cd4f8f82c.jpg
+      - AVATAR_ALT=Dennis AgyepongProfile Pic
+      - NAME=Dennis Agyepong
+      - BIO=Cyber-Security Analyst | Gamer | Tech Hobbyist | Linux Enthusiast | Homelab | 🇺🇸 🇬🇭 | Nerd
+      # use ENV variable names for order, listed buttons will be boosted to the top
+      - BUTTON_ORDER=REDDIT,GITHUB,GITLAB,GHOST,INSTAGRAM,LINKED_IN,DISCORD,FACEBOOK,TIKTOK,PATREON,GEAR,DOCUMENTATION
+      # you can render an unlimited amount of custom buttons by adding 
+      # the CUSTOM_BUTTON_* variables and by using a comma as a separator.
+      - CUSTOM_BUTTON_TEXT=Documentation,Homelab
+      - CUSTOM_BUTTON_URL=https://doc.nanaoware.online
+      - CUSTOM_BUTTON_COLOR=#000000,#000000
+      - CUSTOM_BUTTON_TEXT_COLOR=#ffffff,#ffffff
+      - CUSTOM_BUTTON_ALT_TEXT=Homelab documentation site
+      - CUSTOM_BUTTON_NAME=DOCUMENTATION,GEAR
+      - CUSTOM_BUTTON_ICON=fas file-alt,fas fa-cog
+      - GITHUB=https://github.com/dagyepong
+      - GITLAB=https://gitlab.com/na204
+      - GHOST=https://linuxpad.nanaoware.online
+      - TWITTER=https://twitter.com/
+      - INSTAGRAM=https://instagram.com/oware84?igsh=cjhxOXZwanRiMmhj
+      - REDDIT=https://www.reddit.com/user/nanaoware/
+      - LINKED_IN=https://www.linkedin.com/in/nana-oware-944bba282/
+      #- YOUTUBE=https://youtube.com
+      #- TWITCH=https://twich.com
+      - DISCORD=https://discord.com/nana12
+      - TIKTOK=https://tiktok.com/@nanaoware
+      - GHOST=https://linuxpad.nanaoware.online
+      - FACEBOOK=https://www.facebook.com/profile.php?id=100094076774707&mibextid=ZbWKwL
+      - PATREON=https://patreon.com/Linuxpad?utm_medium=clipboard_copy&utm_source=copyLink&utm_campaign=creatorshare_creator&utm_content=join_link
+      - FOOTER=Linuxpad © 2024
+    ports:
+      - 8080:3000
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
