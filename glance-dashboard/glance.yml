@@ -1,0 +1,101 @@
+#Début du bloc pour les assets#
+
+server:
+  assets-path: ./assets
+
+#Début du bloc pour le thème#
+
+theme:
+  background-color: 50 1 6
+  primary-color: 24 97 58
+  negative-color: 209 88 54
+
+#Début du bloc pour la page Home#
+
+pages:
+  - name: Home
+    columns:
+      - size: small
+        widgets:
+          - type: clock
+          - type: calendar
+
+#Début du bloc pour Twitch#
+
+          - type: twitch-channels
+            channels:
+              - mrchonks
+
+#Début du bloc pour la partie des releases GitHub#
+
+          - type: releases
+            repositories:
+              - immich-app/immich
+              - go-gitea/gitea
+              - dani-garcia/vaultwarden
+              - jellyfin/jellyfin
+
+#Début du bloc pour la partie monitoring de vos applications Docker#
+
+          - type: monitor
+            cache: 1m
+            title: Services
+            assets-path: /app/assets
+            sites:
+              - title: Jellyfin
+                url: https://jellyfin.teamsyno.com
+                icon: /assets/jellyfin.svg
+
+#Début du bloc pour le réglage d'apparence de la partie RSS#
+
+      - size: full
+        widgets
+
+#Début du bloc pour la barre de recherche#
+
+          - type: search
+            search-engine: duckduckgo
+
+#Début du bloc pour la partie RSS#
+
+          - type: rss
+            limit: 10
+            collapse-after: 3
+            cache: 3h
+            style: horizontal-cards
+            feeds:
+              - url: https://belginux.com/rss
+                title: belginux
+
+#Début du bloc pour la partie des vidéos de YouTube#
+
+          - type: videos
+            channels:
+              - UCS-NkJiYhYku2YtKi2W4p3w # La chaîne de P.A.U.L
+              - UC_yP2DpIgs5Y1uWC0T03Chw # Joueur Du Grenier
+
+#Début du bloc pour la partie des subreddit#
+
+          - type: reddit
+            style: horizontal-cards
+            subreddit: belginux
+
+#Début du bloc pour la partie météo#
+
+      - size: small
+        widgets:
+          - type: weather
+            location: Chicago, USA
+
+#Début du bloc pour la partie bourse#
+
+          - type: markets
+            markets:
+              - symbol: BTC-USD
+                name: Bitcoin
+              - symbol: NVDA
+                name: NVIDIA
+              - symbol: AMD
+                name: AMD
+              - symbol: RDDT
+                name: Reddit
