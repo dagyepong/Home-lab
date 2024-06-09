@@ -49,7 +49,7 @@ pages:
 #Début du bloc pour le réglage d'apparence de la partie RSS#
 
       - size: full
-        widgets
+        widgets:
 
 #Début du bloc pour la barre de recherche#
 
