@@ -40,11 +40,17 @@ pages:
           - type: monitor
             cache: 1m
             title: Services
-            assets-path: /app/assets
+            assets-path: /app/assets/svg
             sites:
               - title: Jellyfin
-                url: https://jellyfin.teamsyno.com
-                icon: /assets/jellyfin.svg
+                url: http://10.0.0.14:8096
+                icon: /assets/svg/jellyfin.svg
+              - title: Traefik
+                url: https://traefik.nanaoware.online
+                icon: /assets/svg/traefik.svg
+              - title: Code-Server
+                url: http://10.0.0.16:8443
+                icon: /assets/svg/code.svg
 
 #Début du bloc pour le réglage d'apparence de la partie RSS#
 
@@ -66,6 +72,22 @@ pages:
             feeds:
               - url: https://belginux.com/rss
                 title: belginux
+              - url: https://ciechanow.ski/atom.xml
+              - url: https://www.joshwcomeau.com/rss.xml
+                title: Josh Comeau
+              - url: https://samwho.dev/rss.xml
+              - url: https://awesomekling.github.io/feed.xml
+              - url: https://ishadeed.com/feed.xml
+                title: Ahmad Shadeed
+
+          - type: twitch-channels
+            channels:
+              - theprimeagen
+              - cohhcarnage
+              - christitustech
+              - blurbs
+              - asmongold
+              - jembawls
 
 #Début du bloc pour la partie des vidéos de YouTube#
 
@@ -73,6 +95,8 @@ pages:
             channels:
               - UCS-NkJiYhYku2YtKi2W4p3w # La chaîne de P.A.U.L
               - UC_yP2DpIgs5Y1uWC0T03Chw # Joueur Du Grenier
+              - UCR-DXc1voovS8nhAvccRZhg # Jeff Geerling
+              - UCOk-gHyjcWZNj3Br4oxwh0A # Techno Tim
 
 #Début du bloc pour la partie des subreddit#
 
@@ -99,3 +123,7 @@ pages:
                 name: AMD
               - symbol: RDDT
                 name: Reddit
+              - symbol: SPY
+                name: S&P 500
+              - symbol: AAPL
+                name: Apple
