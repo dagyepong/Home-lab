@@ -1,34 +1,141 @@
-version: '3'
+
+networks:
+  proxy:
+    external: true
+
+volumes:
+  mariadb-data:
+  ghost-data:
+  ghost-mariadb-backup:
+  ghost-data-backups:
+  ghost-database-backups:
+  traefik-certificates:
+
 services:
-
-  ghost-server:
-    image: ghost:5
-    cap_add:
-      - CAP_SYS_NICE
-    security_opt:
-      - seccomp:unconfined
-    restart: always
-    ports:
-      - 2368:2368
-    depends_on:
-      - ghost-db
+  mariadb:
+    image: ${GHOST_MARIADB_IMAGE_TAG}
+    volumes:
+      - mariadb-data:/var/lib/mysql
     environment:
+      MARIADB_DATABASE: ${GHOST_DB_NAME}
+      MARIADB_USER: ${GHOST_DB_USER}
+      MARIADB_PASSWORD: ${GHOST_DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${GHOST_DB_ADMIN_PASSWORD}
+    networks:
+      - proxy
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
 
-      url: http://localhost:2368
+  ghost:
+    image: ${GHOST_IMAGE_TAG}
+    volumes:
+      - ghost-data:${DATA_PATH}
+    environment:
+      NODE_ENV: production
+      url: https://tech.nanaoware.online
       database__client: mysql
-      database__connection__host: ghost-db
-      database__connection__user: root
-      database__connection__password: V3ryS3cretP@ssw0rd
-      database__connection__database: ghost
+      database__connection__host: mariadb
+      database__connection__database: ${GHOST_DB_NAME}
+      database__connection__user: ${GHOST_DB_USER}
+      database__connection__password: ${GHOST_DB_PASSWORD}
+    networks:
+      - proxy
+    healthcheck:
+      test: timeout 10s bash -c ':> /dev/tcp/127.0.0.1/2368' || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 90s
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ghost.rule=Host(`tech.nanaoware.online`) || Host(`www.tech.nanaoware.online`)
+      - traefik.http.services.ghost.loadbalancer.server.port=2368
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.myghost.middlewares=mywwwredirect
+      - traefik.http.routers.myghost.middlewares=myauth
+      - traefik.http.routers.myghost.service=api@internal
+
+
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      traefik:
+        condition: service_healthy
+
+  traefik:
+    image: traefik:v3.0
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - proxy
     volumes:
-      - /docker/ghost/content:/var/lib/ghost/content
-  ghost-db:
-    image: mysql:8
-    security_opt:
-    - seccomp:unconfined
-    restart: always
-    command: --default-authentication-plugin=mysql_native_password
+      - /var/run/docker.sock:/var/run/docker.sock
+      - letsencrypt:/letsencrypt
+      - /var/log:/var/log
+    command:
+      - --api.dashboard=true
+      - --log.level=INFO
+      - --log.filepath=/var/log/traefik.log
+      - --accesslog=true
+      - --accesslog.filepath=/var/log/traefik-access.log
+      - --providers.docker.network=proxy
+      - --providers.docker.exposedByDefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entryPoints.web.http.redirections.entrypoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      # remove next line when using Traefik v2
+      - --entrypoints.websecure.asDefault=true
+      - --entrypoints.websecure.http.tls.certresolver=myresolver
+      - --certificatesresolvers.myresolver.acme.email=owarenana06@gmail.com
+      - --certificatesresolvers.myresolver.acme.tlschallenge=true
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.mydashboard.rule=Host(`test.nanaoware.online`)
+      - traefik.http.routers.mydashboard.service=api@internal
+      - traefik.http.routers.mydashboard.middlewares=myauth
+      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+
+  backups:
+    image: ${GHOST_MARIADB_IMAGE_TAG}
+    command: >-
+      sh -c 'sleep $BACKUP_INIT_SLEEP &&
+      while true; do
+        mariadb-dump -h mariadb -u $GHOST_DB_USER -p"$GHOST_DB_PASSWORD" $GHOST_DB_NAME | gzip > "$MARIADB_BACKUPS_PATH/$MARIADB_BACKUP_NAME-$(date '+%Y-%m-%d_%H-%M').gz" &&
+        tar -zcpf $DATA_BACKUPS_PATH/$DATA_BACKUP_NAME-$(date "+%Y-%m-%d_%H-%M").tar.gz $DATA_PATH &&
+        find $MARIADB_BACKUPS_PATH -type f -mtime +$MARIADB_BACKUP_PRUNE_DAYS | xargs rm -f &&
+        find $DATA_BACKUPS_PATH -type f -mtime +$DATA_BACKUP_PRUNE_DAYS | xargs rm -f;
+        sleep $BACKUP_INTERVAL; done'
+    volumes:
+      - ghost-mariadb-backup:/var/lib/mysql
+      - ghost-data:${DATA_PATH}
+      - ghost-data-backups:${DATA_BACKUPS_PATH}
+      - ghost-database-backups:${MARIADB_BACKUPS_PATH}
     environment:
-      MYSQL_ROOT_PASSWORD: V3ryS3cretP@ssw0rd
-    volumes:
-      - /docker/ghost/mysql:/var/lib/mysql
+      GHOST_DB_NAME: ${GHOST_DB_NAME}
+      GHOST_DB_USER: ${GHOST_DB_USER}
+      GHOST_DB_PASSWORD: ${GHOST_DB_PASSWORD}
+      BACKUP_INIT_SLEEP: ${BACKUP_INIT_SLEEP}
+      BACKUP_INTERVAL: ${BACKUP_INTERVAL}
+      MARIADB_BACKUP_PRUNE_DAYS: ${MARIADB_BACKUP_PRUNE_DAYS}
+      DATA_BACKUP_PRUNE_DAYS: ${DATA_BACKUP_PRUNE_DAYS}
+      MARIADB_BACKUPS_PATH: ${MARIADB_BACKUPS_PATH}
+      DATA_BACKUPS_PATH: ${DATA_BACKUPS_PATH}
+      DATA_PATH: ${DATA_PATH}
+      MARIADB_BACKUP_NAME: ${MARIADB_BACKUP_NAME}
+      DATA_BACKUP_NAME: ${DATA_BACKUP_NAME}
+    networks:
+      - proxy
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
