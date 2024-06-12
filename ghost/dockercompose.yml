@@ -9,7 +9,7 @@ volumes:
   ghost-mariadb-backup:
   ghost-data-backups:
   ghost-database-backups:
-  traefik-certificates:
+  letsencrypt:
 
 services:
   mariadb:
@@ -61,7 +61,6 @@ services:
       - traefik.http.routers.myghost.middlewares=myauth
       - traefik.http.routers.myghost.service=api@internal
 
-
     restart: unless-stopped
     depends_on:
       mariadb:
@@ -104,6 +103,13 @@ services:
       - traefik.http.routers.mydashboard.service=api@internal
       - traefik.http.routers.mydashboard.middlewares=myauth
       - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+    healthcheck:
+      test: ["CMD", "wget", "http://localhost:8082/ping","--spider"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    
 
   backups:
     image: ${GHOST_MARIADB_IMAGE_TAG}
