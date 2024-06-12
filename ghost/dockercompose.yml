@@ -84,8 +84,15 @@ services:
       - --log.level=INFO
       - --log.filepath=/var/log/traefik.log
       - --accesslog=true
+      - --ping=true
+      - --ping.entrypoint=ping
+      - --entryPoints.ping.address=:8082"
       - --accesslog.filepath=/var/log/traefik-access.log
       - --providers.docker.network=proxy
+      - --metrics.prometheus=true
+      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
+      - --global.checkNewVersion=true
+      - --global.sendAnonymousUsage=false
       - --providers.docker.exposedByDefault=false
       - --entrypoints.web.address=:80
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
@@ -97,6 +104,7 @@ services:
       - --certificatesresolvers.myresolver.acme.email=owarenana06@gmail.com
       - --certificatesresolvers.myresolver.acme.tlschallenge=true
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+
     labels:
       - traefik.enable=true
       - traefik.http.routers.mydashboard.rule=Host(`test.nanaoware.online`)
@@ -109,7 +117,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
-    
+  
 
   backups:
     image: ${GHOST_MARIADB_IMAGE_TAG}
