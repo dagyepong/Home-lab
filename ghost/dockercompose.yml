@@ -1,6 +1,9 @@
 
 services:
 
+volumes:
+  letsencrypt:
+
   traefik:
     image: traefik:v3.0
     ports:
