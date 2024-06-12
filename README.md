@@ -1,36 +1,5 @@
-# Home-lab
-This is a collection of my current docker-compose files for my home-lab set-up. Anyone willing to replicate such set-up must have a working docker and docker-compose installed in their system first.
-# Traefik Setup
-1.docker network create web
+# Awesome Compose [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
 
-2.touch acme.json
+> A curated list of Docker Compose samples.
 
-3.chmod 600 acme.json
-
-
-docker run -d \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -v $PWD/traefik.toml:/traefik.toml \
-  -v $PWD/traefik_dynamic.toml:/traefik_dynamic.toml \
-  -v $PWD/acme.json:/acme.json \
-  -p 80:80 \
-  -p 443:443 \
-  --network web \
-  --name traefik \
-  traefik:v2.2
-
-  # navigate to https://monitor.nanaoware.online/dashboard/
-
-  # Cloudflare setup
-
-   export TUNNEL_TOKEN=xxxxx
-
-
-
-   ## Authentic Setup
-
-   After spawning up this Authentik stack, you will be greeted by Authentik's login dashboard. However, you have to onboard an admin user first.
-
-This is done by visiting the following URL:
-
-http(s)://<myserver>/if/flow/initial-setup
+These samples provide a starting point for how to integrate different services using a Compose file and to manage their deployment with Docker Compose.
