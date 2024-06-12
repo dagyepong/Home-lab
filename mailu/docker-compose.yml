@@ -1,0 +1,215 @@
+version: '3.7'
+
+services:
+  certdumper:
+    restart: always
+    image: mailu/traefik-certdumper:${MAILU_VERSION:-master}
+    environment:
+      - DOMAIN=mail.nanaoware.online
+      - TRAEFIK_VERSION=v2
+    volumes:
+      - '/home/antoine/git/traefik/letsencrypt/acme.json:/traefik/acme.json'
+      - '/data/docker/volumes/mailu/certs:/output'
+
+  # External dependencies
+  redis:
+    image: redis:alpine
+    restart: always
+    volumes:
+      - '/data/docker/volumes/mailu/redis:/data'
+
+  # Core services
+  front:
+    image: ${DOCKER_ORG:-mailu}/${DOCKER_PREFIX:-}nginx:${MAILU_VERSION:-1.7}
+    restart: always
+    env_file: mailu.env
+    logging:
+      driver: json-file
+    volumes:
+      - '/data/docker/volumes/mailu/certs:/certs'
+      - '/data/docker/volumes/mailu/overrides/nginx:/overrides'
+    ports:
+      - 'YOUR_IP:110:110'
+      - 'YOUR_IP:143:143'
+      - 'YOUR_IP:993:993'
+      - 'YOUR_IP:995:995'
+      - 'YOUR_IP:25:25'
+      - 'YOUR_IP:465:465'
+      - 'YOUR_IP:587:587'
+    networks:
+      - default
+      - traefik-public
+    labels:
+      - 'traefik.enable=true'
+      # Web UI
+      - 'traefik.http.routers.mailu-websecure.rule=Host(`mail.nanaoware.online`)'
+      - 'traefik.http.routers.mailu-websecure.entrypoints=websecure'
+      - 'traefik.http.routers.mailu-websecure.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.mailu-websecure.service=mailu-websecure-svc'
+      - 'traefik.http.services.mailu-websecure-svc.loadbalancer.server.port=80'
+      # # SMTP: No SSL
+      # # - 'traefik.tcp.routers.mailu-smtp.rule=HostSNI(`*`)'
+      # # - 'traefik.tcp.routers.mailu-smtp.entrypoints=smtp'
+      # # - 'traefik.tcp.routers.mailu-smtp.service=mailu-smtp-svc'
+      # # - 'traefik.tcp.services.mailu-smtp-svc.loadbalancer.server.port=25'
+      # # SMTP: SSL
+      # # - 'traefik.tcp.routers.mailu-smtp_ssl.rule=HostSNI(`smtp.YOUR_DOMAIN`, `YOUR_DOMAIN`, `mail.YOUR_DOMAIN`)'
+      # - 'traefik.tcp.routers.mailu-smtp_ssl.rule=HostSNI(`mail.YOUR_DOMAIN`)'
+      # - 'traefik.tcp.routers.mailu-smtp_ssl.entrypoints=smtp_ssl'
+      # # - 'traefik.tcp.routers.mailu-smtp_ssl.tls.passthrough=true'
+      # - 'traefik.tcp.routers.mailu-smtp_ssl.tls=true'
+      # - 'traefik.tcp.routers.mailu-smtp_ssl.tls.certresolver=letsencrypt'
+      # - 'traefik.tcp.routers.mailu-smtp_ssl.service=mailu-smtp_ssl-svc'
+      # - 'traefik.tcp.services.mailu-smtp_ssl-svc.loadbalancer.server.port=465'
+      # # # STARTTLS
+      # # - 'traefik.tcp.routers.mailu-smtp_start.rule=HostSNI(`smtp.YOUR_DOMAIN`, `YOUR_DOMAIN`, `mail.YOUR_DOMAIN`)'
+      # - 'traefik.tcp.routers.mailu-smtp_start.rule=HostSNI(`mail.YOUR_DOMAIN`)'
+      # - 'traefik.tcp.routers.mailu-smtp_start.entrypoints=smtp_start'
+      # # - 'traefik.tcp.routers.mailu-smtp_start.tls.passthrough=true'
+      # - 'traefik.tcp.routers.mailu-smtp_start.tls=true'
+      # - 'traefik.tcp.routers.mailu-smtp_start.tls.certresolver=letsencrypt'
+      # - 'traefik.tcp.routers.mailu-smtp_start.service=mailu-smtp_start-svc'
+      # - 'traefik.tcp.services.mailu-smtp_start-svc.loadbalancer.server.port=587'
+      # # POP3: No SSL
+      # - 'traefik.tcp.routers.mailu-pop3.rule=HostSNI(`*`)'
+      # - 'traefik.tcp.routers.mailu-pop3.entrypoints=pop3'
+      # - 'traefik.tcp.routers.mailu-pop3.service=mailu-pop3-svc'
+      # - 'traefik.tcp.services.mailu-pop3-svc.loadbalancer.server.port=110'
+      # # POP3: SSL
+      # # - 'traefik.tcp.routers.mailu-pop3_ssl.rule=HostSNI(`pop3.YOUR_DOMAIN`, `YOUR_DOMAIN`, `mail.YOUR_DOMAIN`)'
+      # - 'traefik.tcp.routers.mailu-pop3_ssl.rule=HostSNI(`mail.YOUR_DOMAIN`)'
+      # - 'traefik.tcp.routers.mailu-pop3_ssl.entrypoints=pop3_ssl'
+      # - 'traefik.tcp.routers.mailu-pop3_ssl.tls.passthrough=true'
+      # # - 'traefik.tcp.routers.mailu-pop3_ssl.tls=true'
+      # # - 'traefik.tcp.routers.mailu-pop3_ssl.tls.certresolver=letsencrypt'
+      # - 'traefik.tcp.routers.mailu-pop3_ssl.service=mailu-pop3_ssl-svc'
+      # - 'traefik.tcp.services.mailu-pop3_ssl-svc.loadbalancer.server.port=995'
+      # # IMAP: No SSL
+      # - 'traefik.tcp.routers.mailu-imap.rule=HostSNI(`*`)'
+      # - 'traefik.tcp.routers.mailu-imap.entrypoints=imap'
+      # - 'traefik.tcp.routers.mailu-imap.service=mailu-imap-svc'
+      # - 'traefik.tcp.services.mailu-imap-svc.loadbalancer.server.port=143'
+      # # IMAP: SSL
+      # # - 'traefik.tcp.routers.mailu-imap_ssl.rule=HostSNI(`imap.YOUR_DOMAIN`, `YOUR_DOMAIN`, `mail.YOUR_DOMAIN`)'
+      # - 'traefik.tcp.routers.mailu-imap_ssl.rule=HostSNI(`mail.YOUR_DOMAIN`)'
+      # - 'traefik.tcp.routers.mailu-imap_ssl.entrypoints=imap_ssl'
+      # - 'traefik.tcp.routers.mailu-imap_ssl.tls.passthrough=true'
+      # # - 'traefik.tcp.routers.mailu-imap_ssl.tls=true'
+      # # - 'traefik.tcp.routers.mailu-imap_ssl.tls.certresolver=letsencrypt'
+      # - 'traefik.tcp.routers.mailu-imap_ssl.service=mailu-imap_ssl-svc'
+      # - 'traefik.tcp.services.mailu-imap_ssl-svc.loadbalancer.server.port=993'
+
+  # resolver:
+  #   image: ${DOCKER_ORG:-mailu}/${DOCKER_PREFIX:-}unbound:${MAILU_VERSION:-1.7}
+  #   env_file: mailu.env
+  #   restart: always
+  #   networks:
+  #     default:
+  #       ipv4_address: 192.168.203.254
+
+  admin:
+    image: ${DOCKER_ORG:-mailu}/${DOCKER_PREFIX:-}admin:${MAILU_VERSION:-1.7}
+    restart: always
+    env_file: mailu.env
+    volumes:
+      - '/data/docker/volumes/mailu/data:/data'
+      - '/data/docker/volumes/mailu/dkim:/dkim'
+    depends_on:
+      - redis
+
+  imap:
+    image: ${DOCKER_ORG:-mailu}/${DOCKER_PREFIX:-}dovecot:${MAILU_VERSION:-1.7}
+    restart: always
+    env_file: mailu.env
+    volumes:
+      - '/data/docker/volumes/mailu/mail:/mail'
+      - '/data/docker/volumes/mailu/overrides:/overrides'
+    depends_on:
+      - front
+
+  smtp:
+    image: ${DOCKER_ORG:-mailu}/${DOCKER_PREFIX:-}postfix:${MAILU_VERSION:-1.7}
+    restart: always
+    env_file: mailu.env
+    volumes:
+      - '/data/docker/volumes/mailu/overrides:/overrides'
+    depends_on:
+      - front
+      # - resolver
+    # dns:
+    #   - 192.168.203.254
+
+  antispam:
+    image: ${DOCKER_ORG:-mailu}/${DOCKER_PREFIX:-}rspamd:${MAILU_VERSION:-1.7}
+    restart: always
+    env_file: mailu.env
+    volumes:
+      - '/data/docker/volumes/mailu/filter:/var/lib/rspamd'
+      - '/data/docker/volumes/mailu/dkim:/dkim'
+      - '/data/docker/volumes/mailu/overrides/rspamd:/etc/rspamd/override.d'
+    depends_on:
+      - front
+      # - resolver
+    # dns:
+    #   - 192.168.203.254
+
+  # Optional services
+  antivirus:
+    image: ${DOCKER_ORG:-mailu}/${DOCKER_PREFIX:-}clamav:${MAILU_VERSION:-1.7}
+    restart: always
+    env_file: mailu.env
+    volumes:
+      - '/data/docker/volumes/mailu/filter:/data'
+    # depends_on:
+    #   - resolver
+    # dns:
+    #   - 192.168.203.254
+
+  # webdav:
+  #   image: ${DOCKER_ORG:-mailu}/${DOCKER_PREFIX:-}radicale:${MAILU_VERSION:-1.7}
+  #   restart: always
+  #   env_file: mailu.env
+  #   volumes:
+  #     - '/data/docker/volumes/mailu/dav:/data'
+
+  # fetchmail:
+  #   image: ${DOCKER_ORG:-mailu}/${DOCKER_PREFIX:-}fetchmail:${MAILU_VERSION:-1.7}
+  #   restart: always
+  #   env_file: mailu.env
+  #   depends_on:
+  #     - resolver
+  #   dns:
+  #     - 192.168.203.254
+
+  webmail:
+    image: ${DOCKER_ORG:-mailu}/${DOCKER_PREFIX:-}rainloop:${MAILU_VERSION:-1.7}
+    restart: always
+    env_file: mailu.env
+    volumes:
+      - '/data/docker/volumes/mailu/webmail:/data'
+    depends_on:
+      - imap
+
+  database:
+    image: ${DOCKER_ORG:-mailu}/${DOCKER_PREFIX:-}postgresql:${MAILU_VERSION:-1.7}
+    restart: always
+    env_file: mailu.env
+    volumes:
+      - '/data/docker/volumes/mailu/data/psql_db:/data'
+      - '/data/docker/volumes/mailu/data/psql_backup:/backup'
+
+networks:
+  traefik-public:
+    name: traefik-public
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.203.0/24
+  # default:
+  #   driver: bridge
+  #   ipam:
+  #     driver: default
+  #     config:
+  #       - subnet: 192.168.203.0/24
