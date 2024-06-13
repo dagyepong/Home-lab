@@ -43,6 +43,8 @@ services:
       - --entryPoints.web.http.redirections.entryPoint.to=websecure
       - --entryPoints.web.http.redirections.entryPoint.scheme=https
       - --entryPoints.websecure.address=:443
+      - --metrics.prometheus=true
+      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
       - --entrypoints.websecure.http.tls.certresolver=myresolver
       - --entryPoints.tcp-plain.address=:9000
       - --certificatesresolvers.myresolver.acme.tlschallenge=true
