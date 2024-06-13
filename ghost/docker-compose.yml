@@ -72,7 +72,7 @@ services:
     container_name: db_backup
     image: tiredofit/db-backup
     depends_on:
-      - mysql
+      - mysql:8
     volumes:
       - ../backups/ghost_db/:/backup
       #- ./post-script.sh:/assets/custom-scripts/post-script.sh
