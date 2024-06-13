@@ -13,7 +13,7 @@ services:
       test: "/usr/bin/nc localhost 2368 || exit 1"
       interval: 30s
       timeout: 10s
-      retries: 5        
+      retries: 5
     expose:
       - 2368
     ports:
@@ -46,7 +46,6 @@ services:
       - traefik.http.routers.myghost.middlewares=mywwwredirect
       - traefik.http.routers.myghost.middlewares=myauth
       - traefik.http.routers.myghost.service=api@internal
-
 
   database:
     image: mysql:8
