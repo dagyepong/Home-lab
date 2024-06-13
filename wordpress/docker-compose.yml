@@ -26,6 +26,30 @@ services:
     volumes:
       - db:/var/lib/mysql
 
+  db_backup:
+    container_name: db_backup
+    image: tiredofit/db-backup
+    depends_on:
+      - mysql
+    volumes:
+      - ../backups/danielpetrica_com/ghost_db/:/backup
+      #- ./post-script.sh:/assets/custom-scripts/post-script.sh
+    environment:
+      # - DEBUG_MODE=TRUE
+      - DB_TYPE=mysql
+      - DB_HOST=ghost_mysql
+      - DB_NAME=${DATABASE__CONNECTION__DATABASE}
+      - DB_USER=root
+      - DB_PASS=${DATABASE__CONNECTION__PASSWORD}
+      - DB_DUMP_FREQ=720          # backup 12 hours 12 * 60
+      # - DB_DUMP_BEGIN=0000      # backup starts immediately
+      - DB_CLEANUP_TIME=72000     # clean backups that are older than 72000 minutes
+      - CHECKSUM=SHA1
+      - COMPRESSION=GZ
+      - SPLIT_DB=true
+      - CONTAINER_ENABLE_MONITORING=FALSE
+    restart: always
+
   wpcli:
     image: wordpress:cli
     environment:
@@ -46,3 +70,8 @@ services:
 
 volumes:
   db:
+
+networks:
+  default:
+    external: true
+    name: proxy
