@@ -79,9 +79,9 @@ services:
       # - DEBUG_MODE=TRUE
       - DB_TYPE=mysql
       - DB_HOST=ghost_mysql
-      - DB_NAME=${DATABASE__CONNECTION__DATABASE}
-      - DB_USER=root
-      - DB_PASS=${DATABASE__CONNECTION__PASSWORD}
+      - DB_NAME=${DB_NAME:-ghost}
+      - DB_USER=${DB_USER:-ghost}
+      - DB_PASS=${DB_USER_PASS:-DatabasePassword1234}
       - DB_DUMP_FREQ=720          # backup 12 hours 12 * 60
       # - DB_DUMP_BEGIN=0000      # backup starts immediately
       - DB_CLEANUP_TIME=72000     # clean backups that are older than 72000 minutes
