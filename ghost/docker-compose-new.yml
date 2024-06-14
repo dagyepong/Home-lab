@@ -46,7 +46,7 @@ services:
       url: https://tech.nanaoware.online
       database__client: mysql
       database__connection__host: mariadb
-      database__connection__database: ${DATBASE_NAME}
+      database__connection__database: ${DATABASE_NAME}
       database__connection__user: ${DATABASE_USER}
       database__connection__password: ${MARIADB_PASSWORD}
     networks:
