@@ -21,7 +21,7 @@ services:
   ghost:
     image: ghost:5-alpine
     depends_on:
-      database:
+      mariadb:
         condition: service_healthy
     healthcheck:
       test: "/usr/bin/nc localhost 2368 || exit 1"
