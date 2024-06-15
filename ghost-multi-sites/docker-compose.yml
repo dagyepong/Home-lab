@@ -1,0 +1,130 @@
+version: '3.1'
+
+services:
+  mariadb:
+    image: ${MARIADB_IMAGE_TAG}
+    #container_name: my_mariadb
+    expose:
+      - 3306
+    volumes:
+      - data:/var/lib/mysql
+      # If there is not scheme, restore the last created backup (if exists)
+      - ${VOLUME_PATH}/backup/latest.${DATABASE_NAME}.sql.gz:/docker-entrypoint-initdb.d/database.sql.gz
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      - MYSQL_PASSWORD=${MARIADB_PASSWORD}
+      - MYSQL_DATABASE=${DATABASE_NAME}
+      - MYSQL_USER=${DATABASE_USER}
+    networks:
+      - ghost-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+  ghost1:
+    image: ghost:5-alpine
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    healthcheck:
+      test: "/usr/bin/nc localhost 2368 || exit 1"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    expose:
+      - 2368
+    ports:
+      - 2368:2368
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/ghost/content:/var/lib/ghost/content
+    environment:
+      NODE_ENV: production
+      url: https://linuxpad.nanaoware.online
+      database__client: mysql
+      database__connection__host: mariadb
+      database__connection__database: ${DATABASE_NAME}
+      database__connection__user: ${DATABASE_USER}
+      database__connection__password: ${MARIADB_PASSWORD}
+    networks:
+      - ghost-network
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ghost.rule=Host(`linuxpad.nanaoware.online`) || Host(`www.linuxpad.nanaoware.online`)
+      - traefik.http.services.ghost.loadbalancer.server.port=2368
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.myghost.middlewares=mywwwredirect
+      - traefik.http.routers.myghost.middlewares=myauth
+      - traefik.http.routers.myghost.service=api@internal
+
+  ghost2:
+    image: ghost:5-alpine
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    healthcheck:
+      test: "/usr/bin/nc localhost 2368 || exit 1"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    expose:
+      - 2368
+    ports:
+      - 2368:2368
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/ghost/content:/var/lib/ghost/content
+    environment:
+      NODE_ENV: production
+      url: https://tech.nanaoware.online
+      database__client: mysql
+      database__connection__host: mariadb
+      database__connection__database: ${DATABASE_NAME}
+      database__connection__user: ${DATABASE_USER}
+      database__connection__password: ${MARIADB_PASSWORD}
+    networks:
+      - ghost-network
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ghost.rule=Host(`tech.nanaoware.online`) || Host(`www.tech.nanaoware.online`)
+      - traefik.http.services.ghost.loadbalancer.server.port=2368
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.myghost.middlewares=mywwwredirect
+      - traefik.http.routers.myghost.middlewares=myauth
+      - traefik.http.routers.myghost.service=api@internal
+
+  mysql-cron-backup:
+    image: fradelg/mysql-cron-backup
+    depends_on:
+      - mariadb
+      - ghost1
+      - ghost2
+    volumes:
+      - ${VOLUME_PATH}/backup:/backup
+    environment:
+      - MYSQL_HOST=mariadb
+      - MYSQL_USER=root
+      - MYSQL_PASS=${MARIADB_PASSWORD}
+      - MAX_BACKUPS=15
+      - INIT_BACKUP=0
+      # Every day at 03:00
+      - CRON_TIME=0 3 * * *
+      # Make it small
+      - GZIP_LEVEL=9
+      # As of MySQL 8.0.21 this is needed
+      - MYSQLDUMP_OPTS=--no-tablespaces
+    restart: unless-stopped
+
+volumes:
+  data:
+networks:
+  proxy:
+    external: true
+  ghost-network:
+    external: true
