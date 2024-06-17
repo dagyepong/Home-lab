@@ -13,7 +13,7 @@ touch ./config/pma_php.ini
 touch ./config/pma_config.php
 ```
 
-### ** Alter PhP Variables:**
+### **Alter PhP Variables:**
 
 ```bash
 
