@@ -91,6 +91,5 @@ volumes:
   db:
 
 networks:
-  default:
+  proxy:
     external: true
-    name: proxy
