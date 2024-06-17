@@ -1,81 +1,64 @@
-version: '3.7'
+---
+version: "3.8"
 
 services:
-  postgres:
-    image: postgres:16.2
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+  database:
+    image: postgres:14
+    container_name: database
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    # add multiple schemas
+      # POSTGRES_MULTIPLE_DATABASES: ${DB_DATABASE},${KEYCLOAK_DATABASE}
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      # POSTGRES_KEYCLOAK_USER: ${KEYCLOAK_USER}
+      # POSTGRES_KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
+      # POSTGRES_DB2: ${KEYCLOAK_DATABASE}
+    hostname: local
+    restart: always
+    volumes:
+      - ./db-data:/var/lib/postgresql/data/
+      - ./sql:/docker-entrypoint-initdb.d/:ro
+      # - ./sql/access_attempt.sql:/docker-entrypoint-initdb.d/A.sql
+      # - ./sql/bceid.sql:/docker-entrypoint-initdb.d/B.sql
+      # - ./sql/lookup_activitytype.sql:/docker-entrypoint-initdb.d/C.sql
+      # - ./sql/lookup_gender_pronoun.sql:/docker-entrypoint-initdb.d/D.sql
+      # - ./sql/client.sql:/docker-entrypoint-initdb.d/E.sql
+    ports: 
+      - "5439:5432"
     networks:
-      - keycloak_network
+      - db-keycloak
 
   keycloak:
-    image: quay.io/keycloak/keycloak:23.0.6
-    command: start
+    image: quay.io/keycloak/keycloak:21.0.1
+    command: ["start-dev"]
+    container_name: keycloak
     environment:
-      KC_HOSTNAME: localhost
-      KC_HOSTNAME_PORT: 8088
-      KC_HOSTNAME_STRICT_BACKCHANNEL: false
-      KC_HTTP_ENABLED: true
-      KC_HOSTNAME_STRICT_HTTPS: false
-      KC_HEALTH_ENABLED: true
+      DB_VENDOR: ${DB_VENDOR}
+      DB_ADDR: database
+      DB_PORT: 5432
+      DB_SCHEMA: public
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      KEYCLOAK_USER: ${KEYCLOAK_USER}
+      KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres/${POSTGRES_DB}
-      KC_DB_USERNAME: ${POSTGRES_USER}
-      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KC_PROXY_MODE: edge
+      KC_METRICS_ENABLED: true
+      KC_HTTP_ENABLED: true
     ports:
-      - 8088:8080
+      - "8089:8080"
+      - "8443:8443"
+    depends_on:
+      - database
     restart: always
-    depends_on:
-      - postgres
+    links: 
+      - database
     networks:
-      - keycloak_network
-      - proxy
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.keycloak.rule=Host(`key.nanaoware.online`) || Host(`www.key.nanaoware.online`)
-      - traefik.http.services.keycloak.loadbalancer.server.port=2368
-      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.mykeycloak.middlewares=mywwwredirect
-      - traefik.http.routers.mykeycloak.middlewares=myauth
-      - traefik.http.routers.mykeycloak.service=api@internal
-
-    
-  
-  mysql-cron-backup:
-    image: fradelg/mysql-cron-backup
-    depends_on:
-      - keycloak
-      - postgres
-    volumes:
-      - /backup:/backup
-    environment:
-      - MYSQL_HOST=postgres
-      - MYSQL_USER=${POSTGRES_USER}
-      - MYSQL_PASS=${POSTGRES_PASSWORD}
-      - MAX_BACKUPS=15
-      - INIT_BACKUP=0
-      # Every day at 03:00
-      - CRON_TIME=0 3 * * *
-      # Make it small
-      - GZIP_LEVEL=9
-      # As of MySQL 8.0.21 this is needed
-      - MYSQLDUMP_OPTS=--no-tablespaces
-    restart: unless-stopped
-
-volumes:
-  postgres_data:
-    driver: local
-  backup:
+      - db-keycloak
 
 networks:
-  keycloak_network:
-    external: true
-  proxy:
-    external: true
+  db-keycloak:
+    driver: bridge
