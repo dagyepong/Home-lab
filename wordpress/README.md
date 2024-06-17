@@ -51,3 +51,20 @@ define('WP_REDIS_PORT', '6379');
 
 docker compose up
 ```
+
+### **Verify Backups:**
+
+In the backup directory where you have the stack or docker compose file you should have a backup directory with database backups you should check and see if they were generated:
+
+**Example:**
+
+```py
+/opt/stacks/wordpress# cd backups/
+/opt/stacks/wordpress/backups# ls -ltr
+total 16
+-rw------- 1 10000 10000 495 Feb 21 09:26 mysql_wordpress_wp-db_20240221-092619.sql.gz
+-rw------- 1 10000 10000  87 Feb 21 09:26 mysql_wordpress_wp-db_20240221-092619.sql.gz.sha1
+-rw------- 1 10000 10000 495 Feb 21 09:32 mysql_wordpress_wp-db_20240221-093228.sql.gz
+-rw------- 1 10000 10000  87 Feb 21 09:32 mysql_wordpress_wp-db_20240221-093228.sql.gz.sha1
+lrwxrwxrwx 1 10000 10000  44 Feb 21 09:32 latest-mysql_wordpress_wp-db -> mysql_wordpress_wp-db_20240221-093228.sql.gz
+```
