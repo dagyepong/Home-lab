@@ -17,7 +17,7 @@ services:
     command: start
     environment:
       KC_HOSTNAME: localhost
-      KC_HOSTNAME_PORT: 8080
+      KC_HOSTNAME_PORT: 8088
       KC_HOSTNAME_STRICT_BACKCHANNEL: false
       KC_HTTP_ENABLED: true
       KC_HOSTNAME_STRICT_HTTPS: false
@@ -29,12 +29,45 @@ services:
       KC_DB_USERNAME: ${POSTGRES_USER}
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - 8080:8080
+      - 8088:8080
     restart: always
     depends_on:
       - postgres
     networks:
       - keycloak_network
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.keycloak.rule=Host(`key.nanaoware.online`) || Host(`www.key.nanaoware.online`)
+      - traefik.http.services.keycloak.loadbalancer.server.port=2368
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.mykeycloak.middlewares=mywwwredirect
+      - traefik.http.routers.mykeycloak.middlewares=myauth
+      - traefik.http.routers.mykeycloak.service=api@internal
+
+    
+  
+  mysql-cron-backup:
+    image: fradelg/mysql-cron-backup
+    depends_on:
+      - keycloak
+      - postgres
+    volumes:
+      - postgres_data/backup:/backup
+    environment:
+      - MYSQL_HOST=postgres
+      - MYSQL_USER=${POSTGRES_USER}
+      - MYSQL_PASS=${POSTGRES_PASSWORD}
+      - MAX_BACKUPS=15
+      - INIT_BACKUP=0
+      # Every day at 03:00
+      - CRON_TIME=0 3 * * *
+      # Make it small
+      - GZIP_LEVEL=9
+      # As of MySQL 8.0.21 this is needed
+      - MYSQLDUMP_OPTS=--no-tablespaces
+    restart: unless-stopped
 
 volumes:
   postgres_data:
@@ -42,4 +75,6 @@ volumes:
 
 networks:
   keycloak_network:
-    driver: bridge
+    external: true
+  proxy:
+    external: true
