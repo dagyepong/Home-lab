@@ -4,7 +4,7 @@
 
 mkdir -p /opt/stacks/wordpress
 
-cd /opt/staks/wordpress
+cd /opt/stacks/wordpress
 ## make config directory##
 mkdir config
 ## create empy files##
