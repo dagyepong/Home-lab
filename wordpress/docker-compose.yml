@@ -13,8 +13,21 @@ services:
       WORDPRESS_DB_USER: exampleuser
       WORDPRESS_DB_PASSWORD: examplepass
       WORDPRESS_DB_NAME: exampledb
+      url: https://tech.nanaoware.online
     volumes:
       - ./wp:/var/www/html/
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.wordpress.rule=Host(`tech.nanaoware.online`) || Host(`www.tech.nanaoware.online`)
+      - traefik.http.services.wordpress.loadbalancer.server.port=2368
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.mywordpress.middlewares=mywwwredirect
+      - traefik.http.routers.mywordpress.middlewares=myauth
+      - traefik.http.routers.mywordpress.service=api@internal
+
 
   db:
     image: mysql:5.7
@@ -33,17 +46,17 @@ services:
       - wordpress
       - db
     volumes:
-      - ../backups/danielpetrica_com/ghost_db/:/backup
+      - ../backups/:/backup
       #- ./post-script.sh:/assets/custom-scripts/post-script.sh
     environment:
       # - DEBUG_MODE=TRUE
       - DB_TYPE=mysql
-      - DB_HOST=ghost_mysql
-      - DB_NAME=${DATABASE__CONNECTION__DATABASE}
-      - DB_USER=root
-      - DB_PASS=${DATABASE__CONNECTION__PASSWORD}
+      - DB_HOST=db
+      - DB_NAME=exampledb
+      - DB_USER=exampleuser
+      - DB_PASS=examplepass
       - DB_DUMP_FREQ=720          # backup 12 hours 12 * 60
-      # - DB_DUMP_BEGIN=0000      # backup starts immediately
+      - DB_DUMP_BEGIN=0000      # backup starts immediately
       - DB_CLEANUP_TIME=72000     # clean backups that are older than 72000 minutes
       - CHECKSUM=SHA1
       - COMPRESSION=GZ
