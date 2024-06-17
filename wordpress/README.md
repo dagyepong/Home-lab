@@ -4,7 +4,7 @@
 
 mkdir -p /opt/stacks/wordpress
 
-cd /opt/staks/wordpress
+cd /opt/stacks/wordpress
 ## make config directory##
 mkdir config
 ## create empy files##
@@ -13,7 +13,7 @@ touch ./config/pma_php.ini
 touch ./config/pma_config.php
 ```
 
-### ** Alter PhP Variables:**
+### **Alter PhP Variables:**
 
 ```bash
 
@@ -51,6 +51,7 @@ define('WP_REDIS_PORT', '6379');
 
 docker compose up
 ```
+<<<<<<< HEAD
 
 ### **Verify Backups:**
 
@@ -68,3 +69,5 @@ total 16
 -rw------- 1 10000 10000  87 Feb 21 09:32 mysql_wordpress_wp-db_20240221-093228.sql.gz.sha1
 lrwxrwxrwx 1 10000 10000  44 Feb 21 09:32 latest-mysql_wordpress_wp-db -> mysql_wordpress_wp-db_20240221-093228.sql.gz
 ```
+=======
+>>>>>>> f7fdd4b0c53a999b3d97671f43e0440a7252fb61
