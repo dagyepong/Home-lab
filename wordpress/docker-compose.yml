@@ -14,6 +14,11 @@ services:
       WORDPRESS_DB_PASSWORD: examplepass
       WORDPRESS_DB_NAME: exampledb
       url: https://tech.nanaoware.online
+      database__client: mysql
+      database__connection__host: mariadb
+      database__connection__database: exampledb
+      database__connection__user: exampleuser
+      database__connection__password: examplepass
     volumes:
       - ./wp:/var/www/html/
     networks:
