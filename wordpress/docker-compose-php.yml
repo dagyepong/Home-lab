@@ -31,6 +31,7 @@ services:
       - 5011:80
     volumes:
       - ./config/pma_php.ini:/usr/local/etc/php/conf.d/conf.ini
+      - ./wordpress.ini:/usr/local/etc/php/conf.d/wordpress.ini
       - ./config/pma_config.php:/etc/phpmyadmin/config.user.inc.php
     restart: unless-stopped
     environment:

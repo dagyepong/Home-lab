@@ -7,6 +7,7 @@ services:
       - 5010:80
     volumes:
       - ./config/wp_php.ini:/usr/local/etc/php/conf.d/conf.ini
+      - ./wordpress.ini:/usr/local/etc/php/conf.d/wordpress.ini 
       - ./wp-app:/var/www/html # Full wordpress project
     environment:
       WORDPRESS_DB_HOST: wp-db:3306
