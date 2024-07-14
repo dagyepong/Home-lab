@@ -10,7 +10,7 @@ services:
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - certs:/etc/nginx/certs:rw
-      - vhost.d:/etc/nginx/vhost.d
+      - vhost.d/nginx.conf:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
     labels:
       - com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy
@@ -28,8 +28,8 @@ services:
     environment:
       - NGINX_PROXY_CONTAINER=nginx-proxy
       - TZ=America/Chicago
-      - URL=test.nanaoware.online
-      - SUBDOMAINS=www,test
+      - URL=nanaoware.online
+      - SUBDOMAINS=www
       - VALIDATION=http
  
   mariadb:
@@ -50,7 +50,7 @@ services:
       - nginx-proxy
       - mariadb
     environment:
-      - url=https://test.nanaoware.online
+      - url=https://nanaoware.online
       - VIRTUAL_HOST=nanaoware.online
       - LETSENCRYPT_HOST=nanaoware.online
       - LETSENCRYPT_EMAIL=owarenana06@gmail.com
