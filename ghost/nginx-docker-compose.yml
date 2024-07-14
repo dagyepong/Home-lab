@@ -27,6 +27,10 @@ services:
       - html:/usr/share/nginx/html
     environment:
       - NGINX_PROXY_CONTAINER=nginx-proxy
+      - TZ=America/Chicago
+      - URL=tech.nanaoware.online
+      - SUBDOMAINS=www
+      - VALIDATION=http
  
   mariadb:
     image: mariadb:latest
