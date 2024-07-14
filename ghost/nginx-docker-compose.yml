@@ -28,8 +28,8 @@ services:
     environment:
       - NGINX_PROXY_CONTAINER=nginx-proxy
       - TZ=America/Chicago
-      - URL=tech.nanaoware.online
-      - SUBDOMAINS=www
+      - URL=test.nanaoware.online
+      - SUBDOMAINS=www,test
       - VALIDATION=http
  
   mariadb:
@@ -50,7 +50,7 @@ services:
       - nginx-proxy
       - mariadb
     environment:
-      - url=https://tech.nanaoware.online
+      - url=https://test.nanaoware.online
       - VIRTUAL_HOST=nanaoware.online
       - LETSENCRYPT_HOST=nanaoware.online
       - LETSENCRYPT_EMAIL=owarenana06@gmail.com
