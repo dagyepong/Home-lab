@@ -15,7 +15,7 @@ services:
       database__connection__database: ghost
     volumes:
         - ./content:/var/lib/ghost/content
-        - ./config.production.json:/var/lib/ghost/config.production.json
+        - ./prod/config.json:/var/lib/ghost/config.json
         
   db:
     image: mysql:8.0
