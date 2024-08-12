@@ -15,7 +15,7 @@ services:
       - OG_SITE_NAME=Dennis Agyepong
       - OG_TITLE=Dennis Agyepong
       - OG_DESCRIPTION=The home of Dennis Agyepong
-      - OG_URL=https://linuxpad.nanaoware.online
+      - OG_URL=https://linuxpad.blog
       - OG_IMAGE=https://pfp.nostr.build/663ce288381c6a1bbf9ee09cccdf8efcc5025ded44e22e50a041543cd4f8f82c.jpg
       - OG_IMAGE_WIDTH=400
       - OG_IMAGE_HEIGHT=400
