@@ -2,6 +2,56 @@
 
 This is the updated docker-compose repo of all the media, home, and web server apps described on SmartHomeBeginner.com. 
 
+
+```bash
+
+mkdir -p Docker/appdata
+cd Docker
+
+## create .env file & give permission
+touch /home/nana/docker/.env
+sudo chown root:root /home/anand/docker/.env
+sudo chmod 600 /home/nana/docker/.env
+## create the ultimate compose file
+
+touch /home/nana/docker/docker-compose-udms.yml
+
+mkdir -p compose/udms
+mkdir logs
+mkdir scripts
+mkdir secrets
+
+## set permissions
+sudo chown root:root /home/nana/docker/secrets
+sudo chmod 600 /home/nana/docker/secrets
+
+mkdir shared
+```
+
+
+## **Docker Root Folder Permissions:**
+
+Assuming that you have created the files and folders listed above, let us set the right permissions for them. We will need acl for this. If it is not installed, install it using:
+
+1
+```bash
+sudo apt install acl
+```
+Next, set the permission for /home/anand/docker folder (anand being the username of the user) as follows:
+
+```bash
+sudo chmod 775 /home/nana/docker
+sudo setfacl -Rdm u:nana:rwx /home/nana/docker
+sudo setfacl -Rm u:nana:rwx /home/nana/docker
+sudo setfacl -Rdm g:docker:rwx /home/nana/docker
+sudo setfacl -Rm g:docker:rwx /home/nana/docker
+```
+
+You may also have to set acls on your media folder or the DATADIR path you will define in the later steps or apps such a sonarr, radarr, etc. may through permissions error.
+The above commands provide access to the contents of the docker root folder (both existing and new stuff) to the docker group. Some may disagree with the liberal permissions above but again this is for home use and it is restrictive enough.
+
+**Note:** After doing the above, you will notice a "+" at the end of permissions (e.g. drwxrwxr-x+) for docker root folder and its contents (as in the picture above). This indicates that ACL is set for the folder/file.
+
 ### **Prepare Traefik 3 Folders and Files:**
 
 Finally, we need to create new folders for Traefik and ACME in the docker appdata folder (/home/user/docker/appdata) described previously:
