@@ -37,7 +37,7 @@ Assuming that you have created the files and folders listed above, let us set th
 ```bash
 sudo apt install acl
 ```
-Next, set the permission for /home/anand/docker folder (anand being the username of the user) as follows:
+Next, set the permission for /home/nana/docker folder (anand being the username of the user) as follows:
 
 ```bash
 sudo chmod 775 /home/nana/docker
