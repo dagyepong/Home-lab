@@ -101,3 +101,19 @@ touch access.log
 
 sudo docker compose -f /home/nana/docker/docker-compose-udms.yml up -d
 ```
+
+
+### **Create Basic HTTP Authentication Secret:**
+
+Basic HTTP authentication provides a layer of security. You will have to provide a username and password before you can access the app that is behind Traefik.
+
+Basic HTTP Authentication is a good start, but for a more secure authentication layer, consider switching to Google OAuth or Authelia later, which support multi-factor authentication.
+In my previous guides, I created this as .htpasswd file in the shared folder. But we are going to go secure-by-design route. So, in this updated version of the guide, I am going to use Docker Secrets.
+
+Create the Basic Auth credentials secret file using the following command:
+
+```py
+
+sudo htpasswd -cBb /home/anand/docker/secrets/basic_auth_credentials HTTP_USERNAME HTTP_PASSWORD
+sudo chown root:root /home/anand/docker/secrets/basic_aut
+```
