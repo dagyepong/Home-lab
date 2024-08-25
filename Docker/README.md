@@ -35,8 +35,8 @@ Similarly, we are going to create log files for Traefik to write logs to. I stor
 1
 2
 ```bash
-mkdir /home/anand/docker/logs/udms
-mkdir /home/anand/docker/logs/udms/traefik
+mkdir /home/nana/docker/logs/udms
+mkdir /home/nana/docker/logs/udms/traefik
 ```
 Next, from within the logs/udms/traefik folder, let us create empty log files:
 
