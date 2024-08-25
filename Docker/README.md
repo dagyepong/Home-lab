@@ -96,3 +96,8 @@ Next, from within the logs/udms/traefik folder, let us create empty log files:
 touch traefik.log
 touch access.log
 ```
+
+```py
+
+sudo docker compose -f /home/nana/docker/docker-compose-udms.yml up -d
+```
