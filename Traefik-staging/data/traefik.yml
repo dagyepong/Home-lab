@@ -10,6 +10,8 @@ entryPoints:
         - 192.168.12.1/24
         - 172.16.0.0/12
   https:
+    http3:
+      advertisedPort: 443
     address: ":443"
     http:
       tls: {}
