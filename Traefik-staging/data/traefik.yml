@@ -21,7 +21,8 @@ entryPoints:
 
 providers:
   docker:
-    endpoint: "unix:///var/run/docker.sock"
+    #endpoint: "unix:///var/run/docker.sock"
+    endpoint: "tcp://dockerproxy-traefik:2375"
     exposedByDefault: false
     defaultRule: "Host(`{{ index .Labels \"com.docker.compose.service\"}}.example.com`)"
     network: proxy
