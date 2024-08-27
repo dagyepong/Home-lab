@@ -1,0 +1,36 @@
+services:
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    restart: always
+    networks:
+      - proxy
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./data/traefik.yml:/traefik.yml:ro
+      - ./data/configs:/configs:ro
+      - ./data/acme.json:/acme.json:rw
+      - ./data/logs:/logs:rw
+    environment:
+      - TZ=Europe/London
+      - CF_DNS_API_TOKEN=${CFAPI}
+    read_only: true
+    security_opt:
+      - no-new-privileges=true
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.traefik-https.entrypoints=https
+      - traefik.http.routers.traefik-https.rule=Host(`dashboard.nanaoware.online`)
+      - traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIKADMIN}
+      - traefik.http.routers.traefik-https.middlewares=traefik-auth
+      - traefik.http.routers.traefik-https.service=api@internal
+      - traefik.http.routers.traefik-https.tls.certresolver=letsencrypt
+      - traefik.http.routers.traefik-https.tls.domains[0].main=nanaoware.online
+      - traefik.http.routers.traefik-https.tls.domains[0].sans=*.nanaoware.online
+
+networks:
+  proxy:
+    external: {}
