@@ -52,7 +52,7 @@ volumes:
     depends_on:
       - dockerproxy
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+     # - /var/run/docker.sock:/var/run/docker.sock:ro
       - letsencrypt:/letsencrypt
       - /var/log:/var/log
     command:
