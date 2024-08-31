@@ -95,7 +95,7 @@ services:
 networks:
   proxy:
     name: proxy
-    external: true
+    external: true #do not expose external for security risk
   socket:
     name: socket
 
