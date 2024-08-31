@@ -116,7 +116,7 @@ volumes:
 networks:
   proxy:
     external: true           # this network has to be created once before starting:
-    name: traefik-servicenet # docker network create traefik-servicenet
+    name: proxy # docker network create proxy
   docker-proxynet:
     driver: bridge
     internal: true
