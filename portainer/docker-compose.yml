@@ -1,4 +1,4 @@
-version: '3'
+
 
 services:
   portainer:
@@ -7,16 +7,15 @@ services:
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      #- /var/run/docker.sock:/var/run/docker.sock:ro
       #- portainer_data:/data
+    # command: -H unix:///var/run/docker.sock # # Use Docker Socket Proxy instead for improved security
+    command: -H tcp://socket-proxy:2375
     ports:
       - 9443:9443
-    expose:
-      - 9443
-      - 9000
-      - 8000
     networks:
       - proxy
+      - socket
     labels:
       - traefik.enable=true
       - traefik.http.routers.portainer.rule=Host(`portainer.nanaoware.online`) || Host(`www.portainer.nanaoware.online`)
@@ -29,4 +28,7 @@ services:
 
 networks:
   proxy:
-    external: true
+    name: proxy
+    external: true #do not expose external for security risk
+  socket:
+    name: socket

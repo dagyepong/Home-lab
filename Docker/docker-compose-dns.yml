@@ -14,23 +14,14 @@
 # - Docker Compose version v2.21.0
 
 ########################### NETWORKS
-# You may customize the network subnets (192.168.x.0/24) below as you please.
+# You may customize the network below as you please.
 
 networks:
-  default:
-    driver: bridge
-  socket_proxy:
-    name: socket_proxy
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 192.168.91.0/24
-  t2_proxy:
-    name: t2_proxy
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 192.168.90.0/24
+  proxy:
+    name: proxy
+    external: true #do not expose external for security risk
+  socket:
+    name: socket
 
 ########################### SECRETS
 secrets:
