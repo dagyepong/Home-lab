@@ -1,0 +1,122 @@
+services:
+  dockerproxy:
+    image: wollomatic/socket-proxy:1 # see https://github.com/wollomatic/socket-proxy for reference
+    # this image replaced https://github.com/Tecnativa/docker-socket-proxy as the socket proxy
+    # for an example with the tecnativa proxy refer tags before 2.10
+    command:
+      # with this configuration socket-proxy acts similar to the tecnativa proxy. For additional hardening
+      # please refer to the documentation of the wollomatic/socket-proxy image
+      - '-loglevel=info' # set to debug for far more logging
+      - '-allowfrom=traefik'
+      - '-listenip=0.0.0.0'
+      - '-allowGET=/v1\..{1,2}/(version|containers/.*|events.*)' # this regexp allows readonly access only for requests that traefik needs
+      - '-shutdowngracetime=5'
+      - '-watchdoginterval=600'
+      - '-stoponwatchdog'
+    restart: unless-stopped
+    read_only: true
+    mem_limit: 64M
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges
+    #user: 65534:<<docker-gid>> # replace <<docker-gid>> with the docker gid on your host system
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - docker-proxynet
+
+
+volumes:
+  letsencrypt:
+    name: letsencrypt
+
+  traefik:
+    image: traefik:3.0
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
+      - target: 9000
+        published: 9000
+        protocol: tcp
+        mode: host
+    networks:
+      - proxy
+      - docker-proxynet
+    depends_on:
+      - dockerproxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - letsencrypt:/letsencrypt
+      - /var/log:/var/log
+    command:
+      - --api.dashboard=true
+      - --log.level=INFO
+      - --log.filepath=/var/log/traefik.log
+      - --accesslog=true
+      - --accesslog.filepath=/var/log/traefik-access.log
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+      - --entryPoints.web.address=:80
+      - --entryPoints.web.http.redirections.entryPoint.to=websecure
+      - --entryPoints.web.http.redirections.entryPoint.scheme=https
+      - --entryPoints.websecure.address=:443
+      - --metrics.prometheus=true
+      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
+      - --entrypoints.websecure.http.tls.certresolver=myresolver
+      - --entryPoints.tcp-plain.address=:9000
+      - --certificatesresolvers.myresolver.acme.tlschallenge=true
+      - --certificatesResolvers.myresolver.acme.email=owarenana06@gmail.com.com
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.mydashboard.entrypoints=websecure
+      - traefik.http.routers.mydashboard.rule=Host(`test.nanaoware.online`)
+      - traefik.http.routers.mydashboard.service=api@internal
+      - traefik.http.routers.mydashboard.middlewares=myauth
+      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+
+  whoami:
+    image: traefik/whoami:v1.9
+    networks:
+      - proxy
+      - docker-proxynet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.whoami.entrypoints=websecure
+      - traefik.http.routers.whoami.rule=Host(`whoami.nanaoware.online`)
+      - traefik.http.services.whoami.loadbalancer.server.port=80
+
+  tcpecho-le:
+    image: istio/tcp-echo-server:1.2
+    labels:
+      - traefik.enable=true
+      - traefik.tcp.routers.tcpecho-le.entrypoints=websecure
+      - traefik.tcp.routers.tcpecho-le.rule=HostSNI(`tcp.nanaoware.online`)
+      - traefik.tcp.routers.tcpecho-le.tls.certresolver=myresolver
+      - traefik.tcp.services.tcpecho-le.loadbalancer.server.port=9000
+
+  tcpecho-plain:
+    image: istio/tcp-echo-server:1.2
+    networks:
+      - proxy
+      - docker-proxynet
+    labels:
+      - traefik.enable=true
+      - traefik.tcp.routers.tcpecho-plain.entrypoints=tcp-plain
+      - traefik.tcp.routers.tcpecho-plain.rule=HostSNI(`*`)
+      - traefik.tcp.services.tcpecho-plain.loadbalancer.server.port=9000
+
+networks:
+  proxy:
+    external: true           # this network has to be created once before starting:
+    name: traefik-servicenet # docker network create traefik-servicenet
+  docker-proxynet:
+    driver: bridge
+    internal: true
