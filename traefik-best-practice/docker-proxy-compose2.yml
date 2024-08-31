@@ -58,6 +58,29 @@ services:
       - traefik.http.routers.mywhoami.rule=Host(`whoami.linuxpad.blog`) || PathPrefix(`/whoami`)
       - traefik.http.services.mywhoami.loadbalancer.server.port=80
 
+  tcpecho-le:
+    image: istio/tcp-echo-server:1.2
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.tcp.routers.tcpecho-le.entrypoints=websecure
+      - traefik.tcp.routers.tcpecho-le.rule=HostSNI(`tcp.linuxpad.blog`)
+      - traefik.tcp.routers.tcpecho-le.tls.certresolver=myresolver
+      - traefik.tcp.services.tcpecho-le.loadbalancer.server.port=9000
+
+  tcpecho-plain:
+    image: istio/tcp-echo-server:1.2
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.tcp.routers.tcpecho-plain.entrypoints=tcp-plain
+      - traefik.tcp.routers.tcpecho-plain.rule=HostSNI(`*`)
+      - traefik.tcp.services.tcpecho-plain.loadbalancer.server.port=9000
+
+
+
 networks:
   proxy:
     name: proxy
