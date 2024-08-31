@@ -1,41 +1,15 @@
+version: '3.9'
+
 services:
-  traefik-dockerproxy:
-    image: lscr.io/linuxserver/socket-proxy:latest
-    container_name: traefik-dockerproxy
-    environment:
-      - CONTAINERS=1
-      - POST=0
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    tmpfs:
-      - /run
-    networks:
-      - proxy
-    restart: always
-    security_opt:
-      - no-new-privileges=true
-    read_only: true
-
-
   traefik:
-    image: traefik:3.0
+    image: traefik:v3.0
     ports:
-      - target: 80
-        published: 80
-        protocol: tcp
-        mode: host
-      - target: 443
-        published: 443
-        protocol: tcp
-        mode: host
-      - target: 9000
-        published: 9000
-        protocol: tcp
-        mode: host
+      - 80:80
+      - 443:443
     networks:
+      - socket
       - proxy
     volumes:
-     # - /var/run/docker.sock:/var/run/docker.sock:ro
       - letsencrypt:/letsencrypt
       - /var/log:/var/log
     command:
@@ -44,61 +18,52 @@ services:
       - --log.filepath=/var/log/traefik.log
       - --accesslog=true
       - --accesslog.filepath=/var/log/traefik-access.log
-      - --providers.docker=true
+      - --providers.docker.endpoint=tcp://socketproxy:2375
       - --providers.docker.exposedByDefault=false
-      - --entryPoints.web.address=:80
-      - --entryPoints.web.http.redirections.entryPoint.to=websecure
-      - --entryPoints.web.http.redirections.entryPoint.scheme=https
-      - --entryPoints.websecure.address=:443
-      - --metrics.prometheus=true
-      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
+      - --providers.docker.network=proxy
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entryPoints.web.http.redirections.entrypoint.scheme=https
+      - --entrypoints.websecure.address=:443
       - --entrypoints.websecure.http.tls.certresolver=myresolver
-      - --entryPoints.tcp-plain.address=:9000
+      - --certificatesresolvers.myresolver.acme.email=mail@example.com
       - --certificatesresolvers.myresolver.acme.tlschallenge=true
-      - --certificatesResolvers.myresolver.acme.email=owarenana06@gmail.com.com
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
     labels:
       - traefik.enable=true
-      - traefik.http.routers.mydashboard.entrypoints=websecure
-      - traefik.http.routers.mydashboard.rule=Host(`traefik.nanaoware.online`)
+      - traefik.http.routers.mydashboard.rule=Host(`traefik.linuxpad.blog`)
       - traefik.http.routers.mydashboard.service=api@internal
       - traefik.http.routers.mydashboard.middlewares=myauth
       - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
 
+  socketproxy:
+    image: tecnativa/docker-socket-proxy:edge
+    networks:
+      - socket
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - LOG_LEVEL=warning
+      - EVENTS=1
+      - PING=1
+      - VERSION=1
+      - CONTAINERS=1
+
   whoami:
-    image: traefik/whoami:v1.9
+    image: traefik/whoami:v1.10
     networks:
       - proxy
     labels:
       - traefik.enable=true
-      - traefik.http.routers.whoami.entrypoints=websecure
-      - traefik.http.routers.whoami.rule=Host(`whoami.nanaoware.online`)
-      - traefik.http.services.whoami.loadbalancer.server.port=80
-
-  tcpecho-le:
-    image: istio/tcp-echo-server:1.2
-    labels:
-      - traefik.enable=true
-      - traefik.tcp.routers.tcpecho-le.entrypoints=websecure
-      - traefik.tcp.routers.tcpecho-le.rule=HostSNI(`tcp.nanaoware.online`)
-      - traefik.tcp.routers.tcpecho-le.tls.certresolver=myresolver
-      - traefik.tcp.services.tcpecho-le.loadbalancer.server.port=9000
-
-  tcpecho-plain:
-    image: istio/tcp-echo-server:1.2
-    networks:
-      - proxy
-      - docker-proxynet
-    labels:
-      - traefik.enable=true
-      - traefik.tcp.routers.tcpecho-plain.entrypoints=tcp-plain
-      - traefik.tcp.routers.tcpecho-plain.rule=HostSNI(`*`)
-      - traefik.tcp.services.tcpecho-plain.loadbalancer.server.port=9000
+      - traefik.http.routers.mywhoami.rule=Host(`whoami.linuxpad.blog`) || PathPrefix(`/whoami`)
+      - traefik.http.services.mywhoami.loadbalancer.server.port=80
 
 networks:
   proxy:
-    external: true           # this network has to be created once before starting:
-    name: proxy # docker network create proxy
+    name: proxy
+    external: true
+  socket:
+    name: socket
 
 volumes:
   letsencrypt:
