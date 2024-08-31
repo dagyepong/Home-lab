@@ -1,30 +1,20 @@
 services:
-  dockerproxy:
-    image: wollomatic/socket-proxy:1 # see https://github.com/wollomatic/socket-proxy for reference
-    # this image replaced https://github.com/Tecnativa/docker-socket-proxy as the socket proxy
-    # for an example with the tecnativa proxy refer tags before 2.10
-    command:
-      # with this configuration socket-proxy acts similar to the tecnativa proxy. For additional hardening
-      # please refer to the documentation of the wollomatic/socket-proxy image
-      - '-loglevel=info' # set to debug for far more logging
-      - '-allowfrom=traefik'
-      - '-listenip=0.0.0.0'
-      - '-allowGET=/v1\..{1,2}/(version|containers/.*|events.*)' # this regexp allows readonly access only for requests that traefik needs
-      - '-shutdowngracetime=5'
-      - '-watchdoginterval=600'
-      - '-stoponwatchdog'
-    restart: unless-stopped
-    read_only: true
-    mem_limit: 64M
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges
-    #user: 65534:<<docker-gid>> # replace <<docker-gid>> with the docker gid on your host system
+  traefik-dockerproxy:
+    image: lscr.io/linuxserver/socket-proxy:latest
+    container_name: traefik-dockerproxy
+    environment:
+      - CONTAINERS=1
+      - POST=0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    tmpfs:
+      - /run
     networks:
-      - docker-proxynet
+      - proxy
+    restart: always
+    security_opt:
+      - no-new-privileges=true
+    read_only: true
 
 
   traefik:
@@ -44,9 +34,6 @@ services:
         mode: host
     networks:
       - proxy
-      - docker-proxynet
-    depends_on:
-      - dockerproxy
     volumes:
      # - /var/run/docker.sock:/var/run/docker.sock:ro
       - letsencrypt:/letsencrypt
@@ -82,7 +69,6 @@ services:
     image: traefik/whoami:v1.9
     networks:
       - proxy
-      - docker-proxynet
     labels:
       - traefik.enable=true
       - traefik.http.routers.whoami.entrypoints=websecure
@@ -113,6 +99,7 @@ networks:
   proxy:
     external: true           # this network has to be created once before starting:
     name: proxy # docker network create proxy
-  docker-proxynet:
-    driver: bridge
-    internal: true
+
+volumes:
+  letsencrypt:
+    name: letsencrypt
