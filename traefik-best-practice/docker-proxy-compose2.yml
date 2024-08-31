@@ -16,6 +16,7 @@ services:
       - --api.dashboard=true
       - --log.level=INFO
       - --log.filepath=/var/log/traefik.log
+      - --entryPoints.tcp-plain.address=:9000
       - --accesslog=true
       - --accesslog.filepath=/var/log/traefik-access.log
       - --providers.docker.endpoint=tcp://socketproxy:2375
