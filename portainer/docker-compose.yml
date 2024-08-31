@@ -19,7 +19,6 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.portainer.rule=Host(`portainer.nanaoware.online`) || Host(`www.portainer.nanaoware.online`)
-      - traefik.tcp.routers.portainer.rule=HostSNI(`portainer.nanaoware.online`)
       - traefik.http.services.portainer.loadbalancer.server.port=9443
       - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
       - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
