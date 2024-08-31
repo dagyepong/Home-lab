@@ -27,10 +27,6 @@ services:
       - docker-proxynet
 
 
-volumes:
-  letsencrypt:
-    name: letsencrypt
-
   traefik:
     image: traefik:3.0
     ports:
