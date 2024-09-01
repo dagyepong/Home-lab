@@ -10,14 +10,14 @@ services:
     # ports:
     #   - "5001:5001"
     networks:
-      - t3_proxy
-      - socket_proxy
+      - proxy
+      - socket
     volumes:
       - $DOCKERDIR/appdata/dockge:/app/data
       - $USERDIR/test:/opt/stacks
     environment:
       - DOCKGE_STACKS_DIR=/opt/stacks
-      - DOCKER_HOST=tcp://socket-proxy:2375
+      - DOCKER_HOST=tcp://socketproxy:2375
     labels:
       - "traefik.enable=true"
       # HTTP Routers

@@ -9,7 +9,7 @@ services:
     restart: unless-stopped
     profiles: ["apps", "all"]
     networks:
-      - socket_proxy
+      - socket
     volumes:
       # - /var/run/docker.sock:/var/run/docker.sock # Use Docker Socket Proxy instead for improved security
       - $DOCKERDIR/appdata/docker-gc/docker-gc-exclude:/etc/docker-gc-exclude
@@ -21,4 +21,4 @@ services:
       DRY_RUN: 0
       CLEAN_UP_VOLUMES: 1
       TZ: $TZ
-      DOCKER_HOST: tcp://socket-proxy:2375
+      DOCKER_HOST: tcp://socketproxy:2375

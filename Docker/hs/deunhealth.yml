@@ -8,9 +8,9 @@ services:
     restart: unless-stopped
     profiles: ["apps", "all"]    
     networks:
-      - socket_proxy
+      - socket
     environment:
       LOG_LEVEL: info
       HEALTH_SERVER_ADDRESS: 127.0.0.1:9999
       TZ: $TZ
-      DOCKER_HOST: tcp://socket-proxy:2375
+      DOCKER_HOST: tcp://socketproxy:2375
