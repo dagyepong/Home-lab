@@ -28,6 +28,10 @@ services:
       - traefik.http.routers.mydozzle.middlewares=mywwwredirect
       - traefik.http.routers.mydozzle.middlewares=myauth
       - traefik.http.routers.mydozzle.service=api@internal
+
 networks:
   proxy:
-    external: true
+    name: proxy
+    external: true #do not expose external for security risk
+  socket:
+    name: socket
