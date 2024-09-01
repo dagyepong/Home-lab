@@ -1,13 +1,36 @@
-version: "3.8"
+
 services:
+  # Dockge - Docker Compose Manager
   dockge:
-    image: louislam/dockge:latest
+    image: louislam/dockge
+    container_name: dockge
+    security_opt:
+      - no-new-privileges:true
     restart: unless-stopped
     ports:
-      - 5005:5001
+      - "5005:5001"
+    networks:
+      - proxy
+      - socket
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - ./data:/app/data
       - /opt/stacks:/opt/stacks
     environment:
-      - DOCKGE_STACKS_DIR=/opt/stacks
+      #- DOCKGE_STACKS_DIR=/opt/stacks
+      - DOCKER_HOST=tcp://socketproxy:2375
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.codeserver.rule=Host(`dockge.nanaoware.online`) || Host(`www.dockge.nanaoware.online`)
+      - traefik.http.services.codeserver.loadbalancer.server.port=5001
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.mycodeserver.middlewares=mywwwredirect
+      - traefik.http.routers.mycodeserver.middlewares=myauth
+      - traefik.http.routers.mycodeserver.service=api@internal
+
+networks:
+  proxy:
+    name: proxy
+    external: true #do not expose external for security risk
+  socket:
+    name: socket
