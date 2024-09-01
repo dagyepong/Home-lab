@@ -6,7 +6,6 @@ services:
     security_opt:
       - no-new-privileges:true
     restart: "no"
-    profiles: ["media", "arrs", "all"]
     networks:
       - t3_proxy
     ports:
@@ -28,3 +27,9 @@ services:
       # HTTP Services
       - "traefik.http.routers.bazarr-rtr.service=bazarr-svc"
       - "traefik.http.services.bazarr-svc.loadbalancer.server.port=6767"
+networks:
+  proxy:
+    name: proxy
+    external: true #do not expose external for security risk
+  socket:
+    name: socket

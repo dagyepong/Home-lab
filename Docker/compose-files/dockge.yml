@@ -6,17 +6,16 @@ services:
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
-    profiles: ["apps", "all"]
-    # ports:
-    #   - "5001:5001"
+    ports:
+      - "5001:5001"
     networks:
       - proxy
       - socket
     volumes:
-      - $DOCKERDIR/appdata/dockge:/app/data
-      - $USERDIR/test:/opt/stacks
+      - /dockge:/app/data
+      - /test:/opt/stacks
     environment:
-      - DOCKGE_STACKS_DIR=/opt/stacks
+      #- DOCKGE_STACKS_DIR=/opt/stacks
       - DOCKER_HOST=tcp://socketproxy:2375
     labels:
       - "traefik.enable=true"
@@ -28,3 +27,10 @@ services:
       # HTTP Services
       - "traefik.http.routers.dockge-rtr.service=dockge-svc"
       - "traefik.http.services.dockge-svc.loadbalancer.server.port=5001"
+
+networks:
+  proxy:
+    name: proxy
+    external: true #do not expose external for security risk
+  socket:
+    name: socket

@@ -6,10 +6,9 @@ services:
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
-    profiles: ["apps", "all"]
     networks:
-      - t3_proxy
-      - socket_proxy
+      - proxy
+      - socket
     ports:
       - "8082:8080"
     environment:
@@ -30,3 +29,10 @@ services:
       # HTTP Services
       - "traefik.http.routers.dozzle-rtr.service=dozzle-svc"
       - "traefik.http.services.dozzle-svc.loadbalancer.server.port=8080"
+
+networks:
+  proxy:
+    name: proxy
+    external: true #do not expose external for security risk
+  socket:
+    name: socket
