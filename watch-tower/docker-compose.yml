@@ -14,6 +14,7 @@ services:
       - WATCHTOWER_HTTP_API_TOKEN=${API_TOKEN:-SecureApiToken}
       #- WATCHTOWER_NOTIFICATIONS=email
       - WATCHTOWER_DEBUG=true
+      - DOCKER_HOST=tcp://socketproxy:2375
       - WATCH_TOWER_HTTP_API_METRICS=true
       #- WATCH_TOWER_HTTP_API_TOKEN="mytoken"
       #new- TZ=$TZ
@@ -28,6 +29,7 @@ services:
     image: containrrr/watchtower:latest
     networks:
       - proxy
+      - socket
     labels:
       - traefik.enable=true
       - traefik.http.routers.watchtower.rule=Host(`watchtower.nanaoware.online`) || Host(`www.watchtower.nanaoware.online`)
@@ -43,10 +45,14 @@ services:
     #network_mode: "host"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      #- /var/run/docker.sock:/var/run/docker.sock:ro # Disable for socket proxy
     ports:
       - 8080:8080
     working_dir: /
+
 networks:
   proxy:
-    external: true
+    name: proxy
+    external: true #do not expose external for security risk
+  socket:
+    name: socket
