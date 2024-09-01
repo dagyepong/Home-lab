@@ -15,7 +15,7 @@ services:
       # DOZZLE_FILTER: "label=log_me" # limits logs displayed to containers with this label
 
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      #- /var/run/docker.sock:/var/run/docker.sock
       - ./dozzle-data:/data
     networks:
       - proxy
