@@ -1,4 +1,5 @@
- # By default, scrape targets every 15 seconds.
+global:
+  scrape_interval:     15s # By default, scrape targets every 15 seconds.
 
 scrape_configs:
   - job_name: 'prometheus'
@@ -7,6 +8,5 @@ scrape_configs:
       - targets: ['192.168.1.152:9090']
 
   - job_name: 'cadvisor'
-    scrape_interval: 15s
     static_configs:
-      - targets: ['cadvisor:8098']
+      - targets: ['cadvisor:8080']
