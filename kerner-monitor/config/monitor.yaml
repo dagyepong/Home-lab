@@ -1,0 +1,26 @@
+- name: linuxpad
+  description: Applications Docker 
+  tag: "linuxpad-website"
+  image: "https://belginux.com/content/images/2024/01/bbbbb-8.png"
+  api:
+    method: GET   
+    url: https://linuxpad.blog
+- name: Immich    
+  description: Mon application photos et vidéos
+  tag: "immich-website"
+  api:
+    method: GET
+    url: https://photos.nanaoware.online
+  image: "https://immich.xxx.xx/_app/immutable/assets/immich-logo.18dcdcef.svg"
+- name: Nextcloud
+  description: Mon cloud perso
+  tag: "nextcloud"
+  defaultStatus: "UP"
+  image: "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/nextcloud.png"
+- name: Proxmox backup server
+  description: Serveur de backup
+  tag: "pbs"
+  image: "https://github.com/walkxcode/dashboard-icons/raw/main/png/proxmox-light.png"
+  api:
+    method: GET
+    url: https://pbs.xxx.xx/
