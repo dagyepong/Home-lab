@@ -19,6 +19,7 @@ Port 9000 is TCP-router enabled, just for plain TCP. Traefik can not see anythin
 
 - Adapt all domain names in `Host()` and `HostSNI()`
 - Adapt `acme.email`
+- touch acme.json && chmod 600 acme.json
 - Adapt dashboard username/password
 - For production: write logs files to mounted folder on host
 - Run `docker compose up -d`
