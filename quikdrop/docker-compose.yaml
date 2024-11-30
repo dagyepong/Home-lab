@@ -1,0 +1,17 @@
+#version: '3.9'
+services:
+  quickdrop:
+    image: roastslav/quickdrop:latest
+    container_name: quickdrop
+    volumes:
+      - ./files:/files
+      - ./log:/app/log
+      - ./db:/app/db
+    environment:
+      - max_upload_file_size=2GB   
+      - app_enable_password=false
+      #- app_basic_password=test
+      #- file_deletion_cron=0 0 2 * * *
+    ports:
+      - 8556:8080
+    restart: unless-stopped
