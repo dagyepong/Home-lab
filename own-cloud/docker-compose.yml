@@ -15,8 +15,8 @@ services:
     # therefore we ignore the error and then start the ocis server
     command: ["-c", "ocis init || true; ocis server"]
     environment:
-      - OCIS_URL=https://localhost:9200 # adjust to your FQDN domain; https required
-      - PROXY_TLS=true # disable if you use a reverse proxy with SSL support in front
+      - OCIS_URL=https://cloud.nanaoware.online # adjust to your FQDN domain; https required
+      #- PROXY_TLS=true # disable if you use a reverse proxy with SSL support in front
       - OCIS_INSECURE=true # required if you use a reverse proxy with SSL support in front
     volumes:
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/owncloud-ocis/config:/etc/ocis
@@ -25,22 +25,22 @@ services:
       - 9200:9200
     expose:
       - 9200
-    #labels:
-    #  - traefik.enable=true
-    #  - traefik.http.routers.ocis.rule=Host(`cloud.example.com`) # adjust to your domain
-    #  - traefik.http.services.ocis.loadbalancer.server.port=9200
-    #  - traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=50000000
-    #  - traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=50000000
-    #  - traefik.http.middlewares.limit.buffering.memRequestBodyBytes=50000000
-    #  - traefik.http.middlewares.limit.buffering.memResponseBodyBytes=50000000
-    #  - traefik.http.routers.ocis.middlewares=local-ipwhitelist@file,authelia@docker
-    #  - traefik.docker.network=dev
-    #  # disallow listing version details via /status.php endpoint
-    #  - traefik.http.routers.ocis-version-disclosure.rule=Host(`cloud.example.com`) && Path(`/status.php`)
-    #  - traefik.http.routers.ocis-version-disclosure.middlewares=local-ipwhitelist@file
-    #networks:
-    #  - dev
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ocis.rule=Host(`cloud.nanaoware.online`) # adjust to your domain
+      - traefik.http.services.ocis.loadbalancer.server.port=9200
+      - traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=50000000
+      - traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=50000000
+      - traefik.http.middlewares.limit.buffering.memRequestBodyBytes=50000000
+      - traefik.http.middlewares.limit.buffering.memResponseBodyBytes=50000000
+      - traefik.http.routers.ocis.middlewares=local-ipwhitelist@file,authelia@docker
+      - traefik.docker.network=proxy
+      # disallow listing version details via /status.php endpoint
+      - traefik.http.routers.ocis-version-disclosure.rule=Host(`cloud.nanaoware.online`) && Path(`/status.php`)
+      - traefik.http.routers.ocis-version-disclosure.middlewares=local-ipwhitelist@file
+    networks:
+      - proxy
 
-#networks:
-#  dev:
-#    external: true
+networks:
+  proxy:
+    external: true
