@@ -1,46 +1,79 @@
----
-version: "3.7"
+version: "3.9"
+
+volumes:
+  files:
+    driver: local
+  mysql:
+    driver: local
+  redis:
+    driver: local
 
 services:
-
-  ocis:
-    image: owncloud/ocis:latest
-    container_name: owncloud-ocis
-    hostname: owncloud-ocis
-    restart: unless-stopped
-    entrypoint:
-      - /bin/sh
-    # run ocis init to initialize a configuration file with random secrets
-    # it will fail on subsequent runs, because the config file already exists
-    # therefore we ignore the error and then start the ocis server
-    command: ["-c", "ocis init || true; ocis server"]
+  owncloud:
+    image: owncloud/server:${OWNCLOUD_VERSION}
+    container_name: owncloud_server
+    restart: always
+    depends_on:
+      - mariadb
+      - redis
     environment:
-      - OCIS_URL=https://cloud.nanaoware.online # adjust to your FQDN domain; https required
-      #- PROXY_TLS=true # disable if you use a reverse proxy with SSL support in front
-      - OCIS_INSECURE=true # required if you use a reverse proxy with SSL support in front
+      - OWNCLOUD_DOMAIN=${OWNCLOUD_DOMAIN}
+      - OWNCLOUD_DB_TYPE=mysql
+      - OWNCLOUD_DB_NAME=owncloud
+      - OWNCLOUD_DB_USERNAME=owncloud
+      - OWNCLOUD_DB_PASSWORD=owncloud
+      - OWNCLOUD_DB_HOST=mariadb
+      - OWNCLOUD_ADMIN_USERNAME=${ADMIN_USERNAME}
+      - OWNCLOUD_ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - OWNCLOUD_MYSQL_UTF8MB4=true
+      - OWNCLOUD_REDIS_ENABLED=true
+      - OWNCLOUD_REDIS_HOST=redis
+      - VIRTUAL_HOST=${OWNCLOUD_DOMAIN}
+      - LETSENCRYPT_HOST=${OWNCLOUD_DOMAIN}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+      - VIRTUAL_PORT=${HTTP_PORT}
+    healthcheck:
+      test: ["CMD", "/usr/bin/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     volumes:
-      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/owncloud-ocis/config:/etc/ocis
-      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/owncloud-ocis/data:/var/lib/ocis
-    ports:
-      - 9200:9200
-    expose:
-      - 9200
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.ocis.rule=Host(`cloud.nanaoware.online`) # adjust to your domain
-      - traefik.http.services.ocis.loadbalancer.server.port=9200
-      - traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=50000000
-      - traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=50000000
-      - traefik.http.middlewares.limit.buffering.memRequestBodyBytes=50000000
-      - traefik.http.middlewares.limit.buffering.memResponseBodyBytes=50000000
-      - traefik.http.routers.ocis.middlewares=local-ipwhitelist@file,authelia@docker
-      - traefik.docker.network=proxy
-      # disallow listing version details via /status.php endpoint
-      - traefik.http.routers.ocis-version-disclosure.rule=Host(`cloud.nanaoware.online`) && Path(`/status.php`)
-      - traefik.http.routers.ocis-version-disclosure.middlewares=local-ipwhitelist@file
-    networks:
-      - proxy
+      - files:/mnt/data
 
+  mariadb:
+    image: mariadb:10.5
+    container_name: owncloud_mariadb
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=owncloud
+      - MYSQL_USER=owncloud
+      - MYSQL_PASSWORD=owncloud
+      - MYSQL_DATABASE=owncloud
+    command: ["--max-allowed-packet=128M", "--innodb-log-file-size=64M"]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-u", "root", "--password=owncloud"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - mysql:/var/lib/mysql
+
+  redis:
+    image: redis:6
+    container_name: owncloud_redis
+    restart: always
+    command: ["--databases", "1"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - redis:/data
+
+
+#Use this configuration in production
 networks:
-  proxy:
-    external: true
+  default:
+      name: proxy
+      external: true
