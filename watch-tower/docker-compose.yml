@@ -55,4 +55,4 @@ networks:
     name: proxy
     external: true #do not expose external for security risk
   #socket:
-   # name: socket
+   # name: socket 
