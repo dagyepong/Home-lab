@@ -2,7 +2,7 @@
 
 services:
 
-  blog:
+  ghost:
     image: ghost:5-alpine
     container_name: ghost
     restart: always
@@ -72,7 +72,7 @@ services:
     image: tiredofit/db-backup
     depends_on:
       - database
-      - blog
+      - ghost
     volumes:
       - ../backups/ghost_db/:/backup
       #- ./post-script.sh:/assets/custom-scripts/post-script.sh
