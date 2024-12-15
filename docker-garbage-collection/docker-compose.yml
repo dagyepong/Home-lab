@@ -11,7 +11,7 @@ services:
       - socket
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # Use Docker Socket Proxy instead for improved security
-      - /docker-gc-exclude:/etc/docker-gc-exclude
+      - ./docker-gc-exclude:/etc/docker-gc-exclude
     environment:
       CRON: 0 0 0 * * ? # Everyday at midnight. Previously 0 0 * * *
       FORCE_IMAGE_REMOVAL: 1
@@ -20,7 +20,7 @@ services:
       DRY_RUN: 0
       CLEAN_UP_VOLUMES: 1
       #TZ: $TZ
-      DOCKER_HOST: tcp://socketproxy:2375
+      #DOCKER_HOST: tcp://socketproxy:2375
 
 networks:
   proxy:
