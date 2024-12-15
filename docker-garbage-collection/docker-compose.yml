@@ -10,7 +10,7 @@ services:
     networks:
       - socket
     volumes:
-      # - /var/run/docker.sock:/var/run/docker.sock # Use Docker Socket Proxy instead for improved security
+      - /var/run/docker.sock:/var/run/docker.sock # Use Docker Socket Proxy instead for improved security
       - /docker-gc-exclude:/etc/docker-gc-exclude
     environment:
       CRON: 0 0 0 * * ? # Everyday at midnight. Previously 0 0 * * *
@@ -26,5 +26,5 @@ networks:
   proxy:
     name: proxy
     external: true #do not expose external for security risk
-  socket:
-    name: socket
+  #socket:
+   # name: socket
