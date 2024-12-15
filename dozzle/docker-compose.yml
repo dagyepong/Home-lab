@@ -19,7 +19,7 @@ services:
       - ./dozzle-data:/data
     networks:
       - proxy
-      - socket
+    #  - socket
     labels:
       - traefik.enable=true
       - traefik.http.routers.dozzle.rule=Host(`dozzle.nanaoware.online`) || Host(`www.dozzle.nanaoware.online`)
