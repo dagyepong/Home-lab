@@ -1,0 +1,29 @@
+version: "3.7"
+
+services:
+  node-project:
+    build: .
+    container_name: ${DOMAIN}
+    restart: always
+    expose:
+      - "${PORT}"
+    command: "npm run start"
+    networks:
+      - default
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:${PORT}"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      traefik.enable: true
+      traefik.http.routers.node-project.rule: Host(`${DOMAIN}`)
+      traefik.http.routers.node-project.tls: true
+      traefik.http.routers.node-project.tls.certresolver: le
+      traefik.http.routers.node-project.entrypoints: websecure
+networks:
+  default:
+    external:
+      name: proxy
+
