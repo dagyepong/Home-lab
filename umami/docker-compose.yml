@@ -17,6 +17,23 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    
+    networks:
+    - proxy
+
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.umami.rule=Host(`umami.nanaoware.online`) || Host(`www.umami.nanaoware.online`)
+      - traefik.http.services.umami.loadbalancer.server.port=3001
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.myumami.middlewares=mywwwredirect
+      - traefik.http.routers.myumami.middlewares=dashboard
+      - traefik.http.routers.myumami.service=api@internal
+      - traefik.http.routers.myumami.tls=true
+      - traefik.http.routers.myumami.tls.certresolver=le
+
+
   db:
     image: postgres:15-alpine
     environment:
@@ -36,3 +53,7 @@ volumes:
 
   # username admin
   # psswd umami
+
+  networks:
+  proxy:
+    external: true

@@ -31,8 +31,10 @@ services:
       - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
       - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
       - traefik.http.routers.myadguard.middlewares=mywwwredirect
-      - traefik.http.routers.myadguard.middlewares=myauth
+      - traefik.http.routers.myadguard.middlewares=dashboard
       - traefik.http.routers.myadguard.service=api@internal
+      - traefik.http.routers.myadguard.tls=true
+      - traefik.http.routers.myadguard.tls.certresolver=le
 
 
 networks:

@@ -22,8 +22,10 @@ services:
       - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
       - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
       - traefik.http.routers.myuptimekuma.middlewares=mywwwredirect
-      - traefik.http.routers.myuptimekuma.middlewares=myauth
+      - traefik.http.routers.myuptimekuma.middlewares=dashboard
       - traefik.http.routers.myuptimekuma.service=api@internal
+      - traefik.http.routers.myuptimekuma.tls=true
+      - traefik.http.routers.myuptimekuma.tls.certresolver=le
 networks:
   proxy:
     external: true
