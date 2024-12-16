@@ -28,7 +28,7 @@ services:
       #- WATCHTOWER_CLEANUP=true # remove unused images afterwards
     image: containrrr/watchtower:latest
     networks:
-      - proxy
+      - default
       #- socket
     labels:
       - traefik.enable=true
@@ -53,7 +53,7 @@ services:
     working_dir: /
 
 networks:
-  proxy:
+  default:
     name: proxy
     external: true #do not expose external for security risk
   #socket:
