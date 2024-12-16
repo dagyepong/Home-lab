@@ -18,8 +18,10 @@ services:
             - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
             - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
             - traefik.http.routers.mypsitransfer.middlewares=mywwwredirect
-            - traefik.http.routers.mypsitransfer.middlewares=myauth
+            - traefik.http.routers.mypsitransfer.middlewares=dashboard
             - traefik.http.routers.mypsitransfer.service=api@internal
+            - traefik.http.routers.mypsitransfer.tls=true
+            - traefik.http.routers.mypsitransfer.tls.certresolver=le
 
 
 networks:

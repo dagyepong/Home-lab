@@ -14,8 +14,8 @@ services:
     ports:
       - 9443:9443
     networks:
-      - proxy
-      - socket
+      - default
+     # - socket
     labels:
       - traefik.enable=true
       - traefik.http.routers.portainer.rule=Host(`portainer.nanaoware.online`) || Host(`www.portainer.nanaoware.online`)
@@ -23,12 +23,14 @@ services:
       - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
       - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
       - traefik.http.routers.myportainer.middlewares=mywwwredirect
-      - traefik.http.routers.myportainer.middlewares=myauth
+      - traefik.http.routers.myportainer.middlewares=dashboard
       - traefik.http.routers.myportainer.service=api@internal
+      - traefik.http.routers.mypotrtainer.tls=true
+      - traefik.http.routers.myportainer.tls.certresolver=le
 
 networks:
-  proxy:
+  default:
     name: proxy
     external: true #do not expose external for security risk
-  socket:
-    name: socket
+  #socket:
+   # name: socket

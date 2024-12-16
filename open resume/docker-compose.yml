@@ -14,8 +14,10 @@ services:
             - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
             - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
             - traefik.http.routers.myopen-resume.middlewares=mywwwredirect
-            - traefik.http.routers.myopen-resume.middlewares=myauth
+            - traefik.http.routers.myopen-resume.middlewares=dashboard
             - traefik.http.routers.myopen-resume.service=api@internal
+            - traefik.http.routers.myopen-resume.tls=true
+            - traefik.http.routers.myopen-resume.tls.certresolver=le
 
 
 networks:

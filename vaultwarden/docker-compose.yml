@@ -19,8 +19,10 @@ services:
             - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
             - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
             - traefik.http.routers.myvaultwarden.middlewares=mywwwredirect
-            - traefik.http.routers.myvaultwarden.middlewares=myauth
+            - traefik.http.routers.myvaultwarden.middlewares=dashboard
             - traefik.http.routers.myvaultwarden.service=api@internal
+            - traefik.http.routers.myvaultwarden.tls=true
+            - traefik.http.routers.myvaultwarden.tls.certresolver=le
 
         image: 'vaultwarden/server:latest'
 
