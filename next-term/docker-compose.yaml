@@ -7,3 +7,22 @@ services:
     volumes:
       - ./nexterm:/app/data
     image: germannewsmaker/nexterm:1.0.1-OPEN-PREVIEW
+
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.nexterrm.rule=Host(`nexterm.nanaoware.online`) || Host(`www.nexterm.nanaoware.online`)
+      - traefik.http.services.nexterm.loadbalancer.server.port=6989
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.mynexterm.middlewares=mywwwredirect
+      - traefik.http.routers.mynexterm.middlewares=dashboard
+      - traefik.http.routers.mynexterm.service=api@internal
+      - traefik.http.routers.mynexterm.tls=true
+      - traefik.http.routers.mynexterm.tls.certresolver=le
+
+
+networks:
+  proxy:
+    external: true
