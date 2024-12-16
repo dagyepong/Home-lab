@@ -1,0 +1,65 @@
+version: "3.7"
+
+services:
+  reverse-proxy:
+    # The official v3 Traefik docker image
+    image: traefik:latest
+    container_name: reverse-proxy
+    # Enables the web UI and tells Traefik to listen to docker
+    command:
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.websecure.http3
+      - --log.level=INFO
+
+      - --providers.docker=true
+      - --providers.docker.network=proxy
+      - --providers.docker.exposedbydefault=false # Do not expose containers unless explicitly told so
+
+      - --api=true # Enable dashboard
+      - --api.debug=true
+
+      - --certificatesresolvers.le.acme.tlschallenge=true
+      - --certificatesresolvers.le.acme.email=YOUR_EMAIL #  cert resolvers
+      - --certificatesResolvers.le.acme.storage=/ssl/acme.json
+    restart: always
+    ports:
+      - 80:80/tcp
+      - 80:80/udp
+      - 443:443/tcp
+      - 443:443/udp
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${PWD}/ssl:/ssl
+    labels:
+      traefik.enable: true
+
+      # Dashboard
+      traefik.http.routers.reverse-proxy.rule: Host(`YOUR_CUSTOM_DOMAIN`)
+      traefik.http.routers.reverse-proxy.entrypoints: websecure
+      traefik.http.routers.reverse-proxy.service: api@internal
+      traefik.http.routers.reverse-proxy.tls: true
+      traefik.http.routers.reverse-proxy.tls.certresolver: le
+      traefik.http.routers.reverse-proxy.middlewares: dashboard
+      traefik.http.middlewares.dashboard.basicauth.users: YOUR_CUSTOM_ADMIN_HTTP_PASSWORD
+
+
+      # SECURITY MIDDLEWARE named "hstsx"
+      traefik.http.middlewares.hstsx.headers.stsincludesubdomains: true
+      traefik.http.middlewares.hstsx.headers.stspreload: true
+      traefik.http.middlewares.hstsx.headers.stsseconds: 31536000
+      traefik.http.middlewares.hstsx.headers.forcestsheader: true
+      traefik.http.middlewares.hstsx.headers.customframeoptionsvalue: sameorigin
+      traefik.http.middlewares.hstsx.headers.browserxssfilter: true
+      traefik.http.middlewares.hstsx.headers.sslredirect: true
+      traefik.http.middlewares.hstsx.headers.contenttypenosniff: true
+    networks:
+      - default
+
+networks:
+  default:
+    external:
+      name: proxy
