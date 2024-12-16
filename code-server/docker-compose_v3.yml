@@ -28,8 +28,10 @@ services:
       - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
       - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
       - traefik.http.routers.mycodeserver.middlewares=mywwwredirect
-      - traefik.http.routers.mycodeserver.middlewares=myauth
+      - traefik.http.routers.mycodeserver.middlewares=dashboard
       - traefik.http.routers.mycodeserver.service=api@internal
+      - traefik.http.routers.mycodeserver.tls=true
+      - traefik.http.routers.mycodeserver.tls.certresolver=le
 
 
 networks:

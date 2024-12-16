@@ -22,8 +22,10 @@ services:
       - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
       - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
       - traefik.http.routers.myminio.middlewares=mywwwredirect
-      - traefik.http.routers.myminio.middlewares=myauth
+      - traefik.http.routers.myminio.middlewares=dashboard
       - traefik.http.routers.myminio.service=api@internal
+      - traefik.http.routers.myminio.tls=true
+      - traefik.http.routers.myminio.tls.certresolver=le
 
 networks:
   proxy:

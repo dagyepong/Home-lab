@@ -27,8 +27,10 @@ services:
       - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
       - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
       - traefik.http.routers.mydockge.middlewares=mywwwredirect
-      - traefik.http.routers.mydockge.middlewares=myauth
+      - traefik.http.routers.mydockge.middlewares=dashboard
       - traefik.http.routers.mydockge.service=api@internal
+      - traefik.http.routers.mydockge.tls=true
+      - traefik.http.routers.mydockge.tls.certresolver=le
 
 networks:
   proxy:
