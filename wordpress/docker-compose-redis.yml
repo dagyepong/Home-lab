@@ -17,20 +17,7 @@ services:
     depends_on:
       - wp-db
     
-    networks:
-    - proxy
 
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.wordpress.rule=Host(`tech.nanaoware.online`) || Host(`www.tech.nanaoware.online`)
-      - traefik.http.services.wordpress.loadbalancer.server.port=5010
-      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.mywordpress.middlewares=mywwwredirect
-      - traefik.http.routers.mywordpress.middlewares=dashboard
-      - traefik.http.routers.mywordpress.service=api@internal
-      - traefik.http.routers.mywordpress.tls=true
-      - traefik.http.routers.mywordpress.tls.certresolver=le
 
 
 
@@ -85,6 +72,3 @@ services:
     restart: unless-stopped
 
 
-networks:
-  proxy:
-    external: true
