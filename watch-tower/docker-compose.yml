@@ -37,8 +37,10 @@ services:
       - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
       - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
       - traefik.http.routers.mywatchtower.middlewares=mywwwredirect
-      - traefik.http.routers.mywatchtower.middlewares=myauth
+      - traefik.http.routers.mywatchtower.middlewares=dashboard
       - traefik.http.routers.mywatchtower.service=api@internal
+      - traefik.http.routers.mywatchtower.tls=true
+      - traefik.http.routers.mywatchtower.tls.certresolver=le
 
 
     restart: always
