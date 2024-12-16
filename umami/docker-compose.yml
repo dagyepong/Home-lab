@@ -43,6 +43,8 @@ services:
     volumes:
       - /srv/appdata/umami/dba:/var/lib/postgresql/data
     restart: always
+    networks:
+      - proxy
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
