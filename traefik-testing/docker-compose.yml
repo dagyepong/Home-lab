@@ -1,5 +1,14 @@
 version: "3.7"
 
+
+
+volumes:
+  letsencrypt:
+    name: letsencrypt
+
+
+
+
 services:
   reverse-proxy:
     # The official v3 Traefik docker image
@@ -18,12 +27,23 @@ services:
       - --providers.docker.network=proxy
       - --providers.docker.exposedbydefault=false # Do not expose containers unless explicitly told so
 
-      - --api=true # Enable dashboard
+      - --api.dashboard=true # Enable dashboard
       - --api.debug=true
 
       - --certificatesresolvers.le.acme.tlschallenge=true
-      - --certificatesresolvers.le.acme.email=YOUR_EMAIL #  cert resolvers
-      - --certificatesResolvers.le.acme.storage=/ssl/acme.json
+      - --certificatesresolvers.le.acme.email=dollarsterl@gmail.com #  cert resolvers
+      - --certificatesResolvers.le.acme.storage=/letsencrypt/acme.json
+
+      
+      - --log.filepath=/var/log/traefik.log
+      - --accesslog=true
+      - --accesslog.filepath=/var/log/traefik-access.log
+      - --metrics.prometheus=true
+      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
+      - --entrypoints.websecure.http.tls.certresolver=le
+      - --entryPoints.tcp-plain.address=:9000
+      - --certificatesresolvers.myresolver.acme.tlschallenge=true
+      - --certificatesResolvers.myresolver.acme.email=owarenana06@gmail.com.c
     restart: always
     ports:
       - 80:80/tcp
@@ -33,18 +53,20 @@ services:
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${PWD}/ssl:/ssl
+      - letsencrypt:/letsencrypt
+      - /var/log:/var/log
+    
     labels:
       traefik.enable: true
 
       # Dashboard
-      traefik.http.routers.reverse-proxy.rule: Host(`YOUR_CUSTOM_DOMAIN`)
+      traefik.http.routers.reverse-proxy.rule: Host(`dashboard.nanaoware.online`)
       traefik.http.routers.reverse-proxy.entrypoints: websecure
       traefik.http.routers.reverse-proxy.service: api@internal
       traefik.http.routers.reverse-proxy.tls: true
       traefik.http.routers.reverse-proxy.tls.certresolver: le
       traefik.http.routers.reverse-proxy.middlewares: dashboard
-      traefik.http.middlewares.dashboard.basicauth.users: YOUR_CUSTOM_ADMIN_HTTP_PASSWORD
+      traefik.http.middlewares.dashboard.basicauth.users: test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
 
 
       # SECURITY MIDDLEWARE named "hstsx"
@@ -58,6 +80,39 @@ services:
       traefik.http.middlewares.hstsx.headers.contenttypenosniff: true
     networks:
       - default
+
+
+
+  whoami:
+    image: traefik/whoami:v1.9
+    networks:
+      - default
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.whoami.entrypoints=websecure
+      - traefik.http.routers.whoami.rule=Host(`whoami.nanaoware.online`)
+      - traefik.http.services.whoami.loadbalancer.server.port=80
+
+  tcpecho-le:
+    image: istio/tcp-echo-server:1.2
+    networks:
+      - default
+    labels:
+      - traefik.enable=true
+      - traefik.tcp.routers.tcpecho-le.entrypoints=websecure
+      - traefik.tcp.routers.tcpecho-le.rule=HostSNI(`tcp.nanaoware.online`)
+      - traefik.tcp.routers.tcpecho-le.tls.certresolver=le
+      - traefik.tcp.services.tcpecho-le.loadbalancer.server.port=9000
+
+  tcpecho-plain:
+    image: istio/tcp-echo-server:1.2
+    networks:
+      - default
+    labels:
+      - traefik.enable=true
+      - traefik.tcp.routers.tcpecho-plain.entrypoints=tcp-plain
+      - traefik.tcp.routers.tcpecho-plain.rule=HostSNI(`*`)
+      - traefik.tcp.services.tcpecho-plain.loadbalancer.server.port=9000      
 
 networks:
   default:
