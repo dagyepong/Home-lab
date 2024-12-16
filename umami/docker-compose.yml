@@ -19,7 +19,7 @@ services:
       retries: 5
     
     networks:
-    - proxy
+      - proxy
 
     labels:
       - traefik.enable=true
@@ -53,7 +53,6 @@ volumes:
 
   # username admin
   # psswd umami
-
-  networks:
-  proxy:
-    external: true
+networks:
+    proxy:
+        external: true
