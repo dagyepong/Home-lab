@@ -71,7 +71,7 @@
         description: Docker Manager
         siteMonitor: https://portainer.internal-domain.lan
         widget:
-            type:
+            type: portainer
             url:
             key:
             env: 2
