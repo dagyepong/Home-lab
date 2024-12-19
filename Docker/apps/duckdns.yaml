@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+#######################################
+# DUCKDNS (DYNAMIC DNS MONITORING)
+#######################################
+
+services:
+    duckdns:
+        container_name: duckdns
+        image: lscr.io/linuxserver/duckdns:latest
+        profiles: ["traefik", "core", "all"]
+        environment:
+            PUID: ${PUID}
+            PGID: ${PGID}
+            TZ: ${TZ}
+            SUBDOMAINS: ${DUCKDNS_SUBDOMAIN}
+            TOKEN: ${DUCKDNS_TOKEN}
+        networks:
+            internal:
+        security_opt:
+            - no-new-privileges:true
+        restart: always
+        labels:
+            com.ouroboros.enable: "true"
