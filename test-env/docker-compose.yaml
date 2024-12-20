@@ -25,7 +25,7 @@ include:
     - apps/portainer.yaml # Docker Mgt(Docker)
     - apps/beszel.yaml # Docker Monitoring(Docker)
     - apps//dozzle/dozzle.yaml # Log(Docker Log)
-    - apps/authentic.yaml # Authentication(Authenticator)
+    - apps/authentic/authentic.yaml # Authentication(Authenticator)
     - apps/littlelink.yaml # Link(LinkTree Alt.)
     - apps/nextterm.yaml # Termninal (Emulator)
     # - apps/calibre-web.yaml # Calibre Web-UI
