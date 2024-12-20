@@ -5,8 +5,10 @@ services:
     image: nextcloud
     container_name: nextcloud
     restart: unless-stopped
+    profiles: [ "media", "all"]
+
     networks:
-      - cloud
+      - docker
       - proxy
     depends_on:
       - nextclouddb
@@ -46,7 +48,7 @@ services:
     restart: unless-stopped
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     networks:
-      - cloud
+      - docker
       - proxy
     volumes:
       - /srv/appdata/nextcloud/nextclouddb:/var/lib/mysql
@@ -68,9 +70,4 @@ services:
       - cloud
       - proxy
 
-networks:
-  cloud:
-    name: cloud
-    driver: bridge
-  proxy:
-    external: true
+
