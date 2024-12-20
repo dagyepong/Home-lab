@@ -7,7 +7,7 @@ include:
     # TRAEFIK (CORE)
     #############################################################################
 
-    - apps/traefik/docker-compose.yaml # Traefik (Reverse Proxy)
+    - apps/traefik/traefik.yaml # Traefik (Reverse Proxy)
     - apps/socket-proxy.yaml # Docker Socket Proxy (Security)
     - apps/deunhealth.yaml # Restart Unhealthy Containers
     - apps/pihole/unbound.yaml
