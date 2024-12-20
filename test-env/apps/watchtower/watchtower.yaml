@@ -4,6 +4,8 @@ services:
   watchtower:
     container_name: watchtower
     hostname: watchtower
+    profiles: [ "utilities", "all"]
+
     environment:
       #- WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PORT=${SMTP_PORT:-587}
       #- WATCHTOWER_NOTIFICATION_EMAIL_SERVER_USER=${SMTP_USER:-smtpuser}
@@ -14,7 +16,7 @@ services:
       - WATCHTOWER_HTTP_API_TOKEN=${API_TOKEN:-SecureApiToken}
       #- WATCHTOWER_NOTIFICATIONS=email
       - WATCHTOWER_DEBUG=true
-      - DOCKER_HOST=tcp://socketproxy:2375
+      - DOCKER_HOST=tcp://socket-proxy:2375
       - WATCH_TOWER_HTTP_API_METRICS=true
       #- WATCH_TOWER_HTTP_API_TOKEN="mytoken"
       #new- TZ=$TZ

@@ -12,7 +12,10 @@ services:
       #- /var/run/docker.sock:/var/run/docker.sock:ro
       #- portainer_data:/data
     #command: -H unix:///var/run/docker.sock # # Use Docker Socket Proxy instead for improved security
-    command: -H tcp://socketproxy:2375
+    command: -H tcp://socket-proxy:2375
+    environment:
+      #- TZ: ${TZ}
+      - DOCKER_HOST: tcp://socket-proxy:2375
     ports:
       - 9443:9443
     networks:
