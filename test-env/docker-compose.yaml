@@ -16,7 +16,7 @@ include:
     # MEDIA
     #############################################################################
 
-    - apps/homepage.yaml # Heomepage(Landing Page)
+    - apps/homepage/homepage.yaml # Heomepage(Landing Page)
     - apps/ghost/ghost.yaml # Blog (CMS Server)
     - apps/wordpress/wordpress.yaml # Blog (CMS Server)
     - apps/immich.yaml # Photos(Backup)
