@@ -10,15 +10,15 @@ include:
     - apps/traefik/docker-compose.yaml # Traefik (Reverse Proxy)
     - apps/socket-proxy.yaml # Docker Socket Proxy (Security)
     - apps/deunhealth.yaml # Restart Unhealthy Containers
-    - apps/unbound.yaml
+    - apps/pihole/unbound.yaml
     - apps/fail2ban.yaml
     #############################################################################
     # MEDIA
     #############################################################################
 
     - apps/homepage.yaml # Heomepage(Landing Page)
-    - apps/ghost # Blog (CMS Server)
-    - apps/wordpress.yaml # Blog (CMS Server)
+    - apps/ghost/ghost.yaml # Blog (CMS Server)
+    - apps/wordpress/wordpress.yaml # Blog (CMS Server)
     - apps/immich.yaml # Photos(Backup)
     - apps/vault.yaml # Password Manager(Vault)
     - apps/nextloud.yaml # Backup(Media Backup)
@@ -34,7 +34,7 @@ include:
     # UTILITIES
     #############################################################################
 
-    - apps/watchtower.yaml #  Watchtower (Container Updating)
+    - apps/watchtower/watchtower.yaml #  Watchtower (Container Updating)
     - apps/umami.yaml # Analytics (Web Analytics)
     - apps/paperless.yaml # Storage (File Management)
     - apps/uptime.yaml # Up Time (Server Uptime)
