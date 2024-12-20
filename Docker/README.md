@@ -1,119 +1,203 @@
-### **Description**
+# Traefik
 
-This is the updated docker-compose repo of all the media, home, and web server apps described on SmartHomeBeginner.com. 
+![](https://i.imgur.com/JVARxB6.png)
 
+The Traefik reverse proxy is a powerful tool for managing web traffic to your
+Docker containers. It can automatically generate SSL certificates, route traffic
+to the correct container, and provide a secure way to access your services from
+anywhere in the world.
 
-```bash
+> [!WARNING]
+>
+> You must set up your router, custom domain, Google OAuth, CloudFlare,
+> DuckDNS, and Traefik before you can start any other services. Setting
+> up Traefik with everything requires a bit of time. Please follow the
+> instructions in this section carefully to get started.
+>
+> Once you have each of the pre-requisites set up, you can use the
+> [core-up](cli.md#core-up) command to start just the Traefik services
+> and confirm that everything is working at https://traefik.yourdomain.com.
+> Initial DNS propagation and certificate generation can take some time, so
+> be patient on the first run.
+>
+> See the [Command Line](cli.md) documentation for more information on how to
+> operate the application.
 
-mkdir -p Docker/appdata
-cd Docker
+> [!INFO] Acknowledgements
+> This configuration was inspired by, and
+> immensely helped by the article at
+> [smarthomebeginner.com](https://www.smarthomebeginner.com/traefik-docker-compose-guide-2024/).
+> Their massive [home server setup on GitHub](https://github.com/htpcBeginner/docker-traefik)
+> and amazing blog series inspired much of this project.
 
-## create .env file & give permission
-touch /home/nana/docker/.env
-sudo chown root:root /home/anand/docker/.env
-sudo chmod 600 /home/nana/docker/.env
-## create the ultimate compose file
+## Prerequisites
 
-touch /home/nana/docker/docker-compose-udms.yml
+### Personal Domain
 
-mkdir -p compose/udms
-mkdir logs
-mkdir scripts
-mkdir secrets
+This guide assumes you have a personal domain name that you can use to
+access your services. You can purchase a domain name from a registrar
+like [Cloudflare](https://www.cloudflare.com/products/registrar/).
 
-## set permissions
-sudo chown root:root /home/nana/docker/secrets
-sudo chmod 600 /home/nana/docker/secrets
+### DuckDNS
 
-mkdir shared
+A free DuckDNS dynamic DNS subdomain can be set up [here](https://www.duckdns.org).
+DuckDNS will provide you with a token that you will use in the `.env` file.
+Behind the scenes, the `duckdns` service will update your IP address with DuckDNS
+every 5 minutes which makes it possible to reach your server from anywhere. You will
+provide CloudFlare with the DuckDNS subdomain to point to your server.
+
+### Port Forwarding
+
+In order to reach the outside world, you must forward ports `80` and `443`
+from your server IP address through your router. See your router's manual
+for Instructions. See this [blog post](https://nordvpn.com/blog/open-ports-on-router/)
+for more information on port forwarding
+
+> [!NOTE]
+> If you're comfortable with SSH configuration I also port forward the SSH
+> service - this alongside your DuckDNS setup will allow you to access your
+> server from anywhere via your dynamic DNS URL instead of your IP address.
+
+### CloudFlare
+
+This guide leverages [CloudFlare](https://cloudflare.com/) for free
+DNS services. SmartHomeBeginner has a great guide on setting up CloudFlare
+[here](https://www.smarthomebeginner.com/cloudflare-settings-for-traefik-docker/).
+
+Once you get CloudFlare and DuckDNS set up, you will need to add some basic DNS
+configuration. CloudFlare lets you use a dynamic DNS address as a CNAME record
+which makes it easy to point your domain to your server.
+
+| Type  | Name          | Content               | TTL  |
+| ----- | ------------- | --------------------- | ---- |
+| CNAME | `example.com` | `example.duckdns.org` | Auto |
+| CNAME | `www`         | `example.com`         | Auto |
+| CNAME | `*`           | `example.com`         | Auto |
+
+### Google OAuth 2.0
+
+A helpful blog post on the Google Oauth 2.0 configuration can be
+found [here](https://www.smarthomebeginner.com/traefik-forward-auth-google-oauth-2022/).
+Essentially you must create a project in the Google Developer Console to enable
+the Google OAuth 2.0 service. You will share credentials with the `oauth` service
+in the `.env` file and manually whitelist users per email address.
+
+### File Configuration
+
+All services are configured via a `.env` file at the root of the project and a few secret
+files in the `secrets` directory. These files are used to define settings and credentials
+for all services that are deployed. You can copy the example files to get started:
+
+```shell
+cp docs/example.env .env
+cp -r docs/example-secrets/ secrets/
 ```
 
+#### .env
 
-## **Docker Root Folder Permissions:**
+The `.env` needs to be modified in order for the containers to be build
+properly. This is the entire configuration file for all applications.
+All relevant hints can be found within.
 
-Assuming that you have created the files and folders listed above, let us set the right permissions for them. We will need acl for this. If it is not installed, install it using:
+<details><summary>📄 .env</summary>
+<p>
 
-1
-```bash
-sudo apt install acl
-```
-Next, set the permission for /home/nana/docker folder (anand being the username of the user) as follows:
-
-```bash
-sudo chmod 775 /home/nana/docker
-sudo setfacl -Rdm u:nana:rwx /home/nana/docker
-sudo setfacl -Rm u:nana:rwx /home/nana/docker
-sudo setfacl -Rdm g:docker:rwx /home/nana/docker
-sudo setfacl -Rm g:docker:rwx /home/nana/docker
+```shell
+--8<-- "docs/example.env"
 ```
 
-You may also have to set acls on your media folder or the DATADIR path you will define in the later steps or apps such a sonarr, radarr, etc. may through permissions error.
-The above commands provide access to the contents of the docker root folder (both existing and new stuff) to the docker group. Some may disagree with the liberal permissions above but again this is for home use and it is restrictive enough.
+</p>
+</details>
 
-**Note:** After doing the above, you will notice a "+" at the end of permissions (e.g. drwxrwxr-x+) for docker root folder and its contents (as in the picture above). This indicates that ACL is set for the folder/file.
+Once you're done with all of the steps in this process you should have the following
+fields filled out in the `.env` file:
 
-### **Prepare Traefik 3 Folders and Files:**
-
-Finally, we need to create new folders for Traefik and ACME in the docker appdata folder (/home/user/docker/appdata) described previously:
-
-1
-2
-3
-4
-```yml
-mkdir traefik3
-mkdir traefik3/acme
-mkdir traefik3/rules
+```text
+DUCKDNS_TOKEN=XXXXXX-XXX-XXXXX-XXXXX
+DUCKDNS_SUBDOMAIN=example
+CLOUDFLARE_EMAIL=example@gmail.com
 ```
 
-Next, let's create an empty file for Traefik to store our LetsEnrypt certificate. Create acme.json empty file inside appdata/traefik3/acme folder using the following command
+And you should also update the secrets files:
 
-1
-```bash
-touch acme.json
-```
-Set proper permission for acme.json file using the following command (from inside appdata/traefik3/acme):
+=== "secrets/google_oauth.secret"
 
-1
-```bash
-chmod 600 acme.json
-```
+    ```text
+    --8<-- "docs/example-secrets/google_oauth.secret"
+    ```
 
+=== "secrets/cloudflare_api_key.secret"
 
-Similarly, we are going to create log files for Traefik to write logs to. I store all my logs in a centralized location (/home/user/docker/logs). Let's create a few additional folders for this specific host:
+    ```text
+    --8<-- "docs/example-secrets/cloudflare_api_key.secret"
+    ```
 
-1
-2
-```bash
-mkdir /home/nana/docker/logs/udms
-mkdir /home/nana/docker/logs/udms/traefik
-```
-Next, from within the logs/udms/traefik folder, let us create empty log files:
+#### acme.json
 
-1
-2
-```bash
-touch traefik.log
-touch access.log
-```
+You will need to create an empty `acme.json` file for the
+application to work and generate an SSL Certificate through LetsEncrypt.
+However, while initially setting up it will be useful to remove and recreate the file to force
+certificate recreation. Keep in mind that certificate creation and registration can take some tie.
+uncomment the `LETS_ENCRYPT_ENV` setting on the `.env` file to test with the
+LetsEncrypt staging environment.
 
-```py
+-   file location: `traefik/core/config/acme/acme.json`
+-   file permissions (chmod): `600`
 
-sudo docker compose -f /home/nana/docker/docker-compose-udms.yml up -d
+```shell
+mkdir -p appdata/traefik/acme/ && \
+  rm -f appdata/traefik/acme/acme.json && \
+  touch appdata/traefik/acme/acme.json && \
+  chmod 600 appdata/traefik/acme/acme.json
 ```
 
+> [!NOTE]
+> If you're comfortable with the `Makefile` at the root of the project, you can run
+> `make config-acme` to create the `acme.json` as described above.
+>
+> See the [Command Line](cli.md) documentation for more information.
 
-### **Create Basic HTTP Authentication Secret:**
+## Containers in Core Profile
 
-Basic HTTP authentication provides a layer of security. You will have to provide a username and password before you can access the app that is behind Traefik.
+-   [traefik](applications/core.md#traefik)
+-   [oauth](applications/core.md#oauth)
+-   [duckdns](applications/core.md#duckdns)
+-   [docker-socket-proxy](applications/core.md#docker-socket-proxy)
 
-Basic HTTP Authentication is a good start, but for a more secure authentication layer, consider switching to Google OAuth or Authelia later, which support multi-factor authentication.
-In my previous guides, I created this as .htpasswd file in the shared folder. But we are going to go secure-by-design route. So, in this updated version of the guide, I am going to use Docker Secrets.
+## Creating New Services
 
-Create the Basic Auth credentials secret file using the following command:
+The below example (which has already been done) shows you how to create a
+new service in the docker compose stack and make it accessible via Traefik.
+In this example, we are creating a LibreOffice service that can be accessed
+at `https://libreoffice.example.com`. If possible, I recommend using a
+[LinuxServer](https://github.com/linuxserver) image as they are well
+maintained and have a common configuration. Once the `libreoffice.yaml` file
+is created, you can reference it in the root `docker-compose.yaml` (by uncommenting
+the reference to `apps/libreoffice.yaml` line) and then run
+`docker compose up --profile all -d`.
 
-```py
+=== "apps/libreoffice.yaml"
 
-sudo htpasswd -cBb /home/anand/docker/secrets/basic_auth_credentials HTTP_USERNAME HTTP_PASSWORD
-sudo chown root:root /home/anand/docker/secrets/basic_aut
-```
+    ```yaml
+    --8<-- "apps/libreoffice.yaml"
+    ```
+
+=== "docker-compose.yaml"
+
+    ```yaml
+    --8<-- "docker-compose.yaml"
+    ```
+
+-   `traefik.enable`
+    -   Allows Traefik to interact with this application
+-   `traefik.http.routers.libreoffice-rtr.rule`
+    -   Creates a router, "libreoffice-rtr", that can be accessed @ libreoffice.example.com
+-   `traefik.http.routers.libreoffice-rtr.service`
+    -   Attaches a load balancing service, "libreoffice-svc",to the router
+-   `traefik.http.services.libreoffice-svc.loadbalancer.server.port`
+    -   Instructs the load balancer to operate on port 8888 (the exposed port of the application)
+-   `traefik.http.routers.libreoffice-rtr.entrypoints`
+    -   Instructs the router to use the "websecure" entrypoint (https://libreoffice.example.com)
+-   `traefik.http.routers.libreoffice-rtr.middlewares:`
+    -   Instructs the router to use the middleware service, `chain-oauth-google@file`
+        which requires Google OAuth for access
