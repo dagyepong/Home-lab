@@ -20,3 +20,15 @@ docker compose --profile core logs -ft
 docker compose --profile all pull
 docker compose --profile all up -d
 ```
+
+### **create network:**
+
+```bash
+docker network create proxy
+```
+
+#### **Logs:**
+
+```shell
+docker compose --profile all logs -ft
+```
