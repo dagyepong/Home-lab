@@ -1,6 +1,8 @@
 services:
   beszel:
     image: 'henrygd/beszel'
+    profiles: [ "media", "all"]
+
     container_name: 'beszel'
     restart: unless-stopped
     ports:
@@ -8,7 +10,7 @@ services:
     volumes:
       - ./beszel_data:/beszel_data
     networks:
-      - proxy
+      - docker
     labels:
       - traefik.enable=true
       - traefik.http.routers.beszel.rule=Host(`beszel.nanaoware.online`) || Host(`www.beszel.nanaoware.online`)
