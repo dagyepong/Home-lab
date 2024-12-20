@@ -1,0 +1,59 @@
+
+services:
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    profiles: [ "utilities", "all"]
+
+    ports:
+      - "3021:3000"
+    environment:
+      DATABASE_URL: postgresql://umami:umami@db:5432/umami
+      DATABASE_TYPE: postgresql
+      APP_SECRET: replace-me-with-a-random-string
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost:3000/api/heartbeat"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    
+    networks:
+      - proxy
+
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.umami.rule=Host(`umami.nanaoware.online`) || Host(`www.umami.nanaoware.online`)
+      - traefik.http.services.umami.loadbalancer.server.port=3021
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.myumami.middlewares=mywwwredirect
+      - traefik.http.routers.myumami.middlewares=dashboard
+      - traefik.http.routers.myumami.service=api@internal
+      - traefik.http.routers.myumami.tls=true
+      - traefik.http.routers.myumami.tls.certresolver=le
+
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: umami
+    volumes:
+      - /srv/appdata/umami/dba:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - proxy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+volumes:
+  umami-db-data:
+
+  # username admin
+  # psswd umami
