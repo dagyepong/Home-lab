@@ -10,23 +10,24 @@ include:
     - apps/traefik/docker-compose.yaml # Traefik (Reverse Proxy)
     - apps/socket-proxy.yaml # Docker Socket Proxy (Security)
     - apps/deunhealth.yaml # Restart Unhealthy Containers
-    - apps/pihole.yaml
+    - apps/unbound.yaml
+    - apps/fail2ban.yaml
     #############################################################################
     # MEDIA
     #############################################################################
 
-    - apps/heimdall.yaml # Heimdall (Landing Page)
-    - apps/plex.yaml # Plex (Media Server)
-    - apps/sonarr.yaml # Sonarr (TV Show Downloads)
-    - apps/radarr.yaml # Radarr (Movie Downloads)
-    - apps/prowlarr.yaml # Prowlarr (Indexer)
-    - apps/overseerr.yaml # Overseerr (Media Requests)
-    - apps/tautulli.yaml # Tautulli (Plex Analytics)
-    - apps/transmission.yaml # Transmission (Torrents Behind VPN)
-    - apps/sabnzbd.yaml # SABnzbd (Usenet Downloading)
-    - apps/nzbhydra.yaml # NZBHydra2 (Usenet Browsing)
-    # - apps/readarr.yaml # Readarr (Ebook Downloads)
-    # - apps/calibre.yaml # Calibre (Books Management)
+    - apps/homepage.yaml # Heomepage(Landing Page)
+    - apps/ghost # Blog (CMS Server)
+    - apps/wordpress.yaml # Blog (CMS Server)
+    - apps/immich.yaml # Photos(Backup)
+    - apps/vault.yaml # Password Manager(Vault)
+    - apps/nextloud.yaml # Backup(Media Backup)
+    - apps/portainer.yaml # Docker Mgt(Docker)
+    - apps/beszel.yaml # Docker Monitoring(Docker)
+    - apps/dozzle.yaml # Log(Docker Log)
+    - apps/authentic.yaml # Authentication(Authenticator)
+    - apps/littlelink.yaml # Link(LinkTree Alt.)
+    - apps/nextterm.yaml # Termninal (Emulator)
     # - apps/calibre-web.yaml # Calibre Web-UI
 
     #############################################################################
@@ -34,9 +35,9 @@ include:
     #############################################################################
 
     - apps/watchtower.yaml #  Watchtower (Container Updating)
-    # - apps/postgres.yaml # PostgreSQL (Shared Database)
-    # - apps/sftpgo.yaml # SFTPGo (File Management)
-    # - apps/pihole.yaml # Pi-hole (DNS Ad-Blocking)
+    - apps/umami.yaml # Analytics (Web Analytics)
+    - apps/paperless.yaml # Storage (File Management)
+    - apps/uptime.yaml # Up Time (Server Uptime)
     # - apps/portainer.yaml # Portainer (Container Management)
 
     #############################################################################
