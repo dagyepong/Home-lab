@@ -67,7 +67,7 @@ services:
     volumes:
       - /srv/appdata/nextcloud/redis:/data
     networks:
-      - cloud
+      - docker
       - proxy
 
 
