@@ -1,0 +1,30 @@
+
+services:
+    server:
+        container_name: vaultwarden
+        profiles: [ "media", "all"]
+
+        volumes:
+            - /srv/appdata/vaultwarden:/data/'
+        environment:
+            - SIGNUPS_ALLOWED=true
+            - ADMIN_TOKEN=#sPqDJ!WxJAkA
+            - I_REALLY_WANT_VOLATILE_STORAGE=true
+        ports:
+            - '4044:80'
+        networks:
+            - proxy
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.vaultwarden.rule=Host(`vaultwarden.nanaoware.online`) || Host(`www.vaultwarden.nanaoware.online`)
+            - traefik.http.services.vaultwarden.loadbalancer.server.port=4044
+            - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+            - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+            - traefik.http.routers.myvaultwarden.middlewares=mywwwredirect
+            - traefik.http.routers.myvaultwarden.middlewares=dashboard
+            - traefik.http.routers.myvaultwarden.service=api@internal
+            - traefik.http.routers.myvaultwarden.tls=true
+            - traefik.http.routers.myvaultwarden.tls.certresolver=le
+
+        image: 'vaultwarden/server:latest'
+

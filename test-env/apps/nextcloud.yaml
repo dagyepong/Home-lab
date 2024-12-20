@@ -1,0 +1,76 @@
+
+
+services:
+  nextcloud:
+    image: nextcloud
+    container_name: nextcloud
+    restart: unless-stopped
+    networks:
+      - cloud
+      - proxy
+    depends_on:
+      - nextclouddb
+      - redis
+    ports:
+      - 8081:80
+    volumes:
+      - /srv/appdata/nextcloud/html:/var/www/html
+      - /srv/appdata/nextcloud/custom_apps:/var/www/html/custom_apps
+      - /srv/appdata/nextcloud/config:/var/www/html/config
+      - /srv/appdata/nextcloud/data:/var/www/html/data
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.nextcloud.rule=Host(`nextcloud.nanaoware.online`) || Host(`www.nextcloud.nanaoware.online`)
+      - traefik.http.services.nextcloud.loadbalancer.server.port=8081
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.mynextcloud.middlewares=mywwwredirect
+      - traefik.http.routers.mynextcloud.middlewares=dashboard
+      - traefik.http.routers.mynextcloud.service=api@internal
+      - traefik.http.routers.mynextcloud.tls=true
+      - traefik.http.routers.mynextcloud.tls.certresolver=le
+
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Brussels
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=dbpassword
+      - MYSQL_HOST=nextclouddb
+      - REDIS_HOST=redis
+
+  nextclouddb:
+    image: mariadb
+    container_name: nextcloud-db
+    restart: unless-stopped
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    networks:
+      - cloud
+      - proxy
+    volumes:
+      - /srv/appdata/nextcloud/nextclouddb:/var/lib/mysql
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Brussels
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
+      - MYSQL_PASSWORD=dbpassword
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    volumes:
+      - /srv/appdata/nextcloud/redis:/data
+    networks:
+      - cloud
+      - proxy
+
+networks:
+  cloud:
+    name: cloud
+    driver: bridge
+  proxy:
+    external: true
