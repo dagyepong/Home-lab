@@ -24,7 +24,7 @@ include:
     - apps/nextloud.yaml # Backup(Media Backup)
     - apps/portainer.yaml # Docker Mgt(Docker)
     - apps/beszel.yaml # Docker Monitoring(Docker)
-    - apps/dozzle.yaml # Log(Docker Log)
+    - apps//dozzle/dozzle.yaml # Log(Docker Log)
     - apps/authentic.yaml # Authentication(Authenticator)
     - apps/littlelink.yaml # Link(LinkTree Alt.)
     - apps/nextterm.yaml # Termninal (Emulator)
