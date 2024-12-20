@@ -15,3 +15,8 @@ docker compose --profile core down
 ```bash
 docker compose --profile core logs -ft
 ```
+### **Start & update all services:**
+```bash
+homelab-compose --profile all pull
+homelab-compose --profile all up -d
+```
