@@ -35,7 +35,7 @@ services:
 
       - --certificatesresolvers.le.acme.tlschallenge=true
       - --certificatesresolvers.le.acme.email=dollarsterl@gmail.com #  cert resolvers
-      - --certificatesResolvers.le.acme.storage=/appdata/traefik/acme.json
+      - --certificatesResolvers.le.acme.storage=/letsencrypt/acme.json
 
       
       - --log.filepath=/var/log/traefik.log
@@ -58,7 +58,7 @@ services:
     volumes:
       # So that Traefik can listen to the Docker events
       #- /var/run/docker.sock:/var/run/docker.sock
-      - appdata/traefik/acme.json:/letsencrypt
+      - /letsencrypt/acme.json:/letsencrypt
       - /var/log:/var/log
     
     labels:
