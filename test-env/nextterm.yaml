@@ -11,7 +11,7 @@ services:
     image: germannewsmaker/nexterm:1.0.1-OPEN-PREVIEW
 
     networks:
-      - docker
+      - proxy
     labels:
       - traefik.enable=true
       - traefik.http.routers.nexterrm.rule=Host(`nexterm.nanaoware.online`) || Host(`www.nexterm.nanaoware.online`)

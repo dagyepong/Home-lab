@@ -8,7 +8,7 @@ services:
     profiles: [ "media", "all"]
 
     networks:
-      - docker
+      - socket-proxy
       - proxy
     depends_on:
       - nextclouddb
@@ -48,7 +48,7 @@ services:
     restart: unless-stopped
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     networks:
-      - docker
+      - socket-proxy
       - proxy
     volumes:
       - /srv/appdata/nextcloud/nextclouddb:/var/lib/mysql
@@ -67,7 +67,7 @@ services:
     volumes:
       - /srv/appdata/nextcloud/redis:/data
     networks:
-      - docker
+      - socket-proxy
       - proxy
 
 

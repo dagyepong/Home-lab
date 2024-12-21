@@ -10,7 +10,7 @@ services:
     volumes:
       - ./beszel_data:/beszel_data
     networks:
-      - docker
+      - proxy
     labels:
       - traefik.enable=true
       - traefik.http.routers.beszel.rule=Host(`beszel.nanaoware.online`) || Host(`www.beszel.nanaoware.online`)

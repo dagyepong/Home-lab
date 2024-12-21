@@ -59,7 +59,8 @@ services:
       - FOOTER=Linuxpad © 2024
     ports:
       - 8080:3000
-
+    networks:
+      - proxy
 
     labels:
       - traefik.enable=true
