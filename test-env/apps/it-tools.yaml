@@ -1,0 +1,25 @@
+services:
+  # IT-Tools - Status Page & Monitoring Server
+  it-tools:
+    image: corentinth/it-tools
+    container_name: it-tools
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    networks:
+      - proxy
+    ports:
+      - 8060:8060
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.it-tools.rule=Host(`tools.nanaoware.online`) || Host(`www.tools.nanaoware.online`)
+      - traefik.http.services.it-tools.loadbalancer.server.port=8060
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.myit-tools.middlewares=mywwwredirect
+      - traefik.http.routers.myit-tools.middlewares=dashboard
+      - traefik.http.routers.myit-tools.service=api@internal
+      - traefik.http.routers.myit-tools.tls=true
+      - traefik.http.routers.myit-tools.tls.certresolver=le
+
+
