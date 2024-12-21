@@ -15,7 +15,7 @@ include:
     # MEDIA
     #############################################################################
 
-    - apps/homepage/homepage.yaml # Heomepage(Landing Page)
+    - apps/homepage.yaml # Heomepage(Landing Page)
    # - apps/ghost/ghost.yaml # Blog (CMS Server)
    # - apps/wordpress/wordpress.yaml # Blog (CMS Server)
    # - apps/immich/immich.yaml # Photos(Backup)
@@ -23,7 +23,7 @@ include:
     - apps/nextcloud.yaml # Backup(Media Backup)
     - apps/portainer.yaml # Docker Mgt(Docker)
     - apps/beszel.yaml # Docker Monitoring(Docker)
-    - apps//dozzle/dozzle.yaml # Log(Docker Log)
+    - apps/dozzle.yaml # Log(Docker Log)
    # - apps/authentic/authentic.yaml # Authentication(Authenticator)
     - apps/link.yaml # Link(LinkTree Alt.)
     - apps/nextterm.yaml # Termninal (Emulator)
@@ -33,9 +33,9 @@ include:
     # UTILITIES
     #############################################################################
 
-    - apps/watchtower/watchtower.yaml #  Watchtower (Container Updating)
+    - apps/watchtower.yaml #  Watchtower (Container Updating)
     - apps/umami.yaml # Analytics (Web Analytics)
-    - apps/paperless.yaml # Storage (File Management)
+   # - apps/paperless.yaml # Storage (File Management)
     - apps/uptime.yaml # Up Time (Server Uptime)
     # - apps/portainer.yaml # Portainer (Container Management)
 
@@ -61,14 +61,14 @@ networks:
         driver: bridge
         ipam:
             config:
-                - subnet: 192.168.12.0/24
+                - subnet: 192.168.90.0/24
     docker:
         driver: bridge
         ipam:
             config:
-                - subnet: 192.168.13.0/24
+                - subnet: 192.168.90.0/24
     internal:
         driver: bridge
         ipam:
             config:
-                - subnet: 192.168.14.0/24
+                - subnet: 192.168.90.0/24
