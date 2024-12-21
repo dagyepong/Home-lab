@@ -1,0 +1,91 @@
+
+services:
+  wp:
+    image: wordpress:latest
+    profiles: [ "media", "all"]
+    restart: unless-stopped
+    ports:
+      - 5010:80
+    volumes:
+      - ./config/wp_php.ini:/usr/local/etc/php/conf.d/conf.ini
+      - appdata/wordpress/wordpress.ini:/usr/local/etc/php/conf.d/wordpress.ini 
+      - ./wp-app:/var/www/html # Full wordpress project
+    environment:
+      WORDPRESS_DB_HOST: wp-db:3306
+      WORDPRESS_DB_NAME: ${DB_NAME}
+      WORDPRESS_DB_USER: ${DB_USER}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - wp-db
+    networks:
+      - proxy
+
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.wordpress.rule=Host(`tech.nanaoware.online`) || Host(`www.tech.nanaoware.online`)
+      - traefik.http.services.wordpress.loadbalancer.server.port=5010
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.mywordpress.middlewares=mywwwredirect
+      - traefik.http.routers.mywordpress.middlewares=dashboard
+      - traefik.http.routers.mywordpress.service=api@internal
+      - traefik.http.routers.mywordpress.tls=true
+      - traefik.http.routers.mywordpress.tls.certresolver=le
+
+
+  wp-db:
+    image: mysql:latest
+    volumes:
+      - ./db_data:/var/lib/mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - proxy  
+  pma:
+    image: phpmyadmin:latest
+    ports:
+      - 5011:80
+    volumes:
+      - ./config/pma_php.ini:/usr/local/etc/php/conf.d/conf.ini
+      - ./config/pma_config.php:/etc/phpmyadmin/config.user.inc.php
+    restart: unless-stopped
+    networks:
+      - proxy
+    environment:
+      # https://docs.phpmyadmin.net/en/latest/setup.html#docker-environment-variables
+      PMA_HOST: wp-db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      UPLOAD_LIMIT: 50M
+    depends_on:
+      - wp-db
+  wp-db-backup:
+    container_name: wp-db-backup
+    image: tiredofit/db-backup
+    volumes:
+      - ./backups:/backup
+    restart: unless-stopped
+    environment:
+      DB_TYPE: mysql
+      DB_HOST: wp-db
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASSWORD}
+      DB_BACKUP_INTERVAL: 720
+      DB_CLEANUP_TIME: 72000
+      #DB_BACKUP_BEGIN: 1
+      CHECKSUM: SHA1
+      COMPRESSION: GZ
+      CONTAINER_ENABLE_MONITORING: false
+    depends_on:
+      - wp-db
+  redis-wp:
+    image: redis
+    restart: unless-stopped
+
+
+

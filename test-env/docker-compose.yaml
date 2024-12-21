@@ -16,8 +16,8 @@ include:
     #############################################################################
 
     - apps/homepage.yaml # Heomepage(Landing Page)
-   # - apps/ghost/ghost.yaml # Blog (CMS Server)
-   # - apps/wordpress/wordpress.yaml # Blog (CMS Server)
+    - apps/ghost.yaml # Blog (CMS Server)
+    - apps/wordpress/wordpress.yaml # Blog (CMS Server)
    # - apps/immich/immich.yaml # Photos(Backup)
     - apps/vault.yaml # Password Manager(Vault)
     - apps/nextcloud.yaml # Backup(Media Backup)
