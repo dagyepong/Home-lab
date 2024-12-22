@@ -74,9 +74,9 @@ services:
     volumes:
       # So that Traefik can listen to the Docker events
       #- /var/run/docker.sock:/var/run/docker.sock
-      - /letsencrypt/:/letsencrypt
+      - ./letsencrypt/:/letsencrypt
       - /var/log:/var/log
-      - ${DOCKER_DIRECTORY}/apps/traefik/rules:/rules
+      - ./rules:/rules
 
     environment:
       CF_API_EMAIL: ${CLOUDFLARE_EMAIL}
