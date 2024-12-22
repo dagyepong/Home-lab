@@ -15,6 +15,22 @@ services:
     image: traefik:latest
     container_name: reverse-proxy
     # Enables the web UI and tells Traefik to listen to docker
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
+      - target: 9000
+        published: 9000
+        protocol: tcp
+        mode: host
+    networks:
+      - socket
+      - proxy
     command:
       - --entrypoints.web.address=:80
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
@@ -26,7 +42,7 @@ services:
       - --providers.docker=true
       - --providers.docker.network=proxy
       - --providers.docker.exposedbydefault=false # Do not expose containers unless explicitly told so
-
+      - --providers.docker.endpoint=tcp://socket-proxy:2375
       - --api.dashboard=true # Enable dashboard
       - --api.debug=true
 
@@ -34,7 +50,6 @@ services:
       - --certificatesresolvers.le.acme.email=dollarsterl@gmail.com #  cert resolvers
       - --certificatesResolvers.le.acme.storage=/letsencrypt/acme.json
 
-      
       - --log.filepath=/var/log/traefik.log
       - --accesslog=true
       - --accesslog.filepath=/var/log/traefik-access.log
@@ -45,17 +60,10 @@ services:
       - --certificatesresolvers.myresolver.acme.tlschallenge=true
       - --certificatesResolvers.myresolver.acme.email=owarenana06@gmail.com
     restart: always
-    ports:
-      - 80:80/tcp
-      - 80:80/udp
-      - 443:443/tcp
-      - 443:443/udp
     volumes:
-      # So that Traefik can listen to the Docker events
-      - /var/run/docker.sock:/var/run/docker.sock
       - letsencrypt:/letsencrypt
       - /var/log:/var/log
-    
+
     labels:
       traefik.enable: true
 
@@ -78,9 +86,46 @@ services:
       traefik.http.middlewares.hstsx.headers.browserxssfilter: true
       traefik.http.middlewares.hstsx.headers.sslredirect: true
       traefik.http.middlewares.hstsx.headers.contenttypenosniff: true
-    networks:
-      - default
 
+
+  socket-proxy:
+    image: tecnativa/docker-socket-proxy:edge
+    networks:
+      - socket
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - LOG_LEVEL=warning # debug,info,notice,warning,err,crit,alert,emerg
+      ## Variables match the URL prefix (i.e. AUTH blocks access to /auth/* parts of the API, etc.).
+      # 0 to revoke access.
+      # 1 to grant access.
+      ## Granted by Default
+      - EVENTS=1
+      - PING=1
+      - VERSION=1
+      ## Revoked by Default
+      # Security critical
+      - AUTH=0
+      - SECRETS=0
+      - POST=1 # Watchtower
+      # Not always needed
+      - BUILD=0
+      - COMMIT=0
+      - CONFIGS=0
+      - CONTAINERS=1 # Traefik, portainer, etc.
+      - DISTRIBUTION=0
+      - EXEC=0
+      - IMAGES=1 # Portainer
+      - INFO=1 # Portainer
+      - NETWORKS=1 # Portainer
+      - NODES=0
+      - PLUGINS=0
+      - SERVICES=1 # Portainer
+      - SESSION=0
+      - SWARM=0
+      - SYSTEM=0
+      - TASKS=1 # Portainer
+      - VOLUMES=1 # Portainer
 
 
   whoami:
@@ -112,9 +157,11 @@ services:
       - traefik.enable=true
       - traefik.tcp.routers.tcpecho-plain.entrypoints=tcp-plain
       - traefik.tcp.routers.tcpecho-plain.rule=HostSNI(`*`)
-      - traefik.tcp.services.tcpecho-plain.loadbalancer.server.port=9000      
+      - traefik.tcp.services.tcpecho-plain.loadbalancer.server.port=9000
 
 networks:
-  default:
-    external:
-      name: proxy
+  proxy:
+    name: proxy
+    external: true #do not expose external for security risk
+  socket:
+    name: socket
