@@ -27,7 +27,7 @@ services:
       - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
       - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
       - traefik.http.routers.mydozzle.middlewares=mywwwredirect
-      - traefik.http.routers.mydozzle.middlewares=myauth
+      - traefik.http.routers.mydozzle.middlewares=dashboard
       - traefik.http.routers.mydozzle.service=api@internal
       - traefik.http.routers.mybeszel.tls.certresolver=le
 
