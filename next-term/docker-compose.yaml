@@ -1,4 +1,4 @@
-version: '3.9'
+
 services:
   nexterm:
     ports:
@@ -10,6 +10,7 @@ services:
 
     networks:
       - proxy
+      - socket
     labels:
       - traefik.enable=true
       - traefik.http.routers.nexterrm.rule=Host(`nexterm.nanaoware.online`) || Host(`www.nexterm.nanaoware.online`)
@@ -17,7 +18,7 @@ services:
       - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
       - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
       - traefik.http.routers.mynexterm.middlewares=mywwwredirect
-      - traefik.http.routers.mynexterm.middlewares=dashboard
+      - traefik.http.routers.mynexterm.middlewares=myauth
       - traefik.http.routers.mynexterm.service=api@internal
       - traefik.http.routers.mynexterm.tls=true
       - traefik.http.routers.mynexterm.tls.certresolver=le
@@ -25,4 +26,7 @@ services:
 
 networks:
   proxy:
-    external: true
+    name: proxy
+    external: true #do not expose external for security risk
+  socket:
+    name: socket
