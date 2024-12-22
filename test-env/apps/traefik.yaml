@@ -1,5 +1,10 @@
 
-
+####################################
+# TRAEFIK (REVERSE PROXY)
+####################################
+secrets:
+    cloudflare_api_key:
+        file: /secrets/cloudflare_api_key.secret
 
 
 volumes:
@@ -13,22 +18,29 @@ services:
   reverse-proxy:
     # The official v3 Traefik docker image
     image: traefik:latest
-
+    profiles: ["traefik", "core", "all"]
     container_name: reverse-proxy
     # Enables the web UI and tells Traefik to listen to docker
     command:
+              # GLOBAL SETTINGS
+      - --global.checkNewVersion=true
+      - --global.sendAnonymousUsage=false
+      - --core.defaultRuleSyntax=v3
       - --entrypoints.web.address=:80
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - --entrypoints.websecure.address=:443
       - --entrypoints.websecure.http3
       - --log.level=INFO
-
+            # PROVIDERS
       - --providers.docker=true
       - --providers.docker.network=proxy
       - --providers.docker.endpoint=tcp://socket-proxy:2375
       - --providers.docker.exposedbydefault=false # Do not expose containers unless explicitly told so
-
+      - --providers.file.directory=/rules
+      - --providers.file.watch=true
+              # API SETTINGS
+      - --api=true
       - --api.dashboard=true # Enable dashboard
       - --api.debug=true
 
@@ -36,8 +48,11 @@ services:
       - --certificatesresolvers.le.acme.email=dollarsterl@gmail.com #  cert resolvers
       - --certificatesResolvers.le.acme.storage=/letsencrypt/acme.json
 
-      
-      - --log.filepath=/var/log/traefik.log
+              # LOGGING SETTINGS
+      - --log=true
+      - --log.level=INFO # DEBUG, INFO, WARN, ERROR, FATAL, PANIC
+      - --accessLog.bufferingSize=100
+      - --accessLog.filters.statusCodes=204-299,400-499,500-599
       - --accesslog=true
       - --accesslog.filepath=/var/log/traefik-access.log
       - --metrics.prometheus=true
@@ -49,6 +64,8 @@ services:
     restart: always
     depends_on:
       - socket-proxy
+      - duckdns
+      - oauth
     ports:
       - 80:80/tcp
       - 80:80/udp
@@ -59,6 +76,14 @@ services:
       #- /var/run/docker.sock:/var/run/docker.sock
       - /letsencrypt/:/letsencrypt
       - /var/log:/var/log
+      - ${DOCKER_DIRECTORY}/apps/traefik/rules:/rules
+
+    environment:
+      CF_API_EMAIL: ${CLOUDFLARE_EMAIL}
+      CF_API_KEY_FILE: /run/secrets/cloudflare_api_key
+    secrets:
+      - source: cloudflare_api_key
+      - target: /run/secrets/cloudflare_api_key
     
     labels:
       traefik.enable: true
@@ -83,9 +108,8 @@ services:
       traefik.http.middlewares.hstsx.headers.sslredirect: true
       traefik.http.middlewares.hstsx.headers.contenttypenosniff: true
     networks:
-      - proxy
-      - socket-proxy
-
+      traefik:
+      docker:
 
 
   whoami:
@@ -119,8 +143,3 @@ services:
       - traefik.tcp.routers.tcpecho-plain.rule=HostSNI(`*`)
       - traefik.tcp.services.tcpecho-plain.loadbalancer.server.port=9000
 
-
-networks:
-  default:
-    external:
-      name: proxy
