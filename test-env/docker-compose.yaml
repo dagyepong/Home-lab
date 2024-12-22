@@ -7,10 +7,10 @@ include:
     # TRAEFIK (CORE)
     #############################################################################
 
-    - /traefik.yaml # Traefik (Reverse Proxy)
-    - /duckdns.yaml # DuckDNS (Dynamic DNS)
-    - /oauth.yaml # OAuth (Authentication)
-    - /socket-proxy.yaml # Docker Socket Proxy (Security)
+    - apps/traefik.yaml # Traefik (Reverse Proxy)
+    - apps/duckdns.yaml # DuckDNS (Dynamic DNS)
+    - apps/oauth.yaml # OAuth (Authentication)
+    - apps/socket-proxy.yaml # Docker Socket Proxy (Security)
 
     #############################################################################
     # MEDIA
@@ -58,18 +58,8 @@ include:
 ################################################################################
 
 networks:
-    traefik:
-        driver: bridge
-        ipam:
-            config:
-                - subnet: 192.168.90.0/24
-    docker:
-        driver: bridge
-        ipam:
-            config:
-                - subnet: 192.168.91.0/24
-    internal:
-        driver: bridge
-        ipam:
-            config:
-                - subnet: 192.168.92.0/24
+  proxy:
+    name: proxy
+    external: true #do not expose external for security risk
+  socket:
+    name: socket
