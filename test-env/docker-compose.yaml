@@ -7,10 +7,10 @@ include:
     # TRAEFIK (CORE)
     #############################################################################
 
-    - apps/traefik/docker-compose.yaml # Traefik (Reverse Proxy)
-    - apps/duckdns.yaml # DuckDNS (Dynamic DNS)
-    - apps/oauth.yaml # OAuth (Authentication)
-    - apps/socket-proxy.yaml # Docker Socket Proxy (Security)
+    - /traefik.yaml # Traefik (Reverse Proxy)
+    - /duckdns.yaml # DuckDNS (Dynamic DNS)
+    - /oauth.yaml # OAuth (Authentication)
+    - /socket-proxy.yaml # Docker Socket Proxy (Security)
 
     #############################################################################
     # MEDIA
