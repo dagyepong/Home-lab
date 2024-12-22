@@ -29,7 +29,7 @@ services:
       - --entryPoints.tcp-plain.address=:9000
       - --accesslog=true
       - --accesslog.filepath=/var/log/traefik-access.log
-      - --providers.docker.endpoint=tcp://socketproxy:2375
+      - --providers.docker.endpoint=tcp://socket-proxy:2375
       - --providers.docker.exposedByDefault=false
       - --providers.docker.network=proxy
       - --entrypoints.web.address=:80
@@ -47,7 +47,7 @@ services:
       - traefik.http.routers.mydashboard.middlewares=myauth
       - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
 
-  socketproxy:
+  socket-proxy:
     image: tecnativa/docker-socket-proxy:edge
     networks:
       - socket
