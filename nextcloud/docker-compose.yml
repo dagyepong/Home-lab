@@ -25,7 +25,7 @@ services:
       - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
       - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
       - traefik.http.routers.mynextcloud.middlewares=mywwwredirect
-      - traefik.http.routers.mynextcloud.middlewares=myauth
+      - traefik.http.routers.mynextcloud.middlewares=dashboard
       - traefik.http.routers.mynextcloud.service=api@internal
       - traefik.http.routers.mynextcloud.tls=true
       - traefik.http.routers.mynextcloud.tls.certresolver=le
