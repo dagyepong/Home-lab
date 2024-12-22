@@ -9,6 +9,7 @@ services:
       - ./beszel_data:/beszel_data
     networks:
       - proxy
+      - socket
     labels:
       - traefik.enable=true
       - traefik.http.routers.beszel.rule=Host(`beszel.nanaoware.online`) || Host(`www.beszel.nanaoware.online`)
@@ -23,4 +24,7 @@ services:
 
 networks:
   proxy:
-    external: true
+    name: proxy
+    external: true #do not expose external for security risk
+  socket:
+    name: socket
