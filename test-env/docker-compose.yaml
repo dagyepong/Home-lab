@@ -61,5 +61,10 @@ networks:
   proxy:
     name: proxy
     external: true #do not expose external for security risk
+
   socket:
     name: socket
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "192.168.12.77./24"
