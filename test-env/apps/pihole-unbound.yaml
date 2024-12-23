@@ -1,0 +1,40 @@
+
+
+services:
+  pihole-unbound:
+    container_name: pihole-unbound
+    image: cbcrowe/pihole-unbound:latest
+    cap_add:
+      - NET_ADMIN
+    networks:
+      homepi:
+        ipv4_address: 192.168.12.187 # the IP of the pihole container
+    ports:
+      - 443:443/tcp
+      - 53/tcp
+      - 53/udp
+      - 80/tcp #Allows use of different port to access pihole web interface when other docker containers use port 80
+      # - 5335:5335/tcp # Uncomment to enable unbound access on local server
+      # - 22/tcp # Uncomment to enable SSH
+    environment:
+      - FTLCONF_LOCAL_IPV4=192.168.12.187
+      - TZ=#TZ
+      - WEBPASSWORD=password
+      - PIHOLE_DNS_=127.0.0.1#5335
+      - DNSSEC="true"
+      - DNSMASQ_LISTENING=single
+    volumes:
+      - /some-location/etc-pihole:/etc/pihole:rw
+      - /some-location/etc-dnsmasq.d:/etc/dnsmasq.d:rw
+    restart: unless-stopped
+
+networks:
+  homepi:                                 # Name of network
+    driver: macvlan                       # Use the macvlan network driver
+    driver_opts:
+      parent: enp5s0  # Name of the Network Interface (check in OMV GUI in Network >> Interfaces >> Name
+    ipam:
+      config:
+        - subnet: 192.168.0.0/24          # Specify subnet
+          gateway: 192.168.12.1            # Gateway address / address of router
+          ip_range: 192.168.0.12/30       # 192.168.0.13 and 192.168.0.14
