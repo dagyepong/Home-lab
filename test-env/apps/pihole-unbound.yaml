@@ -1,40 +1,32 @@
 
 
+# More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
 services:
-  pihole-unbound:
-    container_name: pihole-unbound
-    image: cbcrowe/pihole-unbound:latest
-    cap_add:
-      - NET_ADMIN
-    networks:
-      homepi:
-        ipv4_address: 192.168.12.187 # the IP of the pihole container
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
     ports:
-      - 443:443/tcp
-      - 53/tcp
-      - 53/udp
-      - 80/tcp #Allows use of different port to access pihole web interface when other docker containers use port 80
-      # - 5335:5335/tcp # Uncomment to enable unbound access on local server
-      # - 22/tcp # Uncomment to enable SSH
+      - "8553:53/tcp"
+      - "8553:53/udp"
+      - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
+      - "9554:80/tcp"
     environment:
-      - FTLCONF_LOCAL_IPV4=192.168.12.187
-      - TZ=#TZ
-      - WEBPASSWORD=password
-      - PIHOLE_DNS_=127.0.0.1#5335
-      - DNSSEC="true"
-      - DNSMASQ_LISTENING=single
-    volumes:
-      - /some-location/etc-pihole:/etc/pihole:rw
-      - /some-location/etc-dnsmasq.d:/etc/dnsmasq.d:rw
-    restart: unless-stopped
+      TZ: ${PIHOLE_TIMEZONE}
+      WEBPASSWORD: ${PIHOLE_PASSWORD}
 
-networks:
-  homepi:                                 # Name of network
-    driver: macvlan                       # Use the macvlan network driver
-    driver_opts:
-      parent: enp5s0  # Name of the Network Interface (check in OMV GUI in Network >> Interfaces >> Name
-    ipam:
-      config:
-        - subnet: 192.168.0.0/24          # Specify subnet
-          gateway: 192.168.12.1            # Gateway address / address of router
-          ip_range: 192.168.0.12/30       # 192.168.0.13 and 192.168.0.14
+    # Volumes store your data between container upgrades
+    volumes:
+      - "/docker/pihole/etc-pihole:/etc/pihole"
+      - "/docker/pihole/etc-dnsmasq.d:/etc/dnsmasq.d"    
+    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+    cap_add:
+      - NET_ADMIN # Recommended but not required (DHCP needs NET_ADMIN)
+    restart: unless-stopped
+  unbound:
+    container_name: unbound
+    image: mvance/unbound:latest
+    restart: unless-stopped
+    ports:
+      - "5335:53/tcp"
+      - "5335:53/udp"
