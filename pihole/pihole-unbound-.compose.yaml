@@ -23,6 +23,18 @@ services:
     cap_add:
       - NET_ADMIN # Recommended but not required (DHCP needs NET_ADMIN)
     restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pihole.rule=Host(`pihole.nanaoware.online`) || Host(`www.pihole.nanaoware.online`)
+      - traefik.http.services.pihole.loadbalancer.server.port=9554
+      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.mypihole.middlewares=mywwwredirect
+      - traefik.http.routers.mypihole.middlewares=dashboard
+      - traefik.http.routers.mypihole.service=api@internal
+      - traefik.http.routers.mypihole.tls=true
+      - traefik.http.routers.mypihole.tls.certresolver=le
+ 
   unbound:
     container_name: unbound
     image: mvance/unbound:latest
@@ -30,3 +42,4 @@ services:
     ports:
       - "5335:53/tcp"
       - "5335:53/udp"
+   
