@@ -6,5 +6,5 @@ services:
     ports:
       - "8085:8080"
     volumes:
-      - /etc/homer/assets/:/www/assets
+      - /home/nana/docker/homer/data/:/www/assets
     restart: unless-stopped
