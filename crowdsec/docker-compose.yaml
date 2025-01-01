@@ -14,7 +14,7 @@ services:
       - /var/lib/docker/volumes/traefik_logs/_data/:/var/log/traefik/:ro
       - ./acquis.yaml:/etc/crowdsec/acquis.yaml:ro
     networks:
-      - traefik_lan
+      - proxy
     
 
   crowdsec-bouncer:
