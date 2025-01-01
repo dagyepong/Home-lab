@@ -21,6 +21,8 @@ services:
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - --entrypoints.websecure.address=:443
       - --entrypoints.websecure.http3
+      - --entrypoints.websecure.http.middlewares=crowdsec-bouncer@docker
+
       - --log.level=INFO
 
       - --providers.docker=true
@@ -57,27 +59,29 @@ services:
       - /var/log:/var/log
     
     labels:
-      traefik.enable: true
+      - "traefik.enable: true"
 
       # Dashboard
-      traefik.http.routers.reverse-proxy.rule: Host(`dashboard.nanaoware.online`)
-      traefik.http.routers.reverse-proxy.entrypoints: websecure
-      traefik.http.routers.reverse-proxy.service: api@internal
-      traefik.http.routers.reverse-proxy.tls: true
-      traefik.http.routers.reverse-proxy.tls.certresolver: le
-      traefik.http.routers.reverse-proxy.middlewares: dashboard
-      traefik.http.middlewares.dashboard.basicauth.users: test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
-
+      - "traefik.http.routers.reverse-proxy.rule: Host(`dashboard.nanaoware.online`)"
+      - "traefik.http.routers.reverse-proxy.entrypoints: websecure"
+      - "traefik.http.routers.reverse-proxy.service: api@internal"
+      - "traefik.http.routers.reverse-proxy.tls: true"
+      - "traefik.http.routers.reverse-proxy.tls.certresolver: le"
+      - "traefik.http.routers.reverse-proxy.middlewares: dashboard"
+      - "traefik.http.middlewares.dashboard.basicauth.users: test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
+      - "traefik.http.middlewares.crowdsec-bouncer.forwardauth.address=http://crowdsec-bouncer:8080/api/v1/forwardAuth"
+      - "traefik.http.middlewares.crowdsec-bouncer.forwardauth.trustForwardHeader=true"
+    
 
       # SECURITY MIDDLEWARE named "hstsx"
-      traefik.http.middlewares.hstsx.headers.stsincludesubdomains: true
-      traefik.http.middlewares.hstsx.headers.stspreload: true
-      traefik.http.middlewares.hstsx.headers.stsseconds: 31536000
-      traefik.http.middlewares.hstsx.headers.forcestsheader: true
-      traefik.http.middlewares.hstsx.headers.customframeoptionsvalue: sameorigin
-      traefik.http.middlewares.hstsx.headers.browserxssfilter: true
-      traefik.http.middlewares.hstsx.headers.sslredirect: true
-      traefik.http.middlewares.hstsx.headers.contenttypenosniff: true
+      - "traefik.http.middlewares.hstsx.headers.stsincludesubdomains: true"
+      - "traefik.http.middlewares.hstsx.headers.stspreload: true"
+      - "traefik.http.middlewares.hstsx.headers.stsseconds: 31536000"
+      - "traefik.http.middlewares.hstsx.headers.forcestsheader: true"
+      - "traefik.http.middlewares.hstsx.headers.customframeoptionsvalue: sameorigin"
+      - "traefik.http.middlewares.hstsx.headers.browserxssfilter: true"
+      - "traefik.http.middlewares.hstsx.headers.sslredirect: true"
+      - "traefik.http.middlewares.hstsx.headers.contenttypenosniff: true"
     networks:
       - default
 
