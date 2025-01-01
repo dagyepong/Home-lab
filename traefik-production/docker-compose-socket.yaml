@@ -24,7 +24,6 @@ services:
       - --entrypoints.web.address=:80
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entryPoints.web.http.redirections.entrypoint.scheme=https
-      - --entrypoints.websecure.http.middlewares=crowdsec-bouncer@docker
 
       - --entrypoints.web.http.redirections.entrypoint.permanent=true
       - --entrypoints.websecure.http.tls=true
@@ -42,10 +41,7 @@ services:
       - traefik.http.routers.mydashboard.service=api@internal
       - traefik.http.routers.mydashboard.middlewares=myauth
       - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
-      - traefik.http.middlewares.crowdsec-bouncer.forwardauth.address=http://crowdsec-bouncer:8080/api/v1/forwardAuth
-      - traefik.http.middlewares.crowdsec-bouncer.forwardauth.trustForwardHeader=true
-
-  socketproxy:
+  proxy:
     image: tecnativa/docker-socket-proxy:edge
     networks:
       - socket
