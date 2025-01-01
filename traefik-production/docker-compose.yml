@@ -83,14 +83,14 @@ services:
       - "traefik.http.middlewares.hstsx.headers.sslredirect: true"
       - "traefik.http.middlewares.hstsx.headers.contenttypenosniff: true"
     networks:
-      - default
+      - proxy
 
 
 
   whoami:
     image: traefik/whoami:v1.9
     networks:
-      - default
+      - proxy
     labels:
       - traefik.enable=true
       - traefik.http.routers.whoami.entrypoints=websecure
@@ -100,7 +100,7 @@ services:
   tcpecho-le:
     image: istio/tcp-echo-server:1.2
     networks:
-      - default
+      - proxy
     labels:
       - traefik.enable=true
       - traefik.tcp.routers.tcpecho-le.entrypoints=websecure
@@ -111,7 +111,7 @@ services:
   tcpecho-plain:
     image: istio/tcp-echo-server:1.2
     networks:
-      - default
+      - proxy
     labels:
       - traefik.enable=true
       - traefik.tcp.routers.tcpecho-plain.entrypoints=tcp-plain
@@ -119,6 +119,5 @@ services:
       - traefik.tcp.services.tcpecho-plain.loadbalancer.server.port=9000      
 
 networks:
-  default:
-    external:
-      name: proxy
+  proxy:
+    external: true
