@@ -1,0 +1,38 @@
+
+
+services:
+  crowdsec:
+    image: docker.io/crowdsecurity/crowdsec:latest
+    container_name: crowdsec
+    restart: unless-stopped
+    environment:
+      - COLLECTIONS=crowdsecurity/traefik crowdsecurity/http-cve
+      - CUSTOM_HOSTNAME=crowdsec
+    volumes:
+      - config:/etc/crowdsec
+      - db:/var/lib/crowdsec/data/
+      - /var/lib/docker/volumes/traefik_logs/_data/:/var/log/traefik/:ro
+      - ./acquis.yaml:/etc/crowdsec/acquis.yaml:ro
+    networks:
+      - traefik_lan
+    
+
+  crowdsec-bouncer:
+    image: fbonalair/traefik-crowdsec-bouncer:latest
+    container_name: crowdsec-bouncer
+    restart: unless-stopped
+    environment:
+      CROWDSEC_BOUNCER_API_KEY: xxxxxxxxxxxxxxxxxxxxxx  # à modifier
+      CROWDSEC_AGENT_HOST: crowdsec:8080
+    expose:
+      - 8080
+    networks:
+      - traefik_lan
+
+networks:
+  proxy:
+    external: true        
+
+volumes:
+  config:
+  db:    
