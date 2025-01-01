@@ -1,0 +1,52 @@
+
+services:
+  traefik:
+    container_name: traefik
+    image: traefik:latest
+    restart: unless-stopped
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.file.directory=/etc/traefik/dynamic-conf"
+      - "--providers.file.watch=true"
+      - "--api.dashboard=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--certificatesResolvers.letsencrypt.acme.email=owarenana06@gmail.com" # à modifier
+      - "--certificatesResolvers.letsencrypt.acme.storage=acme.json"
+      - "--certificatesResolvers.letsencrypt.acme.tlsChallenge=true"
+      - "--entrypoints.websecure.http.middlewares=crowdsec-bouncer@docker"
+      - "--log=true"
+      - "--log.level=INFO"
+      - "--log.filepath=/var/log/traefik.log"
+      - "--accesslog.filepath=/var/log/traefix-access.log"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.nanaoware.online`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.middlewares=auth-dashboard"
+      - "traefik.http.middlewares.auth-dashboard.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/" # à modifier
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.middlewares.crowdsec-bouncer.forwardauth.address=http://crowdsec-bouncer:8080/api/v1/forwardAuth"
+      - "traefik.http.middlewares.crowdsec-bouncer.forwardauth.trustForwardHeader=true"
+    networks:
+      - traefik_lan
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config/acme.json:/acme.json
+      - ./config:/etc/traefik:ro
+      - logs:/var/log/
+
+networks:
+  traefik_lan:
+    external: true
+
+volumes:
+  logs:

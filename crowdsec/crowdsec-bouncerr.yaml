@@ -1,5 +1,4 @@
 
-
 services:
   crowdsec:
     image: docker.io/crowdsecurity/crowdsec:latest
@@ -14,8 +13,8 @@ services:
       - /var/lib/docker/volumes/traefik_logs/_data/:/var/log/traefik/:ro
       - ./acquis.yaml:/etc/crowdsec/acquis.yaml:ro
     networks:
-      - proxy
-    
+      - traefik_lan
+
 
   crowdsec-bouncer:
     image: fbonalair/traefik-crowdsec-bouncer:latest
@@ -27,12 +26,10 @@ services:
     expose:
       - 8080
     networks:
-      - proxy
-    
-    depends_on:
-      - crowdsec
+      - traefik_lan
+
 networks:
-  proxy:
+  traefik_lan:
     external: true        
 
 volumes:
