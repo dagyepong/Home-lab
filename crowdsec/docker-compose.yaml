@@ -28,7 +28,9 @@ services:
       - 8080
     networks:
       - proxy
-
+    
+    depends_on:
+      - crowdsec
 networks:
   proxy:
     external: true        
