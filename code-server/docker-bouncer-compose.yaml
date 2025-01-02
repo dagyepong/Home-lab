@@ -23,7 +23,6 @@ services:
       - proxy
     labels:
       - traefik.enable=true
-      - traefik.http.routers.codeserver.rule=Host(`code.nanaoware.online`) || Host(`www.code.nanaoware.online`)
       - traefik.http.routers.router-foo.rule=Path(`/foo`)
 
       # Definition of the router
@@ -39,6 +38,17 @@ services:
       - traefik.http.middlewares.crowdsec.plugin.bouncer.crowdsecappsecenabled=true
       # forwardedheaderstrustedips should be the IP of the proxy that is in front of traefik (if any)
       - traefik.http.middlewares.crowdsec.plugin.bouncer.forwardedheaderstrustedips=192.168.12.187
+
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.nanaoware.online`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.middlewares=auth-dashboard"
+      - "traefik.http.middlewares.auth-dashboard.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/" # à modifier
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+
+
 
 
 
