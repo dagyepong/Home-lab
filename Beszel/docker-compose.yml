@@ -9,22 +9,23 @@ services:
       - ./beszel_data:/beszel_data
     networks:
       - proxy
-      - socket
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.beszel.rule=Host(`beszel.nanaoware.online`) || Host(`www.beszel.nanaoware.online`)
-      - traefik.http.services.beszel.loadbalancer.server.port=8090
-      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.mybeszel.middlewares=mywwwredirect
-      - traefik.http.routers.mbeszel.middlewares=dashboard
-      - traefik.http.routers.mbeszel.service=api@internal
-      - traefik.http.routers.mybeszel.tls=true
-      - traefik.http.routers.mybeszel.tls.certresolver=le
+      - "traefik.enable=true"
+      - traefik.http.routers.beszel.rule=Host(`beszel.nanaoware.online`)
+      - traefik.http.routers.beszel.tls=true
+      - traefik.http.routers.beszel.tls.certresolver=prodresolver
+      - traefik.http.routers.beszel.entrypoints=websecure
+      - traefik.http.services.beszel.loadbalancer.server.port=80
+      - traefik.http.routers.beszel.service=beszel
+                    #Define midleware 
+      - "traefik.http.routers.beszel.middlewares=crowdsec-beszel@docker" 
+                    ## Middleware configuration
+      - "traefik.http.middlewares.crowdsec-beszel.plugin.crowdsec-bouncer.enabled=true"
+      - "traefik.http.middlewares.crowdsec-beszel.plugin.crowdsec-bouncer.crowdseclapikey=uw//V2nuhODeROUjnXQPBSYA7eOFwweLq25s1btEZHc"
+
 
 networks:
   proxy:
     name: proxy
     external: true #do not expose external for security risk
-  socket:
-    name: socket
+  
