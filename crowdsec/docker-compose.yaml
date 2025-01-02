@@ -1,0 +1,99 @@
+
+
+services:
+  traefik:
+    restart: unless-stopped
+    image: traefik:latest
+    command:
+      - --providers.docker=true
+      - --accesslog
+      - --accesslog.filepath=/var/log/traefik/access.log
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.prodresolver.acme.email=owarenana06@gmail.com
+      - --certificatesresolvers.prodresolver.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
+      - --certificatesresolvers.prodresolver.acme.keytype=RSA4096
+      - --certificatesresolvers.prodresolver.acme.tlschallenge=true
+      - --certificatesresolvers.prodresolver.acme.httpchallenge=true
+      - --certificatesresolvers.prodresolver.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.prodresolver.acme.storage=/letsencrypt/acme.json
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - "./logsTraefik:/var/log/traefik"
+    networks:
+      - proxy
+      - backend
+
+  # WordPress Service
+  wordpress:
+    image: wordpress:latest
+    container_name: wordpress
+    volumes:
+      - wordpress_data:/var/www/html
+      ## Traefik labels
+    labels:
+      - "traefik.enable=true"
+      - traefik.http.routers.wordpress.rule=Host(`wordpress.yourdomain.com`)
+      - traefik.http.routers.wordpress.tls=true
+      - traefik.http.routers.wordpress.tls.certresolver=prodresolver
+      - traefik.http.routers.wordpress.entrypoints=websecure
+      - traefik.http.services.wordpress.loadbalancer.server.port=80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    depends_on:
+      - db
+    restart: always
+    networks:
+      - backend
+
+  # MySQL Service for WordPress
+  db:
+    image: mysql:8.0
+    container_name: mysql
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: somewordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    restart: always
+    labels:
+      - traefik.enable=false
+    networks:
+      - backend
+
+  # Uptime Kuma Service
+  uptime_kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime_kuma
+    volumes:
+      - uptime_kuma_data:/app/data
+      ## Traefik labels
+    labels:
+      - "traefik.enable=true"
+      - traefik.http.routers.uptime.rule=Host(`uptime.yourdomain.com`)
+      - traefik.http.routers.uptime.tls=true
+      - traefik.http.routers.uptime.tls.certresolver=prodresolver
+    restart: always
+    networks:
+      - backend
+##Volumes part
+volumes:
+  wordpress_data:
+  db_data:
+  uptime_kuma_data:
+
+    ## Networks part
+networks:
+  proxy:
+    external: true
+  backend:
+    driver: bridge
