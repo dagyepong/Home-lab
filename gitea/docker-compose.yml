@@ -1,4 +1,4 @@
-version: "3"
+
 
 services:
   gitea:
@@ -17,16 +17,18 @@ services:
     networks:
       - proxy
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.gitea.rule=Host(`gitea.nanaoware.online`) || Host(`www.gitea.nanaoware.online`)
-      - traefik.http.services.gitea.loadbalancer.server.port=3050
-      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.mygitea.middlewares=mywwwredirect
-      - traefik.http.routers.mygitea.middlewares=dashboard
-      - traefik.http.routers.mygitea.service=api@internal
-      - traefik.http.routers.mygitea.tls=true
-      - traefik.http.routers.mygitea.tls.certresolver=le
+      - "traefik.enable=true"
+      - traefik.http.routers.gitea.rule=Host(`gitea.nanaoware.online`)
+      - traefik.http.routers.gitea.tls=true
+      - traefik.http.routers.gitea.tls.certresolver=prodresolver
+      - traefik.http.routers.gitea.entrypoints=websecure
+      - traefik.http.services.gitea.loadbalancer.server.port=80
+      - traefik.http.routers.gitea.service=gitea
+                    #Define midleware 
+      - "traefik.http.routers.gitea.middlewares=crowdsec-gitea@docker" 
+                    ## Middleware configuration
+      - "traefik.http.middlewares.crowdsec-gitea.plugin.crowdsec-bouncer.enabled=true"
+      - "traefik.http.middlewares.crowdsec-gitea.plugin.crowdsec-bouncer.crowdseclapikey=uw//V2nuhODeROUjnXQPBSYA7eOFwweLq25s1btEZHc"
 
 
 networks:
