@@ -1,0 +1,35 @@
+
+services:
+  dozzle:
+    container_name: dozzle
+    image: amir20/dozzle:latest
+    ports:
+      - 9999:8080
+    environment:
+      - DOZZLE_AUTH_PROVIDER=simple
+      - DOZZLE_HOSTNAME=Nana's Docker Lab
+      - DOCKER_HOST=tcp://socket-proxy:2375
+      - DOZZLE_LEVEL=info
+      - DOZZLE_TAILSIZE=300
+      - DOZZLE_FILTER="status=running"
+      # DOZZLE_FILTER: "label=log_me" # limits logs displayed to containers with this label
+
+    volumes:
+      #- /var/run/docker.sock:/var/run/docker.sock
+      - ./dozzle-data:/data
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dozzle.rule=Host(`dozzle.nanaoware.online`)"
+      - "traefik.http.routers.dozzle.service=api@internal"
+      - "traefik.http.routers.dozzle.entrypoints=websecure"
+      - "traefik.http.routers.dozzle.middlewares=auth-dashboard"
+      - "traefik.http.middlewares.auth-dashboard.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/" # à modifier
+      - "traefik.http.routers.dozzle.tls=true"
+      - "traefik.http.routers.dozzle.tls.certresolver=letsencrypt"
+
+
+networks:
+  proxy:
+    external: true
