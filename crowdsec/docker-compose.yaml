@@ -26,7 +26,7 @@ services:
     depends_on:
       - crowdsec
     volumes:
-      - "./letsencrypt:/letsencrypt"
+      - "letsencrypt:/letsencrypt"
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - "./logsTraefik:/var/log/traefik"
     networks:

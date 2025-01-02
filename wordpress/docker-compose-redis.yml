@@ -32,6 +32,10 @@ services:
       ## Middleware configuration
       - "traefik.http.middlewares.crowdsec-wordpress.plugin.crowdsec-bouncer.enabled=true"
       - "traefik.http.middlewares.crowdsec-wordpress.plugin.crowdsec-bouncer.crowdseclapikey=uw//V2nuhODeROUjnXQPBSYA7eOFwweLq25s1btEZHc"
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.crowdsecmode=live"
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.loglevel=DEBUG"
+
+
 
 
 
