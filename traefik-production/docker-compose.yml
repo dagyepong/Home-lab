@@ -31,7 +31,7 @@ services:
       - --api.debug=true
 
       - --certificatesresolvers.le.acme.tlschallenge=true
-      - --certificatesresolvers.le.acme.email=dollarsterl@gmail.com #  cert resolvers
+      - --certificatesresolvers.le.acme.email=owarenana06@gmail.com #  cert resolvers
       - --certificatesResolvers.le.acme.storage=/letsencrypt/acme.json
 
       
@@ -60,7 +60,7 @@ services:
       - "traefik.enable: true"
 
       # Dashboard
-      - "traefik.http.routers.reverse-proxy.rule: Host(`dashboard.nanaoware.online`)"
+      - "traefik.http.routers.reverse-proxy.rule: Host(`traefik.nanaoware.online`)"
       - "traefik.http.routers.reverse-proxy.entrypoints: websecure"
       - "traefik.http.routers.reverse-proxy.service: api@internal"
       - "traefik.http.routers.reverse-proxy.tls: true"
