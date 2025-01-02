@@ -10,6 +10,14 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--certificatesResolvers.letsencrypt.acme.email=owarenana06@gmail.com" # à modifier
+      - "--certificatesResolvers.letsencrypt.acme.storage=acme.json"
+      - "--certificatesResolvers.letsencrypt.acme.tlsChallenge=true"
+      - "--certificatesResolvers.le.acme.storage=/letsencrypt/acme.json"
+
 
       - "--experimental.plugins.bouncer.modulename=github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
       - "--experimental.plugins.bouncer.version=v1.3.0"
@@ -19,7 +27,7 @@ services:
       # - './captcha.html:/captcha.html:ro'
       - "logs:/var/log/traefik"
     ports:
-      - 8000:80
+      - 443:443
       - 8080:8080
     depends_on:
       - 'crowdsec'
