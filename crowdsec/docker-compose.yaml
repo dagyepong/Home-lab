@@ -26,9 +26,9 @@ services:
     depends_on:
       - crowdsec
     volumes:
-      - "letsencrypt:/letsencrypt"
+      - letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - "./logsTraefik:/var/log/traefik"
+      - ./logsTraefik:/var/log/traefik
     networks:
       - proxy
       - backend
@@ -122,6 +122,7 @@ volumes:
   wordpress_data:
   db_data:
   uptime_kuma_data:
+  letsencrypt:
 
     ## Networks part
 networks:
