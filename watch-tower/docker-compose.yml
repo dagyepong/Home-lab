@@ -51,7 +51,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro # Disable for socket proxy
     ports:
-      - 8080:8080
+      - 9080:8080
     working_dir: /
 
 networks:
