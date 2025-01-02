@@ -21,8 +21,22 @@ services:
 
       - "--experimental.plugins.bouncer.modulename=github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
       - "--experimental.plugins.bouncer.version=v1.3.0"
+    
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.nanaoware.online`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.middlewares=auth-dashboard"
+      - "traefik.http.middlewares.auth-dashboard.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/" # à modifier
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+
+
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - letsencrypt:/letsencrypt
       # - './ban.html:/ban.html:ro'
       # - './captcha.html:/captcha.html:ro'
       - "logs:/var/log/traefik"
@@ -87,3 +101,5 @@ volumes:
   logs:
   crowdsec-db:
   crowdsec-config:
+  letsencrypt:
+    name: letsencrypt
