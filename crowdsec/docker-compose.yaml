@@ -1,6 +1,7 @@
-
+version: '3'
 
 services:
+
   traefik:
     restart: unless-stopped
     image: traefik:latest
@@ -10,20 +11,45 @@ services:
       - --accesslog.filepath=/var/log/traefik/access.log
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
-      - --certificatesresolvers.prodresolver.acme.email=owarenana06@gmail.com
+      - --certificatesresolvers.prodresolver.acme.email=youremail@domain.com
       - --certificatesresolvers.prodresolver.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
       - --certificatesresolvers.prodresolver.acme.keytype=RSA4096
       - --certificatesresolvers.prodresolver.acme.tlschallenge=true
       - --certificatesresolvers.prodresolver.acme.httpchallenge=true
       - --certificatesresolvers.prodresolver.acme.httpchallenge.entrypoint=web
       - --certificatesresolvers.prodresolver.acme.storage=/letsencrypt/acme.json
+      - --experimental.plugins.crowdsec-bouncer.modulename=github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
+      - --experimental.plugins.crowdsec-bouncer.version=v1.2.1
     ports:
       - "80:80"
       - "443:443"
+    depends_on:
+      - crowdsec
     volumes:
       - "./letsencrypt:/letsencrypt"
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - "./logsTraefik:/var/log/traefik"
+    networks:
+      - proxy
+      - backend
+
+  crowdsec:
+    image: crowdsecurity/crowdsec
+    container_name: crowdsec
+    environment:
+      PGID: "1000"
+      COLLECTIONS: "crowdsecurity/traefik crowdsecurity/http-cve"
+    expose:
+      - "8080"
+    volumes:
+      - /var/log/crowdsec:/var/log/crowdsec:ro
+      - /opt/crowdsec-db:/var/lib/crowdsec/data
+      - /var/log/auth.log:/var/log/auth.log:ro
+      - /opt/crowdsec:/etc/crowdsec
+      - "./logsTraefik:/var/log/traefik"
+    restart: unless-stopped
+    labels:
+      - traefik.enable=false
     networks:
       - proxy
       - backend
@@ -37,11 +63,17 @@ services:
       ## Traefik labels
     labels:
       - "traefik.enable=true"
-      - traefik.http.routers.wordpress.rule=Host(`wordpress.yourdomain.com`)
+      - traefik.http.routers.wordpress.rule=Host(`wordpress.yourdomain.fr`)
       - traefik.http.routers.wordpress.tls=true
       - traefik.http.routers.wordpress.tls.certresolver=prodresolver
       - traefik.http.routers.wordpress.entrypoints=websecure
       - traefik.http.services.wordpress.loadbalancer.server.port=80
+      - traefik.http.routers.wordpress.service=wordpress
+      #Define midleware 
+      - "traefik.http.routers.wordpress.middlewares=crowdsec-wordpress@docker" 
+      ## Middleware configuration
+      - "traefik.http.middlewares.crowdsec-wordpress.plugin.crowdsec-bouncer.enabled=true"
+      - "traefik.http.middlewares.crowdsec-wordpress.plugin.crowdsec-bouncer.crowdseclapikey=BOUNCER-API-KEY"
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: wordpress
@@ -79,7 +111,7 @@ services:
       ## Traefik labels
     labels:
       - "traefik.enable=true"
-      - traefik.http.routers.uptime.rule=Host(`uptime.yourdomain.com`)
+      - traefik.http.routers.uptime.rule=Host(`uptime.yourdomain.fr`)
       - traefik.http.routers.uptime.tls=true
       - traefik.http.routers.uptime.tls.certresolver=prodresolver
     restart: always
