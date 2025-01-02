@@ -24,20 +24,19 @@ services:
       - --log.level=INFO
 
       - --providers.docker=true
-      - --providers.docker.network=proxy
       - --providers.docker.exposedbydefault=false # Do not expose containers unless explicitly told so
+      - --certificatesresolvers.prodresolver.acme.email=owarenana06@gmail.com
+      - --certificatesresolvers.prodresolver.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
+      - --certificatesresolvers.prodresolver.acme.keytype=RSA4096
+      - --certificatesresolvers.prodresolver.acme.tlschallenge=true
+      - --certificatesresolvers.prodresolver.acme.httpchallenge=true
+      - --certificatesresolvers.prodresolver.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.prodresolver.acme.storage=/letsencrypt/acme.json
 
-      - --api.dashboard=true # Enable dashboard
-      - --api.debug=true
-
-      - --certificatesresolvers.le.acme.tlschallenge=true
-      - --certificatesresolvers.le.acme.email=owarenana06@gmail.com #  cert resolvers
-      - --certificatesResolvers.le.acme.storage=/letsencrypt/acme.json
-
-      
+      - --api.dashboard=true # Enable dashboard      
       - --log.filepath=/var/log/traefik.log
       - --accesslog=true
-      - --accesslog.filepath=/var/log/traefik-access.log
+      - --accesslog.filepath=/var/log/traefik/access.log
       - --metrics.prometheus=true
       - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
       - --entrypoints.websecure.http.tls.certresolver=le
@@ -57,16 +56,16 @@ services:
       - /var/log:/var/log
     
     labels:
-      - "traefik.enable: true"
 
       # Dashboard
       - "traefik.http.routers.reverse-proxy.rule: Host(`traefik.nanaoware.online`)"
       - "traefik.http.routers.reverse-proxy.entrypoints: websecure"
       - "traefik.http.routers.reverse-proxy.service: api@internal"
       - "traefik.http.routers.reverse-proxy.tls: true"
-      - "traefik.http.routers.reverse-proxy.tls.certresolver: le"
       - "traefik.http.routers.reverse-proxy.middlewares: dashboard"
       - "traefik.http.middlewares.dashboard.basicauth.users: test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
+      - "traefik.enable=true"
+      - traefik.http.routers.wordpress.tls.certresolver=prodresolver
 
 
       # SECURITY MIDDLEWARE named "hstsx"
@@ -80,7 +79,7 @@ services:
       - "traefik.http.middlewares.hstsx.headers.contenttypenosniff: true"
     networks:
       - proxy
-
+      - backend
 
 
   whoami:
@@ -101,7 +100,7 @@ services:
       - traefik.enable=true
       - traefik.tcp.routers.tcpecho-le.entrypoints=websecure
       - traefik.tcp.routers.tcpecho-le.rule=HostSNI(`tcp.nanaoware.online`)
-      - traefik.tcp.routers.tcpecho-le.tls.certresolver=le
+      - traefik.tcp.routers.tcpecho-le.tls.certresolver=prodresolver
       - traefik.tcp.services.tcpecho-le.loadbalancer.server.port=9000
 
   tcpecho-plain:
