@@ -96,6 +96,16 @@ services:
       - crowdsec-config:/etc/crowdsec/
     labels:
       - "traefik.enable=false"
+  
+  crowdsec-bouncer:
+    image: fbonalair/traefik-crowdsec-bouncer:latest
+    container_name: crowdsec-bouncer
+    restart: unless-stopped
+    environment:
+      CROWDSEC_BOUNCER_API_KEY: xxxxxxxxxxxxxxxxxxxxxx  # à modifier
+      CROWDSEC_AGENT_HOST: crowdsec:8080
+    expose:
+      - 8080
 
 volumes:
   logs:
