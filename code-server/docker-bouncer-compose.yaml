@@ -4,7 +4,7 @@ services:
 
   code-server:
     image: lscr.io/linuxserver/code-server:latest
-    container_name: code-server-foo
+    container_name: code-server
     environment:
       - PUID=1000
       - PGID=1000
@@ -22,32 +22,14 @@ services:
     networks:
       - proxy
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.router-foo.rule=Path(`/foo`)
-
-      # Definition of the router
-      - traefik.http.routers.router-bar.entrypoints=traefik
-      - traefik.http.routers.router-bar.middlewares=crowdsec@docker
-      # Definition of the service
-      - traefik.http.services.service-bar.loadbalancer.server.port=8443
-      # Definitin of the middleware
-      - traefik.http.middlewares.crowdsec.plugin.bouncer.enabled=true
-      # crowdseclapikey is the key to authenticate to crowdsec
-      - traefik.http.middlewares.crowdsec.plugin.bouncer.crowdseclapikey=FIXME-LAPI-KEY-1=
-      # enable AppSec real time check
-      - traefik.http.middlewares.crowdsec.plugin.bouncer.crowdsecappsecenabled=true
-      # forwardedheaderstrustedips should be the IP of the proxy that is in front of traefik (if any)
-      - traefik.http.middlewares.crowdsec.plugin.bouncer.forwardedheaderstrustedips=192.168.12.187
-
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`traefik.nanaoware.online`)"
-      - "traefik.http.routers.dashboard.service=api@internal"
-      - "traefik.http.routers.dashboard.entrypoints=websecure"
-      - "traefik.http.routers.dashboard.middlewares=auth-dashboard"
+      - "traefik.http.routers.code-server.rule=Host(`code.nanaoware.online`)"
+      - "traefik.http.routers.code-server.service=api@internal"
+      - "traefik.http.routers.code-server.entrypoints=websecure"
+      - "traefik.http.routers.code-server.middlewares=auth-dashboard"
       - "traefik.http.middlewares.auth-dashboard.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/" # à modifier
-      - "traefik.http.routers.dashboard.tls=true"
-      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
-
+      - "traefik.http.routers.code-server.tls=true"
+      - "traefik.http.routers.code-server.tls.certresolver=letsencrypt"
 
 
 
