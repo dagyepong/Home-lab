@@ -85,7 +85,7 @@ services:
   whoami:
     image: traefik/whoami:v1.9
     networks:
-      - proxy
+      - backend
     labels:
       - traefik.enable=true
       - traefik.http.routers.whoami.entrypoints=websecure
@@ -95,7 +95,7 @@ services:
   tcpecho-le:
     image: istio/tcp-echo-server:1.2
     networks:
-      - proxy
+      - backend
     labels:
       - traefik.enable=true
       - traefik.tcp.routers.tcpecho-le.entrypoints=websecure
@@ -106,7 +106,7 @@ services:
   tcpecho-plain:
     image: istio/tcp-echo-server:1.2
     networks:
-      - proxy
+      - backend
     labels:
       - traefik.enable=true
       - traefik.tcp.routers.tcpecho-plain.entrypoints=tcp-plain
@@ -116,3 +116,5 @@ services:
 networks:
   proxy:
     external: true
+  backend:
+    driver: bridge
