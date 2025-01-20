@@ -65,7 +65,7 @@ services:
       - "traefik.http.routers.reverse-proxy.middlewares: dashboard"
       - "traefik.http.middlewares.dashboard.basicauth.users: test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
       - "traefik.enable=true"
-      - traefik.http.routers.wordpress.tls.certresolver=prodresolver
+
 
 
       # SECURITY MIDDLEWARE named "hstsx"
@@ -79,13 +79,12 @@ services:
       - "traefik.http.middlewares.hstsx.headers.contenttypenosniff: true"
     networks:
       - proxy
-      - backend
 
 
   whoami:
     image: traefik/whoami:v1.9
     networks:
-      - backend
+      - proxy
     labels:
       - traefik.enable=true
       - traefik.http.routers.whoami.entrypoints=websecure
@@ -95,7 +94,7 @@ services:
   tcpecho-le:
     image: istio/tcp-echo-server:1.2
     networks:
-      - backend
+      - proxy
     labels:
       - traefik.enable=true
       - traefik.tcp.routers.tcpecho-le.entrypoints=websecure
@@ -106,7 +105,7 @@ services:
   tcpecho-plain:
     image: istio/tcp-echo-server:1.2
     networks:
-      - backend
+      - proxy
     labels:
       - traefik.enable=true
       - traefik.tcp.routers.tcpecho-plain.entrypoints=tcp-plain
@@ -116,5 +115,3 @@ services:
 networks:
   proxy:
     external: true
-  backend:
-    driver: bridge
