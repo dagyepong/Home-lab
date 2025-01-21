@@ -85,7 +85,7 @@ tcpecho-le:
       - traefik.tcp.routers.tcpecho-le.tls.certresolver=myresolver
       - traefik.tcp.services.tcpecho-le.loadbalancer.server.port=9000
 
-  tcpecho-plain:
+tcpecho-plain:
     image: istio/tcp-echo-server:1.2
     networks:
       - proxy
