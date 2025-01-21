@@ -3,7 +3,6 @@ services:
     image: traefik:v3.2
     restart: unless-stopped
     ports:
-      ports:
       - target: 80
         published: 80
         protocol: tcp
@@ -25,23 +24,25 @@ services:
     command:
       - --api.dashboard=true
       - --log.level=INFO
-      #- --log.filepath=/var/log/traefik.log
+      - --log.filepath=/var/log/traefik.log
       - --accesslog=true
-      #- --accesslog.filepath=/var/log/traefik-access.log
-      - --providers.docker.endpoint=tcp://dockersocket:2375
+      - --accesslog.filepath=/var/log/traefik-access.log
+      - --providers.docker=true
       - --providers.docker.exposedByDefault=false
-      - --providers.docker.network=proxy
-      - --entrypoints.web.address=:80
-      - --entryPoints.tcp-plain.address=:9000
-
-      - --entrypoints.web.http.redirections.entrypoint.to=websecure
-      - --entryPoints.web.http.redirections.entrypoint.scheme=https
-      - --entrypoints.websecure.address=:443
+      - --entryPoints.web.address=:80
+      - --entryPoints.web.http.redirections.entryPoint.to=websecure
+      - --entryPoints.web.http.redirections.entryPoint.scheme=https
+      - --entryPoints.websecure.address=:443
+      - --metrics.prometheus=true
+      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
       - --entrypoints.websecure.http.tls.certresolver=myresolver
-      - --entrypoints.websecure.asDefault=true
-      - --certificatesresolvers.myresolver.acme.email=owarenana06@gmail.com
+      - --entryPoints.tcp-plain.address=:9000
       - --certificatesresolvers.myresolver.acme.tlschallenge=true
+      - --certificatesResolvers.myresolver.acme.email=owarenana06@gmail.com.com
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+
+
+
     labels:
       - traefik.enable=true
       - traefik.http.routers.mydashboard.rule=Host(`test.nanaoware.online`)
@@ -74,7 +75,7 @@ services:
       - traefik.http.routers.mywhoami.rule=Host(`whoami.nanaoware.online`) || PathPrefix(`/whoami`)
       - traefik.http.services.mywhoami.loadbalancer.server.port=80
 
-tcpecho-le:
+  tcpecho-le:
     image: istio/tcp-echo-server:1.2
     networks:
       - proxy
@@ -85,7 +86,7 @@ tcpecho-le:
       - traefik.tcp.routers.tcpecho-le.tls.certresolver=myresolver
       - traefik.tcp.services.tcpecho-le.loadbalancer.server.port=9000
 
-tcpecho-plain:
+  tcpecho-plain:
     image: istio/tcp-echo-server:1.2
     networks:
       - proxy
