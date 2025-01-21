@@ -26,6 +26,7 @@ services:
       - --log.level=INFO
       - --log.filepath=/var/log/traefik.log
       - --accesslog=true
+      - --providers.docker.endpoint=tcp://dockersocket:2375
       - --accesslog.filepath=/var/log/traefik-access.log
       - --providers.docker=true
       - --providers.docker.exposedByDefault=false
