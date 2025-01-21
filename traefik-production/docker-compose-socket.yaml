@@ -33,7 +33,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.mydashboard.entrypoints:websecure
-      - traefik.http.routers.mydashboard.rule=Host(`traefik.nanaoware.online)
+      - traefik.http.routers.mydashboard.rule=Host(`test.nanaoware.online)
       - traefik.http.routers.mydashboard.service=api@internal
       - traefik.http.routers.mydashboard.middlewares=myauth
       - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
