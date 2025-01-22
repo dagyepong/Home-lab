@@ -29,20 +29,12 @@ services:
     image: containrrr/watchtower:latest
     networks:
       - proxy
-      #- socket
     labels:
-      - "traefik.enable=true"
-      - traefik.http.routers.watchtower.rule=Host(`watchtower.nanaoware.online`)
-      - traefik.http.routers.watchtower.tls=true
-      - traefik.http.routers.watchtower.tls.certresolver=prodresolver
-      - traefik.http.routers.watchtower.entrypoints=websecure
-      - traefik.http.services.watchtower.loadbalancer.server.port=80
-      - traefik.http.routers.watchtower.service=watchtower
-                    #Define midleware 
-      - "traefik.http.routers.watchtower.middlewares=crowdsec-watchtower@docker" 
-                    ## Middleware configuration
-      - "traefik.http.middlewares.crowdsec-watchtower.plugin.crowdsec-bouncer.enabled=true"
-      - "traefik.http.middlewares.crowdsec-watchtower.plugin.crowdsec-bouncer.crowdseclapikey=uw//V2nuhODeROUjnXQPBSYA7eOFwweLq25s1btEZHc"
+      - traefik.enable=true
+      - traefik.http.routers.mywatchtower.rule=Host(`watchtower.nanaoware.online`)
+      - traefik.http.routers.mywatchtower.service=api@internal
+      - traefik.http.routers.mywatchtower.middlewares=myauth
+      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
 
 
     restart: always
@@ -57,5 +49,3 @@ services:
 networks:
   proxy:
     external: true #do not expose external for security risk
-  #socket:
-   # name: socket 
