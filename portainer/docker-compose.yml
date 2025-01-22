@@ -18,15 +18,11 @@ services:
      # - socket
     labels:
       - traefik.enable=true
-      - traefik.http.routers.portainer.rule=Host(`portainer.nanaoware.online`) || Host(`www.portainer.nanaoware.online`)
-      - traefik.http.services.portainer.loadbalancer.server.port=9443
-      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.myportainer.middlewares=mywwwredirect
-      - traefik.http.routers.myportainer.middlewares=dashboard
+      - traefik.http.routers.myportainer.rule=Host(`portainer.nanaoware.online`)
       - traefik.http.routers.myportainer.service=api@internal
-      - traefik.http.routers.mypotrtainer.tls=true
-      - traefik.http.routers.myportainer.tls.certresolver=le
+      - traefik.http.routers.myportainer.middlewares=myauth
+      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+
 
 networks:
   default:

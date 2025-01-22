@@ -1,4 +1,4 @@
-version: "3.9"
+
 services:
   picoshare:
     image: mtlynch/picoshare
@@ -14,15 +14,11 @@ services:
       - proxy
     labels:
       - traefik.enable=true
-      - traefik.http.routers.picoshare.rule=Host(`pico.nanaoware.online`) || Host(`www.pico.nanaoware.online`)
-      - traefik.http.services.picoshare.loadbalancer.server.port=4001
-      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.mypicoshare.middlewares=mywwwredirect
-      - traefik.http.routers.mypicoshare.middlewares=dashboard
+      - traefik.http.routers.mypicoshare.rule=Host(`picoshare.nanaoware.online`)
       - traefik.http.routers.mypicoshare.service=api@internal
-      - traefik.http.routers.mypicoshare.tls=true
-      - traefik.http.routers.mypicoshare.tls.certresolver=le
+      - traefik.http.routers.mypicoshare.middlewares=myauth
+      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+
 
 
 networks:

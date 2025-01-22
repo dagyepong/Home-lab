@@ -1,4 +1,4 @@
-version: "3.8"
+
 
 services:
   app:
@@ -17,15 +17,12 @@ services:
       - proxy
     labels:
       - traefik.enable=true
-      - traefik.http.routers.uptimekuma.rule=Host(`uptime.nanaoware.online`) || Host(`www.uptime.nanaoware.online`)
-      - traefik.http.services.uptimekuma.loadbalancer.server.port=3001
-      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.myuptimekuma.middlewares=mywwwredirect
-      - traefik.http.routers.myuptimekuma.middlewares=dashboard
-      - traefik.http.routers.myuptimekuma.service=api@internal
-      - traefik.http.routers.myuptimekuma.tls=true
-      - traefik.http.routers.myuptimekuma.tls.certresolver=le
-networks:
+      - traefik.http.routers.myuptime.rule=Host(`uptime.nanaoware.online`)
+      - traefik.http.routers.myuptime.service=api@internal
+      - traefik.http.routers.myuptime.middlewares=myauth
+      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+
+
+networksks:
   proxy:
     external: true

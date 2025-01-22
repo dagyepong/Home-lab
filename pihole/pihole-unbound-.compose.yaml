@@ -25,16 +25,12 @@ services:
     restart: unless-stopped
     labels:
       - traefik.enable=true
-      - traefik.http.routers.pihole.rule=Host(`pihole.nanaoware.online`) || Host(`www.pihole.nanaoware.online`)
-      - traefik.http.services.pihole.loadbalancer.server.port=9554
-      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.mypihole.middlewares=mywwwredirect
-      - traefik.http.routers.mypihole.middlewares=dashboard
+      - traefik.http.routers.mypihole.rule=Host(`pihole.nanaoware.online`)
       - traefik.http.routers.mypihole.service=api@internal
-      - traefik.http.routers.mypihole.tls=true
-      - traefik.http.routers.mypihole.tls.certresolver=le
- 
+      - traefik.http.routers.mypihole.middlewares=myauth
+      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+
+
   unbound:
     container_name: unbound
     image: mvance/unbound:latest

@@ -20,15 +20,11 @@ services:
       - /srv/appdata/nextcloud/data:/var/www/html/data
     labels:
       - traefik.enable=true
-      - traefik.http.routers.nextcloud.rule=Host(`nextcloud.nanaoware.online`) || Host(`www.nextcloud.nanaoware.online`)
-      - traefik.http.services.nextcloud.loadbalancer.server.port=8081
-      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.mynextcloud.middlewares=mywwwredirect
-      - traefik.http.routers.mynextcloud.middlewares=dashboard
+      - traefik.http.routers.mynextcloud.rule=Host(`nextcloud.nanaoware.online`)
       - traefik.http.routers.mynextcloud.service=api@internal
-      - traefik.http.routers.mynextcloud.tls=true
-      - traefik.http.routers.mynextcloud.tls.certresolver=le
+      - traefik.http.routers.mynextcloudr.middlewares=myauth
+      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+
 
     environment:
       - PUID=1000

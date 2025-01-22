@@ -13,15 +13,11 @@ services:
       - socket
     labels:
       - traefik.enable=true
-      - traefik.http.routers.nexterrm.rule=Host(`nexterm.nanaoware.online`) || Host(`www.nexterm.nanaoware.online`)
-      - traefik.http.services.nexterm.loadbalancer.server.port=6989
-      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.mynexterm.middlewares=mywwwredirect
-      - traefik.http.routers.mynexterm.middlewares=myauth
+      - traefik.http.routers.mynexterm.rule=Host(`nexterm.nanaoware.online`)
       - traefik.http.routers.mynexterm.service=api@internal
-      - traefik.http.routers.mynexterm.tls=true
-      - traefik.http.routers.mynexterm.tls.certresolver=le
+      - traefik.http.routers.mynexterm.middlewares=myauth
+      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+
 
 
 networks:
