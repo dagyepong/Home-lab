@@ -8,7 +8,7 @@ services:
     environment:
       - DOZZLE_AUTH_PROVIDER=simple
       - DOZZLE_HOSTNAME=Nana's Docker Lab
-      - DOCKER_HOST=tcp://socket-proxy:2375
+     # - DOCKER_HOST=tcp://socket-proxy:2375
       - DOZZLE_LEVEL=info
       - DOZZLE_TAILSIZE=300
       - DOZZLE_FILTER="status=running"
@@ -19,22 +19,18 @@ services:
       - ./dozzle-data:/data
     networks:
       - proxy
-      - socket
+
     labels:
       - traefik.enable=true
-      - traefik.http.routers.dozzle.rule=Host(`dozzle.nanaoware.online`) || Host(`www.dozzle.nanaoware.online`)
-      - traefik.http.services.dozzle.loadbalancer.server.port=9999
-      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.mydozzle.middlewares=mywwwredirect
-      - traefik.http.routers.mydozzle.middlewares=dashboard
+      - traefik.http.routers.mydozzle.rule=Host(`dozzle.nanaoware.online`)
       - traefik.http.routers.mydozzle.service=api@internal
-      - traefik.http.routers.mybeszel.tls.certresolver=le
+      - traefik.http.routers.mydozzle.middlewares=myauth
+      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+
 
 
 networks:
   proxy:
     name: proxy
     external: true #do not expose external for security risk
-  socket:
-    name: socket
+ 

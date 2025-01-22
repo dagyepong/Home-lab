@@ -64,15 +64,11 @@ services:
 
     labels:
       - traefik.enable=true
-      - traefik.http.routers.littlelink.rule=Host(`link.nanaoware.online`) || Host(`www.link.nanaoware.online`)
-      - traefik.http.services.littlelink.loadbalancer.server.port=8081
-      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.mylittlelink.middlewares=mywwwredirect
-      - traefik.http.routers.mylittlelink.middlewares=dashboard
-      - traefik.http.routers.mylittlelink.service=api@internal
-      - traefik.http.routers.mylittlelink.tls=true
-      - traefik.http.routers.mylittlelink.tls.certresolver=le
+      - traefik.http.routers.mylink.rule=Host(`link.nanaoware.online`)
+      - traefik.http.routers.mylink.service=api@internal
+      - traefik.http.routers.mylink.middlewares=myauth
+      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+
 
 
 networks:
