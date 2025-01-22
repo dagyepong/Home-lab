@@ -14,7 +14,8 @@ services:
       - WATCHTOWER_HTTP_API_TOKEN=${API_TOKEN:-SecureApiToken}
       #- WATCHTOWER_NOTIFICATIONS=email
       - WATCHTOWER_DEBUG=true
-      - DOCKER_HOST=tcp://socket-proxy:2375
+      - DOCKER_HOST=tcp://dockersocket:2375
+
       - WATCH_TOWER_HTTP_API_METRICS=true
       #- WATCH_TOWER_HTTP_API_TOKEN="mytoken"
       #new- TZ=$TZ
@@ -29,18 +30,14 @@ services:
     image: containrrr/watchtower:latest
     networks:
       - proxy
-      - socket
+      - dockersocket
     labels:
       - traefik.enable=true
-      - traefik.http.routers.watchtower.rule=Host(`watchtower.nanaoware.online`) || Host(`www.watchtower.nanaoware.online`)
-      - traefik.http.services.watchtower.loadbalancer.server.port=8080
-      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.mywatchtower.middlewares=mywwwredirect
-      - traefik.http.routers.mywatchtower.middlewares=dashboard
+      - traefik.enable=true
+      - traefik.http.routers.mywatchtower.rule=Host(`watchtower.nanaoware.online`)
       - traefik.http.routers.mywatchtower.service=api@internal
-      - traefik.http.routers.mywatchtower.tls=true
-      - traefik.http.routers.mywatchtower.tls.certresolver=le
+      - traefik.http.routers.mywatchtower.middlewares=myauth
+      - traefik.http.middlewares.mywatchtower.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
 
 
     restart: always
@@ -55,6 +52,5 @@ services:
 networks:
   proxy:
     name: proxy
-    external: true #do not expose external for security risk
-  socket:
-    name: socket 
+  dockersocket:
+    name: dockersocket
