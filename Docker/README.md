@@ -201,3 +201,9 @@ the reference to `apps/libreoffice.yaml` line) and then run
 -   `traefik.http.routers.libreoffice-rtr.middlewares:`
     -   Instructs the router to use the middleware service, `chain-oauth-google@file`
         which requires Google OAuth for access
+
+TODO: start services 
+
+```shell
+docker compose --profile core up -d
+```
