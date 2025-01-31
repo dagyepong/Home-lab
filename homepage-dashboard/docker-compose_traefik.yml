@@ -1,11 +1,11 @@
-version: "3.8"
+
 services:
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
     restart: unless-stopped
     ports:
-      - 3000:3000
+      - 3030:3000
     environment:
       - PUID=1000
       - PGID=1000
@@ -24,10 +24,10 @@ services:
       - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
       - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
       - traefik.http.routers.myhomepage.middlewares=mywwwredirect
-      - traefik.http.routers.myhomepage.middlewares=dashboard
+      - traefik.http.routers.myhomepage.middlewares=myauth
       - traefik.http.routers.myhomepage.service=api@internal
       - traefik.http.routers.myhomepage.tls=true
-      - traefik.http.routers.myhomepage.tls.certresolver=le
+      - traefik.http.routers.myhomepage.tls.certresolver=myresolver
 
 networks:
   proxy:
