@@ -97,7 +97,7 @@ services:
       - traefik.tcp.routers.tcpecho-plain.rule=HostSNI(`*`)
       - traefik.tcp.services.tcpecho-plain.loadbalancer.server.port=9000
 
-
+FIXME: Add some modifications to the configuration to make it more secure.
 
 networks:
   proxy:
