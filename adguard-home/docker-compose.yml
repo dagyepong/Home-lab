@@ -7,9 +7,9 @@ services:
     image: adguard/adguardhome:latest
     ports:
       - 3000:3000/tcp # only required during initial setup
-      - 8086:80/tcp # web interface after setup
-      - 5051:53/tcp # dns
-      - 5055:53/udp # dns
+      - 80:80/tcp # web interface after setup
+      - 53:53/tcp # dns
+      - 53:53/udp # dns
       # - 67:67/udp # dhcp
       # - 68:68/tcp # dhcp
       # - 68:68/udp # dhcp
