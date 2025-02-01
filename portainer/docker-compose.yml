@@ -14,8 +14,7 @@ services:
     ports:
       - 9443:9443
     networks:
-      - default
-     # - socket
+      - proxy
     labels:
       - traefik.enable=true
       - traefik.http.routers.myportainer.rule=Host(`portainer.nanaoware.online`)
