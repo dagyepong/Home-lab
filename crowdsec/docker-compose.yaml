@@ -11,7 +11,7 @@ services:
       - --accesslog.filepath=/var/log/traefik/access.log
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
-      - --certificatesresolvers.prodresolver.acme.email=youremail@domain.com
+      - --certificatesresolvers.prodresolver.acme.email=owarenana06@gmail.com
       - --certificatesresolvers.prodresolver.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
       - --certificatesresolvers.prodresolver.acme.keytype=RSA4096
       - --certificatesresolvers.prodresolver.acme.tlschallenge=true
