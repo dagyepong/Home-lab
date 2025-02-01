@@ -21,3 +21,9 @@ The do the following:
 ````
 
 **Note**: You can also add Authelia as file provider middleware. See [here](../traefik/fileConfig.yml) for an example Traefik dynamic configuration file. Afterwards, you can use the file provider `authelia@file` instead or besides of `authelia@docker`.
+
+```bash
+
+docker run --rm authelia/authelia:latest authelia crypto hash generate argon2 --password 'password'
+
+```

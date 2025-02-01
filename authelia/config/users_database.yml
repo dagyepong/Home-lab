@@ -7,15 +7,12 @@
 
 # List of users
 users:
-  yourUsername:
-    username: nana
-    disabled: false 
-    displayname: "My Authelia User" 
-    # Password is authelia
-    password: "$argon2id$v=19$m=65536,t=3,p=4$mTOaOa3MOexX7JQ02BdXzw$OzAxTnSPEnahQgIi+y4QPP5/xYIQ8uEWDYW+vlupeTM"  # generate a secure hash with: $ docker run authelia/authelia:latest authelia crypto hash generate argon2 --password 'password'
+  nana:
+    displayname: "nana"
+    # Password is Authelia
+    password: "$argon2id$v=19$m=65536,t=1,p=8$cUI4a0E3L1laYnRDUXl3Lw$ZsdsrdadaoVIaVj8NltA8x4qVOzT+/r5GF62/bT8OuAs" 
     email: dennisagyepong2@gmail.com
     groups:
       - admins
       - dev
 ...
-
