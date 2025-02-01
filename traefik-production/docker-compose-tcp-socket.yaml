@@ -41,6 +41,8 @@ services:
       - --certificatesresolvers.myresolver.acme.tlschallenge=true
       - --certificatesResolvers.myresolver.acme.email=owarenana06@gmail.com.com
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+      - --experimental.plugins.sablier.modulename=github.com/acouvreur/sablier
+      - --experimental.plugins.sablier.version=v1.8.0
 
 
 
