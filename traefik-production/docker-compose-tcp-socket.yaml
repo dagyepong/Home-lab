@@ -52,6 +52,8 @@ services:
       - traefik.http.routers.mydashboard.service=api@internal
       - traefik.http.routers.mydashboard.middlewares=myauth
       - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+      - sablier.enable=true
+      - sablier.group=mygroup
 
   dockersocket:
     image: nginx:alpine-slim
@@ -68,6 +70,22 @@ services:
     expose:
       - 2375
 
+
+  sablier:
+    image: sablierapp/sablier:1.8.2
+    command:
+      - start
+      - --provider.name=docker
+      - --providers.docker.endpoint=tcp://dockersocket:2375
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    networks:
+      - proxy
+      - dockersocket
+
+
   whoami:
     image: traefik/whoami:v1.10
     restart: unless-stopped
@@ -77,6 +95,8 @@ services:
       - traefik.enable=true
       - traefik.http.routers.mywhoami.rule=Host(`whoami.nanaoware.online`) || PathPrefix(`/whoami`)
       - traefik.http.services.mywhoami.loadbalancer.server.port=80
+      - sablier.enable=true
+      - sablier.group=mygroup
 
   tcpecho-le:
     image: istio/tcp-echo-server:1.2
@@ -88,6 +108,8 @@ services:
       - traefik.tcp.routers.tcpecho-le.rule=HostSNI(`tcp.nanaoware.online`)
       - traefik.tcp.routers.tcpecho-le.tls.certresolver=myresolver
       - traefik.tcp.services.tcpecho-le.loadbalancer.server.port=9000
+      - sablier.enable=true
+      - sablier.group=mygroup
 
   tcpecho-plain:
     image: istio/tcp-echo-server:1.2
@@ -98,8 +120,10 @@ services:
       - traefik.tcp.routers.tcpecho-plain.entrypoints=tcp-plain
       - traefik.tcp.routers.tcpecho-plain.rule=HostSNI(`*`)
       - traefik.tcp.services.tcpecho-plain.loadbalancer.server.port=9000
+      - sablier.enable=true
+      - sablier.group=mygroup
 
-FIXME: Add some modifications to the configuration to make it more secure.
+
 
 networks:
   proxy:
