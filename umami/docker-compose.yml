@@ -1,4 +1,4 @@
-version: '3'
+
 services:
   umami:
     image: ghcr.io/umami-software/umami:postgresql-latest
@@ -28,10 +28,12 @@ services:
       - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
       - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
       - traefik.http.routers.myumami.middlewares=mywwwredirect
-      - traefik.http.routers.myumami.middlewares=dashboard
+      - traefik.http.routers.myumami.middlewares=myauth
       - traefik.http.routers.myumami.service=api@internal
       - traefik.http.routers.myumami.tls=true
-      - traefik.http.routers.myumami.tls.certresolver=le
+      - traefik.http.routers.myumami.tls.certresolver=myresolver
+      - sablier.enable=true
+      - sablier.group=mygroup
 
 
   db:

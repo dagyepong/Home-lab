@@ -21,6 +21,8 @@ services:
       - traefik.http.routers.myportainer.service=api@internal
       - traefik.http.routers.myportainer.middlewares=myauth
       - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+      - sablier.enable=true
+      - sablier.group=mygroup
 
 
 networks:

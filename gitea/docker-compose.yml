@@ -22,6 +22,8 @@ services:
       - traefik.http.routers.mygitea.service=api@internal
       - traefik.http.routers.mygitea.middlewares=myauth
       - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+      - sablier.enable=true
+      - sablier.group=mygroup
 
 
 networks:

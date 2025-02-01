@@ -24,6 +24,8 @@ services:
       - traefik.http.routers.mynextcloud.service=api@internal
       - traefik.http.routers.mynextcloudr.middlewares=myauth
       - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+      - sablier.enable=true
+      - sablier.group=mygroup
 
 
     environment:

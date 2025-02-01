@@ -35,6 +35,8 @@ services:
       - traefik.http.routers.mywatchtower.service=api@internal
       - traefik.http.routers.mywatchtower.middlewares=myauth
       - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+      - sablier.enable=true
+      - sablier.group=mygroup
 
 
     restart: always

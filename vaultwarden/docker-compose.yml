@@ -25,6 +25,8 @@ services:
                     ## Middleware configuration
             - "traefik.http.middlewares.crowdsec-vaultwarden.plugin.crowdsec-bouncer.enabled=true"
             - "traefik.http.middlewares.crowdsec-vaultwarden.plugin.crowdsec-bouncer.crowdseclapikey=uw//V2nuhODeROUjnXQPBSYA7eOFwweLq25s1btEZHc"
+            - sablier.enable=true
+            - sablier.group=mygroup
 
         image: 'vaultwarden/server:latest'
 

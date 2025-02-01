@@ -28,6 +28,8 @@ services:
       - traefik.http.routers.myhomepage.service=api@internal
       - traefik.http.routers.myhomepage.tls=true
       - traefik.http.routers.myhomepage.tls.certresolver=myresolver
+      - sablier.enable=true
+      - sablier.group=mygroup
 
 networks:
   proxy:
