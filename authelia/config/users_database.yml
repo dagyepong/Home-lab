@@ -7,7 +7,8 @@
 
 # List of users
 users:
-  yourUsername: nana
+  yourUsername:
+    username: nana
     disabled: false 
     displayname: "My Authelia User" 
     # Password is authelia
