@@ -27,6 +27,16 @@ services:
       - redis
       - database
     restart: always
+    networks:
+      - proxy
+    labels:
+
+      - traefik.enable=true
+      - traefik.http.routers.mywatchtower.rule=Host(`immich.nanaoware.online`)
+      - traefik.http.routers.mywatchtower.service=api@internal
+      - traefik.http.routers.mywatchtower.middlewares=myauth
+      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+
     healthcheck:
       disable: false
 
@@ -89,3 +99,7 @@ services:
 
 volumes:
   model-cache:
+
+networks:
+  proxy:
+    external: true #do not expose external for security risk
