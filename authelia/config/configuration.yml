@@ -45,15 +45,15 @@ authentication_backend:
       memory: 64
 
 access_control:
-  default_policy: deny
+  default_policy: two_factor
   rules:
     # Rules applied to everyone
     # chose from bypass, one_factor and two_factor
-    - domain: public.example.com
+    - domain: nanaoware.online
       policy: bypass
-    - domain: subdomain1.example.com
+    - domain: nanaoware.online
       policy: one_factor
-    - domain: subdomain2.example.com
+    - domain: nanaoware.online
       policy: two_factor
 
 session:
@@ -64,8 +64,8 @@ session:
   inactivity: 5m  # 5 minutes
   cookies:
     - domain: lrvt.de
-      authelia_url: 'https://example.com'
-      default_redirection_url: 'https://www.example.com'  # must be diffent to authelia_url
+      authelia_url: 'https://authelia.nanaoware.online'
+      default_redirection_url: 'https://auth.nanaoware.online'  # must be diffent to authelia_url
       
   redis:
     host: authelia-redis
