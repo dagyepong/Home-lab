@@ -43,6 +43,8 @@ services:
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
       - --experimental.plugins.sablier.modulename=github.com/acouvreur/sablier
       - --experimental.plugins.sablier.version=v1.8.0
+      - --experimental.plugins.fail2ban.modulename=github.com/tomMoulard/fail2ban
+      - --experimental.plugins.fail2ban.version=v0.8.3
 
 
 
