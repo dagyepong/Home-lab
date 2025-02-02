@@ -45,10 +45,15 @@ storage:
   local:
     path: /data/db.sqlite3
 
+#notifier:
+ # smtp:
+  #  username: apikey
+   # password: secret
+    #host: smtp.sendgrid.net
+    #port: 587
+    #sender: no-reply@mydomain.com
+
 notifier:
-  smtp:
-    username: apikey
-    password: secret
-    host: smtp.sendgrid.net
-    port: 587
-    sender: no-reply@mydomain.com
+  disable_startup_check: false
+  filesystem:
+    filename: '/config/notification.txt'
