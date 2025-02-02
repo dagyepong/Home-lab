@@ -7,23 +7,13 @@
 
 # List of users
 users:
-  nana:
-    displayname: "nana"
-    # Password is Authelia
-    password: "$argon2id$v=19$m=65536,t=1,p=8$cUI4a0E3L1laYnRDUXl3Lw$ZsdsrdadaoVIaVj8NltA8x4qVOzT+/r5GF62/bT8OuAs" 
-    email: dennisagyepong2@gmail.com
-    groups:
-      - admins
-      - dev
-
----
-users:
   authelia:
-    displayname: "authelia"
-    password: "$argon2id$v=19$m=65536,t=1,p=8$ek9jRWNRbkhPMVNNWWpreg$myvpTCREAwhITbcD80d2Ae5+pdIK3Y3SSNuLSU8dezw"
-    email: x@x.com
+    disabled: false
+    displayname: 'Authelia User'
+    # Password is authelia
+    password: '$6$rounds=50000$BpLnfgDsc2WD8F2q$Zis.ixdg9s/UOJYrs56b5QEZFiZECu0qZVNsIYxBaNJ7ucIL.nlxVCT5tqh8KHG8X4tlwCFm5r6NTOZZ5qRFN/'  # yamllint disable-line rule:line-length
+    email: 'authelia@authelia.com'
     groups:
-      - admins
-      - dev
-
----
+      - 'admins'
+      - 'dev'
+...
