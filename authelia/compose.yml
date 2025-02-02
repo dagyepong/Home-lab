@@ -12,9 +12,9 @@ services:
       - ./data:/data
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.authelia.entrypoints=websecure'
-      - 'traefik.http.routers.authelia.tls=true'
-      - 'traefik.http.routers.authelia.tls.certresolver=myresolver'
+      - 'traefik.http.routers.myauthelia.entrypoints=websecure'
+      - 'traefik.http.routers.myauthelia.tls=true'
+      - 'traefik.http.routers.myauthelia.tls.certresolver=myresolver'
       - 'traefik.http.middlewares.myauthelia.forwardauth.address=http://authelia-service:9091/api/verify?rd=https://auth.demo.containers.fan'
       - 'traefik.http.middlewares.myauthelia.forwardauth.trustForwardHeader=true'
       - 'traefik.http.middlewares.myauthelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
@@ -61,9 +61,9 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.one-factor.rule=Host(`one-factor.nanaoware.online`)'
-      - 'traefik.http.routers.one-factor.entrypoints=https'
+      - 'traefik.http.routers.one-factor.entrypoints=websecure'
       - 'traefik.http.routers.one-factor.tls=true'
-      - 'traefik.http.routers.one-factor.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.one-factor.tls.certresolver=myresolver'
       - 'traefik.http.routers.one-factor.middlewares=authelia@docker'
       - 'traefik.http.routers.one-factor.service=one-factor-service'
       - 'traefik.http.services.one-factor-service.loadbalancer.server.port=5000'
@@ -87,9 +87,9 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.two-factor.rule=Host(`two-factor.nanaoware.online`)'
-      - 'traefik.http.routers.two-factor.entrypoints=https'
+      - 'traefik.http.routers.two-factor.entrypoints=websecure'
       - 'traefik.http.routers.two-factor.tls=true'
-      - 'traefik.http.routers.two-factor.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.two-factor.tls.certresolver=myresolver'
       - 'traefik.http.routers.two-factor.middlewares=authelia@docker'
       - 'traefik.http.routers.two-factor.service=two-factor-service'
       - 'traefik.http.services.two-factor-service.loadbalancer.server.port=5000'
@@ -113,9 +113,9 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.public.rule=Host(`public.nanaoware.online`)'
-      - 'traefik.http.routers.public.entrypoints=https'
+      - 'traefik.http.routers.public.entrypoints=websecure'
       - 'traefik.http.routers.public.tls=true'
-      - 'traefik.http.routers.public.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.public.tls.certresolver=myresolver'
       - 'traefik.http.routers.public.middlewares=authelia@docker'
       - 'traefik.http.routers.public.service=public-service'
       - 'traefik.http.services.public-service.loadbalancer.server.port=5000'
