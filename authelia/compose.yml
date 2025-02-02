@@ -20,8 +20,8 @@ services:
       traefik.http.middlewares.authelia.forwardauth.address: "http://authelia-service:9091/api/verify?rd=https://authelia.nanaoware.online"
       traefik.http.middlewares.authelia.forwardauth.trustForwardHeader: "true"
       traefik.http.middlewares.authelia.forwardauth.authResponseHeaders: 'Remote-User,Remote-Groups,Remote-Name,Remote-Email'
-    depends_on:
-     restart: 'unless-stopped'
+    depends_on: []
+    restart: 'unless-stopped'
     healthcheck:
       ## In production the healthcheck section should be commented.
       disable: true
