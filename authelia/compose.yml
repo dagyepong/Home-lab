@@ -12,13 +12,18 @@ services:
       - ./data:/data
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.authelia.rule=Host(`auth.nanaoware.online`)'
-      - 'traefik.http.routers.authelia.entrypoints=https'
+      - 'traefik.http.routers.authelia.entrypoints=websecure'
       - 'traefik.http.routers.authelia.tls=true'
-      - 'traefik.http.routers.authelia.tls.certresolver=letsencrypt'
-      - 'traefik.http.middlewares.authelia.forwardauth.address=http://authelia-service:9091/api/verify?rd=https://auth.demo.containers.fan'
-      - 'traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true'
-      - 'traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
+      - 'traefik.http.routers.authelia.tls.certresolver=myresolver'
+      - 'traefik.http.middlewares.myauthelia.forwardauth.address=http://authelia-service:9091/api/verify?rd=https://auth.demo.containers.fan'
+      - 'traefik.http.middlewares.myauthelia.forwardauth.trustForwardHeader=true'
+      - 'traefik.http.middlewares.myauthelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
+      - 'traefik.http.routers.myauthelia.rule=Host(`test.nanaoware.online`)'
+      - 'traefik.http.routers.myauthelia.service=api@internal'
+      - 'traefik.http.routers.mydashboard.middlewares=myauth'
+      - 'sablier.enable=true'
+      - 'sablier.group=mygroup'
+
     depends_on:
       - authelia-redis
     networks:
