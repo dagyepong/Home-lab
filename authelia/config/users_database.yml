@@ -15,4 +15,15 @@ users:
     groups:
       - admins
       - dev
-...
+
+---
+users:
+  authelia:
+    displayname: "authelia"
+    password: "$argon2id$v=19$m=65536,t=1,p=8$ek9jRWNRbkhPMVNNWWpreg$myvpTCREAwhITbcD80d2Ae5+pdIK3Y3SSNuLSU8dezw"
+    email: x@x.com
+    groups:
+      - admins
+      - dev
+
+---

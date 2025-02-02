@@ -1,0 +1,124 @@
+
+
+services:
+  authelia-service:
+    image: authelia/authelia:4
+    container_name: authelia-service
+    restart: unless-stopped
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - ./config:/config
+      - ./data:/data
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.authelia.rule=Host(`auth.nanaoware.online`)'
+      - 'traefik.http.routers.authelia.entrypoints=https'
+      - 'traefik.http.routers.authelia.tls=true'
+      - 'traefik.http.routers.authelia.tls.certresolver=letsencrypt'
+      - 'traefik.http.middlewares.authelia.forwardauth.address=http://authelia-service:9091/api/verify?rd=https://auth.demo.containers.fan'
+      - 'traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true'
+      - 'traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
+    depends_on:
+      - authelia-redis
+    networks:
+      - proxy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+
+  authelia-redis:
+    image: redis:7
+    container_name: authelia-redis
+    restart: unless-stopped
+    environment:
+      - TZ=Africa/Johannesburg
+    networks:
+      - proxy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+
+  one-factor-service:
+    image: ruanbekker/web-center-name-v2
+    container_name: one-factor-service
+    restart: unless-stopped
+    environment:
+      - APP_TITLE=One Factor Service
+      - APP_URL=
+      - APP_TEXT=
+    depends_on:
+      - authelia-service
+    networks:
+      - proxy
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.one-factor.rule=Host(`one-factor.nanaoware.online`)'
+      - 'traefik.http.routers.one-factor.entrypoints=https'
+      - 'traefik.http.routers.one-factor.tls=true'
+      - 'traefik.http.routers.one-factor.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.one-factor.middlewares=authelia@docker'
+      - 'traefik.http.routers.one-factor.service=one-factor-service'
+      - 'traefik.http.services.one-factor-service.loadbalancer.server.port=5000'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+
+  two-factor-service:
+    image: ruanbekker/web-center-name-v2
+    container_name: two-factor-service
+    restart: unless-stopped
+    environment:
+      - APP_TITLE=Two Factor Service
+      - APP_URL=
+      - APP_TEXT=
+    depends_on:
+      - authelia-service
+    networks:
+      - proxy
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.two-factor.rule=Host(`two-factor.nanaoware.online`)'
+      - 'traefik.http.routers.two-factor.entrypoints=https'
+      - 'traefik.http.routers.two-factor.tls=true'
+      - 'traefik.http.routers.two-factor.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.two-factor.middlewares=authelia@docker'
+      - 'traefik.http.routers.two-factor.service=two-factor-service'
+      - 'traefik.http.services.two-factor-service.loadbalancer.server.port=5000'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+
+  public-service:
+    image: ruanbekker/web-center-name-v2
+    container_name: public-service
+    restart: unless-stopped
+    environment:
+      - APP_TITLE=Public Service
+      - APP_URL=
+      - APP_TEXT=
+    depends_on:
+      - authelia-service
+    networks:
+      - proxy
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.public.rule=Host(`public.nanaoware.online`)'
+      - 'traefik.http.routers.public.entrypoints=https'
+      - 'traefik.http.routers.public.tls=true'
+      - 'traefik.http.routers.public.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.public.middlewares=authelia@docker'
+      - 'traefik.http.routers.public.service=public-service'
+      - 'traefik.http.services.public-service.loadbalancer.server.port=5000'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+
+networks:
+  docknet:
+    name: proxy
