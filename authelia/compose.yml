@@ -125,5 +125,5 @@ services:
         max-size: "1m"
 
 networks:
-  docknet:
-    name: proxy
+  proxy:
+    external: true
