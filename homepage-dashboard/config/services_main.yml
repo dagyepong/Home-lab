@@ -165,6 +165,10 @@
         icon: gitea.png
         description: Git Server
         siteMonitor: https://git.public-domain.fr
+        widget:
+            type: gitea
+            url: http://gitea.host.or.ip:port
+            key: giteaapitoken
     - Bookstack:
         href: https://docs.public-domain.fr/
         icon: bookstack.png
