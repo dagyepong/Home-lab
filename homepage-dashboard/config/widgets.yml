@@ -2,18 +2,18 @@
 # For configuration options and examples, please see:
 # https://gethomepage.dev/latest/configs/service-widgets
 
+- logo:
+    icon: https://cdn.worldvectorlogo.com/logos/raspberry-pi.svg
 - resources:
     cpu: true
+    units: imperial
     memory: true
-    disk: /
-
-- search:
-    provider: google # <--- updated with google
-    target: _blank
-
-- datetime:
-    text_size: xl
-    format:
-      timeStyle: short
-      hourCycle: h23
-   # ^^^ add this block
+    cputemp: true
+    expanded: true
+- resources:
+    disk:
+      - /
+    diskUnits: bytes
+    expanded: true
+- logo:
+     icon: https://i.imgur.com/rHHmiIH.gif
