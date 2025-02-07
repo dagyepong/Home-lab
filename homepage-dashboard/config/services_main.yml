@@ -260,6 +260,17 @@
         icon: netgear.png
         description: Wifi Access Point
         siteMonitor: http://local.deeper.network
+    - OPenWrt:
+        href: http://
+        icon: openwrt.png
+        description: Router
+        siteMonitor: http://
+        widget:
+            type: openwrt
+            url: http://host.or.ip
+            username: homepage
+            password: pass
+            interfaceName: eth0 # optional
 - Media:
     - Jellyfin:
         href: https://jellyfin.public-domain2.fr/
@@ -281,51 +292,6 @@
             key:
             type: plex
             url:
-    - Jellyseer:
-        description: Media Requests
-        href: https://jellyseer.public-domain2.fr/
-        siteMonitor: https://jellyseer.public-domain2.fr
-        icon: jellyseerr.png
-        widget:
-            key: password
-            type: jellyseerr
-            url: https://jellyseer.public-domain2.fr
-    - Radarr:
-        href: https://radarr.internal-domain.lan/
-        icon: radarr.png
-        description: Movie Manager
-        siteMonitor: https://radarr.internal-domain.lan
-        widget:
-            key: password
-            type: radarr
-            url: https://radarr.internal-domain.lan
-    - Sonarr:
-        href: https://sonarr.internal-domain.lan/
-        icon: sonarr.png
-        description: TV Show Manager
-        siteMonitor: https://sonarr.internal-domain.lan
-        widget:
-            key: password
-            type: sonarr
-            url: https://sonarr.internal-domain.lan
-    - Lidarr:
-        href: https://lidarr.internal-domain.lan/
-        icon: lidarr.png
-        description: Music Manager
-        siteMonitor: https://lidarr.internal-domain.lan
-        widget:
-            key: password
-            type: lidarr
-            url: https://lidarr.internal-domain.lan
-    - Bazarr:
-        href: https://bazarr.internal-domain.lan/
-        icon: bazarr.png
-        description: Subtitle Manager
-        siteMonitor: https://bazarr.internal-domain.lan
-        widget:
-            key: password
-            type: bazarr
-            url: https://bazarr.internal-domain.lan
     - Transmission:
         href: https://transmission.internal-domain.lan/
         icon: transmission.png
@@ -337,26 +303,6 @@
             username: username
             password: password
             rpcUrl: /transmission/ # Optional. Matches the value of "rpc-url" in your Transmission's settings.json file
-    - Jellystat:
-        href: https://stats.internal-domain.lan
-        icon: jellystat.png
-        description: Jellyfin Statistics
-        siteMonitor: https://stats.internal-domain.lan
-        widget:
-            key: password
-            type: jellyfin
-            url: https://jellyfin.public-domain2.fr
-            enableBlocks: true
-            enableNowPlaying: false
-    - Prowlarr:
-        href: https://prowlarr.internal-domain.lan/
-        icon: prowlarr.png
-        description: Indexer Manager
-        siteMonitor: https://prowlarr.internal-domain.lan
-        widget:
-            key: password
-            type: prowlarr
-            url: https://prowlarr.internal-domain.lan
     - Kavita:
         href: https://kavita.internal-domain.lan/
         icon: kavita.png
