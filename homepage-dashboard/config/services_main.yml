@@ -189,6 +189,18 @@
             slug: home
             type: uptimekuma
             url: http://frontline.public-domain2.fr:3001
+    - Beszel:
+        href: https://beszel.internal-domain.lan/
+        icon: beszel.png
+        description: Chat Server
+        siteMonitor: https://beszel.internal-domain.lan
+        widget:
+            type: beszel
+            url: http://beszel.host.or.ip
+            username: username # email
+            password: password
+            systemId: systemId # optional
+            version: 2 # optional, default is 1
     - Dozzle:
         href:
         icon: dozzle.png
