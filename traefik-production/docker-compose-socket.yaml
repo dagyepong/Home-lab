@@ -29,8 +29,6 @@ services:
       - --certificatesresolvers.myresolver.acme.email=owarenana06@gmail.com
       - --certificatesresolvers.myresolver.acme.tlschallenge=true
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
-      - --experimental.plugins.sablier.modulename=github.com/acouvreur/sablier
-      - --experimental.plugins.sablier.version=v1.8.0
     labels:
       - traefik.enable=true
       - traefik.http.routers.mydashboard.rule=Host(`test.nanaoware.online`)

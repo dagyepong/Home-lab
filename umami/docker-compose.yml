@@ -32,8 +32,7 @@ services:
       - traefik.http.routers.myumami.service=api@internal
       - traefik.http.routers.myumami.tls=true
       - traefik.http.routers.myumami.tls.certresolver=myresolver
-      - sablier.enable=true
-      - sablier.group=mygroup
+     
 
 
   db:
