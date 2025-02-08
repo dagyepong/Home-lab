@@ -37,3 +37,9 @@ services:
 networks:
   proxy:
     external: true #do not expose external for security risk
+
+volumes:
+  db:
+    name: db
+  data:
+    name: data
