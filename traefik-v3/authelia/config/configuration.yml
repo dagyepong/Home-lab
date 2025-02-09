@@ -1,0 +1,68 @@
+host: 0.0.0.0
+port: 9091
+log_level: info
+#jwt_secret:
+default_redirection_url: https://linuxpad.blog
+
+### TOTP Settings
+totp:
+  issuer: linuxpad.blog
+  period: 30
+  skew: 1
+### DUO Settings
+#duo_api:
+#  hostname: api-somenumber.duosecurity.com
+#  integration_key: SOMESECRETKEY
+#  secret_key: somelongersecretkey
+
+authentication_backend:
+  disable_reset_password: false
+  file:
+    path: /config/users_database.yml
+    password:
+      algorithm: argon2id
+      iterations: 1
+      key_length: 32
+      salt_length: 16
+      memory: 512
+      parallelism: 8
+
+access_control:
+  default_policy: 'deny'
+  rules:
+    - domain: 'traefik-dashboard.example.com'
+      policy: 'two_factor'
+
+
+session:
+ name: authelia_session
+#  secret:
+ expiration: 1h
+ inactivity: 5m
+ remember_me_duration: 1M
+ domain: linuxpad.blog
+regulation:
+ max_retries: 3
+ find_time: 2m
+ ban_time: 5m
+
+storage:
+  local:
+    path: /config/db.sqlite3
+notifier:
+  disable_startup_check: false
+  #smtp:
+   # username: me@example.com
+#    password:
+    #host: smtp.gmail.com
+    #port: 587
+    #sender: authelia@example.com
+    #subject: "[Authelia] {title}"
+    ##startup_check_address: test@authelia.com
+    #disable_require_tls: false
+    #disable_html_emails: false
+    #tls:
+     # skip_verify: false
+  filesystem:
+    filename: /config/notification.txt
+...

@@ -1,0 +1,8 @@
+users:
+  spad:
+    displayname: "spad"
+    password: "$argon2id$v=19$m=524288,t=1,p=longrandompasswordhashgenerated"
+    email: owarenana06@gmail.com
+    groups:
+      - Admins
+      - Devs
