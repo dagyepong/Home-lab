@@ -1,52 +1,36 @@
-version: "3.8"
-
 services:
   traefik:
     image: traefik:v3.0
     container_name: traefik
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
+    restart: always
     networks:
       - proxy
     ports:
       - 80:80
-      - 443:443/tcp
-      - 443:443/udp # Uncomment if you want HTTP3
-    environment:
-      CF_DNS_API_TOKEN_FILE: /run/secrets/cf_api_token # note using _FILE for docker secrets
-      # CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN} # if using .env
-      TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
-    secrets:
-      - cf_api_token
-    env_file: .env # use .env
+      - 443:443
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./data/traefik.yml:/traefik.yml:ro
-      - ./data/acme.json:/acme.json
-      - ./data/config.yml:/config.yml:ro
+      - ./data/configs:/configs:ro
+      - ./data/acme.json:/acme.json:rw
+      - ./data/logs:/logs:rw
+    environment:
+      - TZ=Europe/London
+      - CF_DNS_API_TOKEN=${CFAPI}
+    read_only: true
+    security_opt:
+      - no-new-privileges=true
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.traefik.entrypoints=http"
-      - "traefik.http.routers.traefik.rule=Host(`traefik-dashboard.nanaoware.online`)"
-      - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_DASHBOARD_CREDENTIALS}"
-      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
-      - "traefik.http.routers.traefik-secure.entrypoints=https"
-      - "traefik.http.routers.traefik-secure.rule=Host(`traefik-dashboard.nanaoware.online`)"
-      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
-      - "traefik.http.routers.traefik-secure.tls=true"
-      - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
-      - "traefik.http.routers.traefik-secure.tls.domains[0].main=nanaoware.online"
-      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.nanaoware.online"
-      - "traefik.http.routers.traefik-secure.service=api@internal"
-
-secrets:
-  cf_api_token:
-    file: ./cf_api_token.txt
+      - traefik.enable=true
+      - traefik.http.routers.traefik-https.entrypoints=https
+      - traefik.http.routers.traefik-https.rule=Host(`myproxy.linuxpad.blog`)
+      - traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIKADMIN}
+      - traefik.http.routers.traefik-https.middlewares=traefik-auth
+      - traefik.http.routers.traefik-https.service=api@internal
+      - traefik.http.routers.traefik-https.tls.certresolver=letsencrypt
+      - traefik.http.routers.traefik-https.tls.domains[0].main=linuxpad.blog
+      - traefik.http.routers.traefik-https.tls.domains[0].sans=*.linuxpad.blog
 
 networks:
   proxy:
-    external: true
+    external: {}
