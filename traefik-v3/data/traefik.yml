@@ -1,35 +1,74 @@
 api:
   dashboard: true
-  debug: true
+
 entryPoints:
   http:
     address: ":80"
-    http:
-      redirections:
-        entryPoint:
-          to: https
-          scheme: https
+    forwardedHeaders:
+      trustedIPs:
+        - 127.0.0.1/32
+        - 192.168.0.0/16
+        - 172.16.0.0/12
   https:
     address: ":443"
-serversTransport:
-  insecureSkipVerify: true
+    http:
+      tls: {}
+    forwardedHeaders:
+      trustedIPs:
+        - 127.0.0.1/32
+        - 192.168.0.0/16
+        - 172.16.0.0/12
+
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
-  # file:
-  #   filename: /config.yml
+    defaultRule: "Host(`{{ index .Labels \"com.docker.compose.service\"}}.example.com`)"
+    network: proxy
+  file:
+    directory: "/configs"
+    watch: true
+
 certificatesResolvers:
-  cloudflare:
+  http:
     acme:
-      email: owarenana06@gmail.com.com
+      email: owarenana06@gmail.com
       storage: acme.json
-      caServer: https://acme-v02.api.letsencrypt.org/directory # prod (default)
-      #caServer: https://acme-staging-v02.api.letsencrypt.org/directory # staging
+      httpChallenge:
+        entryPoint: http
+  letsencrypt:
+    acme:
+      email: owarenana06@gmail.com
+      storage: acme.json
       dnsChallenge:
         provider: cloudflare
-        disablePropagationCheck: true # uncomment this if you have issues pulling certificates through cloudflare, By setting this flag to true disables the need to wait for the propagation of the TXT record to all authoritative name servers.
-        delayBeforeCheck: 5s # uncomment along with disablePropagationCheck if needed to ensure the TXT record is ready before verification is attempted 
         resolvers:
           - "1.1.1.1:53"
           - "1.0.0.1:53"
+  zerossl:
+    acme:
+      caServer: https://acme.zerossl.com/v2/DV90
+      email: owarenana06@gmail.com
+      storage: acme.json
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+          - "1.1.1.1:53"
+          - "1.0.0.1:53"
+      eab:
+        kid: sdjkflUHKer79HLK
+        hmacEncoded: sjflkJLHeh5JHfdGUIGEJ8ASdyouhj43
+
+serversTransport:
+    insecureSkipVerify: false
+
+accessLog:
+  filePath: "/logs/access.log"
+  fields:
+    headers:
+      names:
+        User-Agent: keep
+
+log:
+  filePath: "/logs/traefik.log"
+  level: INFO
