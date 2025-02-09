@@ -11,6 +11,9 @@ entryPoints:
         - 172.16.0.0/12
   https:
     address: ":443"
+    http3:
+      advertisedPort: 443
+
     http:
       tls: {}
     forwardedHeaders:
