@@ -8,7 +8,7 @@ entryPoints:
       middlewares:
         - crowdsec-bouncer@file
       redirections:
-        entrypoint:
+        entryPoint:
           to: https
           scheme: https
   https:
@@ -22,7 +22,7 @@ entryPoints:
       middlewares:
         - crowdsec-bouncer@file
       redirections:
-        entrypoint:
+        entryPoint:
           to: https-external
           scheme: https
   https-external:
