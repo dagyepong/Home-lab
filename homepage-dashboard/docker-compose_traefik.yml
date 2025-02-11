@@ -18,16 +18,18 @@ services:
       - /home/nana/docker/homepage/config:/app/config 
 
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.homepage.rule=Host(`homepage.nanaoware.online`) || Host(`www.homepage.nanaoware.online`)
-      - traefik.http.services.homepage.loadbalancer.server.port=3000
-      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.myhomepage.middlewares=mywwwredirect
-      - traefik.http.routers.myhomepage.middlewares=myauth
-      - traefik.http.routers.myhomepage.service=api@internal
-      - traefik.http.routers.myhomepage.tls=true
-      - traefik.http.routers.myhomepage.tls.certresolver=myresolver
+      - "traefik.enable=true"
+      - "traefik.http.routers.homepage.entrypoints=http"
+      - "traefik.http.routers.homepage.rule=Host(`homepage.linuxpad.blog`)"
+      - "traefik.http.middlewares.homepage-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.homepage.middlewares=homepage-https-redirect"
+      - "traefik.http.routers.homepage-secure.entrypoints=https"
+      - "traefik.http.routers.homepage-secure.rule=Host(`homepage.linuxpad.blog`)"
+      - "traefik.http.routers.homepage-secure.tls=true"
+      - "traefik.http.routers.homepage-secure.service=homepage"
+      - "traefik.http.services.homepage.loadbalancer.server.port=3030"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.homepage-secure.middlewares=authelia@docker"
 networks:
   proxy:
     external: true

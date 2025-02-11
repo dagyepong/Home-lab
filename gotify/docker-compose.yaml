@@ -21,16 +21,18 @@ services:
       GOTIFY_DEFAULTUSER_NAME: "admin"
       GOTIFY_REGISTRATION: "false"
     labels:
-      - traefik.docker.network=proxy
-      - traefik.enable=true
-      - traefik.http.routers.gotify.rule=Host(`gotify.nanaoware.online`) || Host(`www.gotify.nanaoware.online`)
-      - traefik.http.services.homepage.loadbalancer.server.port=8447
-      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.mygotify.middlewares=myauth
-      - traefik.http.routers.mygotify.service=api@internal
-      - traefik.http.routers.mygotify.tls=true
-      - traefik.http.routers.mygotify.tls.certresolver=myresolver
+      - "traefik.enable=true"
+      - "traefik.http.routers.gotify.entrypoints=http"
+      - "traefik.http.routers.gotify.rule=Host(`gotify.linuxpad.blog`)"
+      - "traefik.http.middlewares.gotify-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.gotify.middlewares=gotify-https-redirect"
+      - "traefik.http.routers.gotify-secure.entrypoints=https"
+      - "traefik.http.routers.gotify-secure.rule=Host(`gotify.linuxpad.blog`)"
+      - "traefik.http.routers.gotify-secure.tls=true"
+      - "traefik.http.routers.gotify-secure.service=gotify"
+      - "traefik.http.services.gotify.loadbalancer.server.port=8447"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.gotify-secure.middlewares=authelia@docker"
     
   igotify-notification:
     image: ghcr.io/androidseb25/igotify-notification-assist:latest
@@ -47,16 +49,18 @@ services:
       GOTIFY_CLIENT_TOKENS: ""
       SECNTFY_TOKENS: ""
     labels:
-      - traefik.docker.network=proxy
-      - traefik.enable=true
-      - traefik.http.routers.igotify.rule=Host(`igotify.nanaoware.online`) || Host(`www.igotify.nanaoware.online`)
-      - traefik.http.services.igotify.loadbalancer.server.port=8447
-      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.myigotify.middlewares=myauth
-      - traefik.http.routers.myigotify.service=api@internal
-      - traefik.http.routers.myigotify.tls=true
-      - traefik.http.routers.myigotify.tls.certresolver=myresolver
+      - "traefik.enable=true"
+      - "traefik.http.routers.igotify.entrypoints=http"
+      - "traefik.http.routers.igotify.rule=Host(`igotify.linuxpad.blog`)"
+      - "traefik.http.middlewares.igotify-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.igotify.middlewares=igotify-https-redirect"
+      - "traefik.http.routers.igotify-secure.entrypoints=https"
+      - "traefik.http.routers.igotify-secure.rule=Host(`igotify.linuxpad.blog`)"
+      - "traefik.http.routers.igotify-secure.tls=true"
+      - "traefik.http.routers.igotify-secure.service=igotify"
+      - "traefik.http.services.igotify.loadbalancer.server.port=8447"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.igotify-secure.middlewares=authelia@docker"
     networks:
       - proxy
 

@@ -17,13 +17,18 @@ services:
     networks:
       - proxy
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.mygitea.rule=Host(`gitea.nanaoware.online`)
-      - traefik.http.routers.mygitea.service=api@internal
-      - traefik.http.routers.mygitea.middlewares=myauth
-      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
-
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.gitea.entrypoints=http"
+      - "traefik.http.routers.gitea.rule=Host(`gitea.linuxpad.blog`)"
+      - "traefik.http.middlewares.gitea-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.gitea.middlewares=gitea-https-redirect"
+      - "traefik.http.routers.gitea-secure.entrypoints=https"
+      - "traefik.http.routers.gitea-secure.rule=Host(`gitea.linuxpad.blog`)"
+      - "traefik.http.routers.gitea-secure.tls=true"
+      - "traefik.http.routers.gitea-secure.service=gitea"
+      - "traefik.http.services.gitea.loadbalancer.server.port=3050"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.gitea-secure.middlewares=authelia@docker"
 networks:
   proxy:
     external: true
