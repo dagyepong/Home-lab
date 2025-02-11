@@ -21,14 +21,18 @@ services:
       - proxy
 
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.mydozzle.rule=Host(`dozzle.nanaoware.online`)
-      - traefik.http.routers.mydozzle.service=api@internal
-      - traefik.http.routers.mydozzle.middlewares=myauth
-      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
-
-
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.dozzle.entrypoints=http"
+      - "traefik.http.routers.dozzle.rule=Host(`dozzle.linuxpad.blog`)"
+      - "traefik.http.middlewares.dozzle-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.dozzle.middlewares=dozzle-https-redirect"
+      - "traefik.http.routers.dozzle-secure.entrypoints=https"
+      - "traefik.http.routers.dozzle-secure.rule=Host(`dozzle.linuxpad.blog`)"
+      - "traefik.http.routers.dozzle-secure.tls=true"
+      - "traefik.http.routers.dozzle-secure.service=dozzle"
+      - "traefik.http.services.dozzle.loadbalancer.server.port=9999"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.dozzle-secure.middlewares=authelia@docker"
 
 networks:
   proxy:
