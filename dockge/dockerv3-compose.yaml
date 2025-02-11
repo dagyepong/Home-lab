@@ -1,0 +1,40 @@
+
+
+services:
+  dockge:
+    image: louislam/dockge:1
+    restart: unless-stopped
+    ports:
+      - 5001:5001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data:/app/data
+      # Stacks Directory
+      # ⚠️ READ IT CAREFULLY. If you did it wrong, your data could end up writing into a WRONG PATH.
+      # ⚠️ 1. FULL path only. No relative path (MUST)
+      # ⚠️ 2. Left Stacks Path === Right Stacks Path (MUST)
+      - /opt/stacks:/opt/stacks
+    
+    networks:
+      - proxy
+    environment:
+      # Tell Dockge where to find the stacks
+      - DOCKGE_STACKS_DIR=/opt/stacks
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dockge.entrypoints=http"
+      - "traefik.http.routers.dockge.rule=Host(`dockge.linuxpad.blog`)"
+      - "traefik.http.middlewares.dockge-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.dockge.middlewares=dockge-https-redirect"
+      - "traefik.http.routers.dockge-secure.entrypoints=https"
+      - "traefik.http.routers.dockge-secure.rule=Host(`dockge.linuxpad.blog`)"
+      - "traefik.http.routers.dockge-secure.tls=true"
+      - "traefik.http.routers.dockge-secure.service=dockge"
+      - "traefik.http.services.dockge.loadbalancer.server.port=5001"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.dockge-secure.middlewares=authelia@docker"
+
+networks:
+  proxy:
+    name: proxy
+    external: true #do not expose external for security risk
