@@ -7,11 +7,11 @@
 
 # List of users
 users:
-  authelia:
+  nana:
     disabled: false
-    displayname: "Authelia User"
-    # Password is authelia
-    password: "$6$rounds=50000$BpLnfgDsc2WD8F2q$Zis.ixdg9s/UOJYrs56b5QEZFiZECu0qZVNsIYxBaNJ7ucIL.nlxVCT5tqh8KHG8X4tlwCFm5r6NTOZZ5qRFN/"  # yamllint disable-line rule:line-length
+    displayname: "Nana"
+    # Password is akwasi123
+    password: "$argon2id$v=19$m=65536,t=3,p=4$umrgBi+cn03iaSZqedcc4g$saG2lv5popbMo2HdvQwDN+bor/GpHZFj/BL7UCIkLaU"  
     email: owarenana06@gmail.com
     groups:
       - admins
