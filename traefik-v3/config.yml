@@ -17,6 +17,15 @@ http:
       redirectScheme:
         scheme: https
         permanent: true
+    authelia:
+      forwardAuth:
+        address: "http://authelia:9091/api/verify?rd=https://auth.linuxpad.blog"
+        trustForwardHeader: true
+        authResponseHeaders:
+          - Remote-User
+          - Remote-Groups
+          - Remote-Name
+          - Remote-Email
 
   routers:
     portainer:
@@ -24,6 +33,7 @@ http:
         - "https"
       rule: "Host(`portainer.linuxpad.blog`)"
       middlewares:
+        - authelia
         - default-security-headers
         - https-redirectscheme
       tls: {}
@@ -35,3 +45,4 @@ http:
         servers:
           - url: "https://192.168.8.183:9443"
         passHostHeader: true
+
