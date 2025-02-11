@@ -582,9 +582,9 @@ access_control:
     # Rules applied to everyone
     - domain: linuxpad.blog
       policy: bypass
-    - domain: traefik.linuxpad.blog
+    - domain: traefik-docker.linuxpad.blog
       policy: one_factor
-    - domain: nginx.linuxpad.blog
+    - domain: portainer.jimsgarage.co.uk
       policy: one_factor
 
     ## Domain Regex examples. Generally we recommend just using a standard domain.

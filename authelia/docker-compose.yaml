@@ -5,7 +5,7 @@ services:
     image: authelia/authelia
     container_name: authelia
     volumes:
-      - /home/ubuntu/docker/authelia/config:/config
+      - /home/nana/docker/authelia/config:/config
     networks:
       - proxy
     security_opt:
