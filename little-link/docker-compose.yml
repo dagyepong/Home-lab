@@ -63,12 +63,18 @@ services:
       - no-new-privileges:true
 
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.mylink.rule=Host(`link.nanaoware.online`)
-      - traefik.http.routers.mylink.service=api@internal
-      - traefik.http.routers.mylink.middlewares=myauth
-      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.littlelink-server.entrypoints=http"
+      - "traefik.http.routers.littlelink-server.rule=Host(`link.linuxpad.blog`)"
+      - "traefik.http.middlewares.littlelink-server-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.littlelink-server.middlewares=littlelink-server-https-redirect"
+      - "traefik.http.routers.littlelink-server-secure.entrypoints=https"
+      - "traefik.http.routers.littlelink-server-secure.rule=Host(`link.linuxpad.blog`)"
+      - "traefik.http.routers.littlelink-server-secure.tls=true"
+      - "traefik.http.routers.littlelink-server-secure.service=littlelink-server"
+      - "traefik.http.services.littlelink-server.loadbalancer.server.port=8080"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.littlelink-server-secure.middlewares=authelia@docker"
 
 networks:
   proxy:
