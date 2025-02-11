@@ -22,7 +22,7 @@ http:
     portainer:
       entryPoints:
         - "https"
-      rule: "Host(`portainer-demo.jimsgarage.co.uk`)"
+      rule: "Host(`portainer.linuxpad.blog`)"
       middlewares:
         - default-security-headers
         - https-redirectscheme
