@@ -71,6 +71,17 @@ http:
         - https-redirectscheme
       tls: {}
       service: dozzle
+    
+    homepage:
+      entryPoints:
+        - "https"
+      rule: "Host(`linuxpad.blog`)"
+      middlewares:
+        - authelia
+        - default-security-headers
+        - https-redirectscheme
+      tls: {}
+      service: homepage
 
   services:
     portainer:
@@ -95,4 +106,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://192.168.8.188:8090"
+        passHostHeader: true
+
+    homepage:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.8.188:3030"
         passHostHeader: true
