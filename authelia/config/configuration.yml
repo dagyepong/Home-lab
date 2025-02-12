@@ -586,6 +586,10 @@ access_control:
       policy: one_factor
     - domain: portainer.linuxpad.blog
       policy: one_factor
+    - domain: homepage.linuxpad.blog
+      policy: one_factor
+    - domain: gitea.linuxpad.blog
+      policy: one_factor
 
     ## Domain Regex examples. Generally we recommend just using a standard domain.
     # - domain_regex: '^(?P<User>\w+)\.example\.com$'
