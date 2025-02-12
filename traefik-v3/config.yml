@@ -82,6 +82,18 @@ http:
         - https-redirectscheme
       tls: {}
       service: homepage
+    
+    vaultwarden:
+      entryPoints:
+        - "https"
+      rule: "Host(`vaultwarden.linuxpad.blog`)"
+      middlewares:
+        - authelia
+        - default-security-headers
+        - https-redirectscheme
+      tls: {}
+      service: vaultwarden
+
 
   services:
     portainer:
@@ -112,4 +124,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://192.168.8.188:3030"
+        passHostHeader: true
+    
+    vaultwarden:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.8.188:4044"
         passHostHeader: true
