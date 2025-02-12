@@ -34,7 +34,7 @@ services:
     image: redis:alpine
     container_name: redis
     volumes:
-      - /home/ubuntu/docker/redis:/data
+      - /home/nana/docker/authelia/redis:/data
     networks:
       - proxy
     expose:
