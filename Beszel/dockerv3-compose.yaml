@@ -21,7 +21,7 @@ services:
       - "traefik.http.routers.beszel-secure.service=beszel"
       - "traefik.http.services.beszel.loadbalancer.server.port=8090"
       - "traefik.docker.network=proxy"
-      - "traefik.http.routers.portainer-secure.middlewares=authelia@docker"
+      - "traefik.http.routers.beszel-secure.middlewares=authelia@docker"
 
 
 networks:
