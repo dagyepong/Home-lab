@@ -49,6 +49,17 @@ http:
         - https-redirectscheme
       tls: {}
       service: proxmox
+    
+    beszel:
+      entryPoints:
+        - "https"
+      rule: "Host(`beszel.linuxpad.blog`)"
+      middlewares:
+        - authelia
+        - default-security-headers
+        - https-redirectscheme
+      tls: {}
+      service: beszel
 
     dozzle: 
       entryPoints:
@@ -79,3 +90,8 @@ http:
         servers:
           - url: "http://192.168.8.188:9999"
         passHostHeader: true
+    
+    beszel:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.8.188:8090"
