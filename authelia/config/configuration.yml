@@ -592,6 +592,8 @@ access_control:
       policy: one_factor
     - domain: uptime-kuma.linuxpad.blog
       policy: one_factor
+    - domain: dockge.linuxpad.blog
+      policy: one_factor
     ## Domain Regex examples. Generally we recommend just using a standard domain.
     # - domain_regex: '^(?P<User>\w+)\.example\.com$'
     #   policy: one_factor
