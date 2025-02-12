@@ -105,6 +105,17 @@ http:
       tls: {}
       service: uptime-kuma
 
+    dockge:
+      entryPoints:
+        - "https"
+      rule: "Host(`dockge.linuxpad.blog`)"
+      middlewares:
+        - authelia
+        - default-security-headers
+        - https-redirectscheme
+      tls: {}
+      service: dockge
+
 
   services:
     portainer:
@@ -148,3 +159,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://192.168.8.188:3001"
+        passHostHeader: true
+    
+    dockge:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.8.188:5001"
+        passHostHeader: true
