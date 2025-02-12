@@ -41,7 +41,7 @@ services:
       - GITHUB=https://github.com/dagyepong
       - GITLAB=https://gitlab.com/na204
       - WORDPRESS=https://tech.nanaoware.online
-      - GHOST=https://linuxpad.blog
+      # - GHOST=https://linuxpad.blog
       - TWITTER=https://twitter.com/
       - INSTAGRAM=https://instagram.com/oware84?igsh=cjhxOXZwanRiMmhj
       - REDDIT=https://www.reddit.com/user/nanaoware/
