@@ -19,7 +19,7 @@ services:
       - "traefik.http.routers.beszel-secure.rule=Host(`beszel.linuxpad.blog`)"
       - "traefik.http.routers.beszel-secure.tls=true"
       - "traefik.http.routers.beszel-secure.service=beszel"
-      - "traefik.http.services.portainer.loadbalancer.server.port=8090"
+      - "traefik.http.services.beszel.loadbalancer.server.port=8090"
       - "traefik.docker.network=proxy"
       - "traefik.http.routers.portainer-secure.middlewares=authelia@docker"
 
