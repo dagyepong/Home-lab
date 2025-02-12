@@ -50,6 +50,17 @@ http:
       tls: {}
       service: proxmox
 
+    dozzle: 
+      entryPoints:
+        - "https"
+      rule: "Host(`dozzle.linuxpad.blog`)"
+      middlewares:
+        - authelia
+        - default-security-headers
+        - https-redirectscheme
+      tls: {}
+      service: dozzle
+
   services:
     portainer:
       loadBalancer:
@@ -61,4 +72,10 @@ http:
       loadBalancer:
         servers:
           - url: "https://192.168.8.178:8006"
+        passHostHeader: true
+    
+    dozzle:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.8.188:9999"
         passHostHeader: true
