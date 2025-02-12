@@ -19,13 +19,18 @@ services:
       - /srv/appdata/nextcloud/config:/var/www/html/config
       - /srv/appdata/nextcloud/data:/var/www/html/data
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.mynextcloud.rule=Host(`nextcloud.nanaoware.online`)
-      - traefik.http.routers.mynextcloud.service=api@internal
-      - traefik.http.routers.mynextcloudr.middlewares=myauth
-      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
-      - sablier.enable=true
-      - sablier.group=mygroup
+      - "traefik.enable=true"
+      - "traefik.http.routers.nextcloud.entrypoints=http"
+      - "traefik.http.routers.nextcloud.rule=Host(.nextcloud.linuxpad.blog`)"
+      - "traefik.http.middlewares.nextcloud-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.nextcloud.middlewares.nextcloud-https-redirect"
+      - "traefik.http.routers.nextcloud-secure.entrypoints=https"
+      - "traefik.http.routers.nextcloud-secure.rule=Host(.nextcloud.linuxpad.blog`)"
+      - "traefik.http.routers.nextcloud-secure.tls=true"
+      - "traefik.http.routers.nextcloud-secure.service.nextcloud"
+      - "traefik.http.services.nextcloud.loadbalancer.server.port=8081"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.nextcloud-secure.middlewares=authelia@docker"
 
 
     environment:
