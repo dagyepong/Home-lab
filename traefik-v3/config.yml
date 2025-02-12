@@ -93,6 +93,17 @@ http:
         - https-redirectscheme
       tls: {}
       service: vaultwarden
+    
+    uptime-kuma:
+      entryPoints:
+        - "https"
+      rule: "Host(`uptime-kuma.linuxpad.blog`)"
+      middlewares:
+        - authelia
+        - default-security-headers
+        - https-redirectscheme
+      tls: {}
+      service: uptime-kuma
 
 
   services:
@@ -131,3 +142,9 @@ http:
         servers:
           - url: "http://192.168.8.188:4044"
         passHostHeader: true
+    
+
+    uptime-kuma:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.8.188:3001"
