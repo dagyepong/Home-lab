@@ -3,18 +3,17 @@
 #                         Users Database                      #
 ###############################################################
 
+# This file can be used if you do not have an LDAP set up.
+
+# List of users
 users:
-  user1: #username
+  nana:
     disabled: false
-    displayname: "User1"
-    password: "$argon2id$v=19$m=65536,t=3,p=4$yJqRgSVgFHFUNn/wy+37wA$NaVCU4xvQlfeYqG7rpqWKysJGgB8etlZwxpj9bHmU5k"
-#   to generate the password use 'docker run authelia/authelia:latest authelia crypto hash generate argon2 --password 'password''
-    email: test@exmaple.com
+    displayname: "Nana"
+    # Password is akwasi123
+    password: "$argon2id$v=19$m=65536,t=3,p=4$umrgBi+cn03iaSZqedcc4g$saG2lv5popbMo2HdvQwDN+bor/GpHZFj/BL7UCIkLaU"  
+    email: owarenana06@gmail.com
     groups:
-      - admin
-      - user
-  user2:
-    disabled: false
-    displayname: "User2"
-    password: "$argon2id$v=19$m=65536,t=3,p=4$yJqRgSVgFHFUNn/wy+37wA$NaVCU4xvQlfeYqG7rpqWKysJGgB8etlZwxpj9bHmU5k"
-    email: test+user2@example.com
+      - admins
+      - dev
+...
