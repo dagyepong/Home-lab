@@ -20,7 +20,7 @@ services:
       - 9091
     restart: unless-stopped
     environment:
-      - TZ=Europe/Berlin
+      - TZ=America/Chicago
 
 
 ####### TRAEFIK #######
