@@ -1,106 +1,8 @@
----
-networks:
-  proxy:
-    external: true
-  net:
-    driver: bridge
-
 services:
-  authelia:
-    image: 'authelia/authelia'
-    container_name: 'authelia'
-    volumes:
-      - './config:/config'
-    networks:
-      - proxy
-    labels:
-      - traefik.enable:true
-      - traefik.http.routers.authelia.rule:Host(`auth.nanaoware.online`)
-      - traefik.http.routers.authelia.entrypoints:https
-      - traefik.http.routers.authelia.tls:true
-      - traefik.http.routers.authelia.tls.certresolver:letsencrypt
-      - traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/verify?rd=https://auth.nanaoware.online
-      - traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader=true
-      - traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email
-      - traefik.http.middlewares.authelia-basic.forwardAuth.address=http://authelia:9091/api/verify?auth=basic
-      - traefik.http.middlewares.authelia-basic.forwardAuth.trustForwardHeader=true
-      - traefik.http.middlewares.authelia-basic.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email
-      - traefik.http.services.authelia.loadbalancer.server.port=9091
-  
-    restart: 'unless-stopped'
-    healthcheck:
-      ## In production the healthcheck section should be commented.
-      disable: true
-    environment:
-      TZ: 'Australia/Melbourne'
 
-  redis:
-    image: 'redis:alpine'
-    container_name: 'redis'
-    volumes:
-      - './redis:/data'
-    networks:
-      - proxy
-    restart: 'unless-stopped'
-    environment:
-      TZ: 'Australia/Melbourne'
-
-
-  # Traefik 3 - Reverse Proxy
   traefik:
-    container_name: traefik
-    image: traefik:3.0
-    security_opt:
-      - no-new-privileges:true
+    image: traefik:v3.2
     restart: unless-stopped
-    # profiles: ["core", "all"]
-    networks:
-      - proxy
-      - net
-    command: # CLI arguments
-      - --global.checkNewVersion=true
-      - --global.sendAnonymousUsage=true
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-      - --entrypoints.traefik.address=:8080
-      - --entrypoints.websecure.http.tls=true
-      - --entrypoints.web.http.redirections.entrypoint.to=websecure
-      - --entrypoints.web.http.redirections.entrypoint.scheme=https
-      - --entrypoints.web.http.redirections.entrypoint.permanent=true
-      - --api=true
-      - --api.dashboard=true
-      # - --api.insecure=true
-      #- --serversTransport.insecureSkipVerify=true
-      # Allow these IPs to set the X-Forwarded-* headers - Cloudflare IPs: https://www.cloudflare.com/ips/
-      - --entrypoints.websecure.forwardedHeaders.trustedIPs=$CLOUDFLARE_IPS,$LOCAL_IPS
-      - --log=true
-      - --log.filePath=/logs/traefik.log
-      - --log.level=DEBUG # (Default: error) DEBUG, INFO, WARN, ERROR, FATAL, PANIC
-      - --accessLog=true
-      - --accessLog.filePath=/logs/access.log
-      - --accessLog.bufferingSize=100 # Configuring a buffer of 100 lines
-      - --accessLog.filters.statusCodes=204-299,400-499,500-599
-      - --providers.docker=true
-      # - --providers.docker.endpoint=unix:///var/run/docker.sock # Disable for Socket Proxy. Enable otherwise.
-      - --providers.docker.endpoint=tcp://socket-proxy:2375 # Enable for Socket Proxy. Disable otherwise.
-      - --providers.docker.exposedByDefault=false
-      - --providers.docker.network=t3_proxy 
-      # - --providers.docker.swarmMode=false # Traefik v2 Swarm
-      # - --providers.swarm.endpoint=tcp://127.0.0.1:2377 # Traefik v3 Swarm
-      - --entrypoints.websecure.http.tls.options=tls-opts@file
-      # Add dns-cloudflare as default certresolver for all services. Also enables TLS and no need to specify on individual services
-      - --entrypoints.websecure.http.tls.certresolver=dns-cloudflare
-      - --entrypoints.websecure.http.tls.domains[0].main=$DOMAINNAME_1
-      - --entrypoints.websecure.http.tls.domains[0].sans=*.$DOMAINNAME_1
-      # - --entrypoints.websecure.http.tls.domains[1].main=$DOMAINNAME_2 # Pulls main cert for second domain
-      # - --entrypoints.websecure.http.tls.domains[1].sans=*.$DOMAINNAME_2 # Pulls wildcard cert for second domain
-      - --providers.file.directory=/rules # Load dynamic configuration from one or more .toml or .yml files in a directory
-      - --providers.file.watch=true # Only works on top level files in the rules folder
-      - --certificatesResolvers.dns-cloudflare.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory # LetsEncrypt Staging Server - uncomment when testing
-      - --certificatesResolvers.dns-cloudflare.acme.storage=/acme.json
-      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.provider=cloudflare
-      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
-      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.delayBeforeCheck=90 # To delay DNS check and reduce LE hitrate
     ports:
       - target: 80
         published: 80
@@ -110,29 +12,231 @@ services:
         published: 443
         protocol: tcp
         mode: host
-      # - target: 8080 # need to enable --api.insecure=true
-      #  published: 8085
-      #  protocol: tcp
-      #  mode: host
+      - target: 9000
+        published: 9000
+        protocol: tcp
+        mode: host
+    networks:
+      - dockersocket
+      - proxy
     volumes:
-      - $DOCKERDIR/appdata/traefik3/rules/$HOSTNAME:/rules # Dynamic File Provider directory
-      # - /var/run/docker.sock:/var/run/docker.sock:ro # Enable if not using Socket Proxy
-      - $DOCKERDIR/appdata/traefik3/acme/acme.json:/acme.json # Certs File 
-      - $DOCKERDIR/logs/$HOSTNAME/traefik:/logs # Traefik logs
-    environment:
-      - TZ=$TZ
-      - CF_DNS_API_TOKEN_FILE=/run/secrets/cf_dns_api_token    
-      - HTPASSWD_FILE=/run/secrets/basic_auth_credentials # HTTP Basic Auth Credentials
-      - DOMAINNAME_1 # Passing the domain name to traefik container to be able to use the variable in rules. 
-    secrets:
-      - cf_dns_api_token
-      - basic_auth_credentials
+      - letsencrypt:/letsencrypt
+      #- /var/log:/var/log
+    command:
+      - --api.dashboard=true
+      - --log.level=INFO
+      - --log.filepath=/var/log/traefik.log
+      - --accesslog=true
+      - --providers.docker.endpoint=tcp://dockersocket:2375
+      - --accesslog.filepath=/var/log/traefik-access.log
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+      - --entryPoints.web.address=:80
+      - --entryPoints.web.http.redirections.entryPoint.to=websecure
+      - --entryPoints.web.http.redirections.entryPoint.scheme=https
+      - --entryPoints.websecure.address=:443
+      - --metrics.prometheus=true
+      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
+      - --entrypoints.websecure.http.tls.certresolver=myresolver
+      - --entryPoints.tcp-plain.address=:9000
+      - --certificatesresolvers.myresolver.acme.tlschallenge=true
+      - --certificatesResolvers.myresolver.acme.email=owarenana06@gmail.com.com
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+      - --experimental.plugins.sablier.modulename=github.com/acouvreur/sablier
+      - --experimental.plugins.sablier.version=v1.8.0
+
+
     labels:
-      - "traefik.enable=true"
-      # HTTP Routers
-      - "traefik.http.routers.traefik-rtr.entrypoints=websecure"
-      - "traefik.http.routers.traefik-rtr.rule=Host(`traefik.$DOMAINNAME_1`)"
-      # Services - API
-      - "traefik.http.routers.traefik-rtr.service=api@internal"
-      # Middlewares
-      - "traefik.http.routers.traefik-rtr.middlewares=middlewares-basic-auth@file" # For Basic HTTP Authentication
+      - traefik.enable=true
+      - traefik.http.routers.mydashboard.rule=Host(`test.nanaoware.online`)
+      - traefik.http.routers.mydashboard.service=api@internal
+      - traefik.http.routers.mydashboard.middlewares=myauth
+      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+
+  dockersocket:
+    image: nginx:alpine-slim
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - dockersocket
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    configs:
+      - source: nginx
+        target: /etc/nginx/nginx.conf
+    expose:
+      - 2375
+  
+  
+  tcpecho-le:
+    image: istio/tcp-echo-server:1.2
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.tcp.routers.tcpecho-le.entrypoints=websecure
+      - traefik.tcp.routers.tcpecho-le.rule=HostSNI(`tcp.nanaoware.online`)
+      - traefik.tcp.routers.tcpecho-le.tls.certresolver=myresolver
+      - traefik.tcp.services.tcpecho-le.loadbalancer.server.port=9000
+
+  tcpecho-plain:
+    image: istio/tcp-echo-server:1.2
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.tcp.routers.tcpecho-plain.entrypoints=tcp-plain
+      - traefik.tcp.routers.tcpecho-plain.rule=HostSNI(`*`)
+      - traefik.tcp.services.tcpecho-plain.loadbalancer.server.port=9000
+
+configs:
+  nginx:
+    content: |
+      user root;
+      events { worker_connections 1024; }
+      http {
+        server {
+          listen 2375;
+          location ~ ^/v1\.24/(events|containers|services|version|networks|tasks) {
+            if ($$request_method != GET) { return 405; }
+            proxy_pass http://unix:/var/run/docker.sock;
+            proxy_set_header Host $$host;
+            proxy_set_header X-Real-IP $$remote_addr;
+            proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $$scheme;
+            proxy_read_timeout 3600s;
+          }
+          location / { return 405; }
+        }
+      }
+
+volumes:
+  letsencrypt:
+    name: letsencrypt
+
+
+
+
+  authelia-service:
+    image: authelia/authelia:4
+    container_name: authelia-service
+    restart: unless-stopped
+    environment:
+      - TZ=Africa/Johannesburg
+    volumes:
+      - ./config:/config
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.authelia.rule=Host(`auth.nanaoware.online`)'
+      - 'traefik.http.routers.authelia.entrypoints=websecure'
+      - 'traefik.http.routers.authelia.tls=true'
+      - 'traefik.http.routers.authelia.tls.certresolver=myresolver'
+      - 'traefik.http.services.authelia-service.loadbalancer.server.port=9091'
+      - 'traefik.http.middlewares.authelia.forwardauth.address=http://authelia-service:9091/api/verify?rd=https://auth.nanaoware.online'
+      - 'traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true'
+      - 'traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
+    depends_on:
+      - authelia-redis
+    networks:
+      - proxy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+
+  authelia-redis:
+    image: redis:7
+    container_name: authelia-redis
+    restart: unless-stopped
+    environment:
+      - TZ=Africa/Johannesburg
+    networks:
+      - proxy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+
+  one-factor-service:
+    image: ruanbekker/web-center-name-v2
+    container_name: one-factor-service
+    restart: unless-stopped
+    environment:
+      - APP_TITLE=One Factor Service
+      - APP_URL=
+      - APP_TEXT=
+    depends_on:
+      - authelia-service
+    networks:
+      - proxy
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.one-factor.rule=Host(`one-factor.demo.containers.fan`)'
+      - 'traefik.http.routers.one-factor.entrypoints=websecure'
+      - 'traefik.http.routers.one-factor.tls=true'
+      - 'traefik.http.routers.one-factor.tls.certresolver=myresolver'
+      - 'traefik.http.routers.one-factor.middlewares=authelia@docker'
+      - 'traefik.http.routers.one-factor.service=one-factor-service'
+      - 'traefik.http.services.one-factor-service.loadbalancer.server.port=5000'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+
+  two-factor-service:
+    image: ruanbekker/web-center-name-v2
+    container_name: two-factor-service
+    restart: unless-stopped
+    environment:
+      - APP_TITLE=Two Factor Service
+      - APP_URL=
+      - APP_TEXT=
+    depends_on:
+      - authelia-service
+    networks:
+      - proxy
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.two-factor.rule=Host(`two-factor.nanaoware.online`)'
+      - 'traefik.http.routers.two-factor.entrypoints=websecure'
+      - 'traefik.http.routers.two-factor.tls=true'
+      - 'traefik.http.routers.two-factor.tls.certresolver=myresolver'
+      - 'traefik.http.routers.two-factor.middlewares=authelia@docker'
+      - 'traefik.http.routers.two-factor.service=two-factor-service'
+      - 'traefik.http.services.two-factor-service.loadbalancer.server.port=5000'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+
+  public-service:
+    image: ruanbekker/web-center-name-v2
+    container_name: public-service
+    restart: unless-stopped
+    environment:
+      - APP_TITLE=Public Service
+      - APP_URL=
+      - APP_TEXT=
+    depends_on:
+      - authelia-service
+    networks:
+      - proxy
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.public.rule=Host(`public.nanaoware.online`)'
+      - 'traefik.http.routers.public.entrypoints=websecure'
+      - 'traefik.http.routers.public.tls=true'
+      - 'traefik.http.routers.public.tls.certresolver=myresolver'
+      - 'traefik.http.routers.public.middlewares=authelia@docker'
+      - 'traefik.http.routers.public.service=public-service'
+      - 'traefik.http.services.public-service.loadbalancer.server.port=5000'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+
+networks:
+  proxy:
+    external: true
+    name: docknet
