@@ -25,6 +25,8 @@ services:
       #- /var/log:/var/log
     command:
       - --api.dashboard=true
+      - --global.checkNewVersion=true
+      - --global.sendAnonymousUsage=true
       - --log.level=INFO
       - --log.filepath=/var/log/traefik.log
       - --accesslog=true
@@ -33,19 +35,22 @@ services:
       - --providers.docker=true
       - --providers.docker.exposedByDefault=false
       - --entryPoints.web.address=:80
+      - --entrypoints.traefik.address=:8080
+       - --entrypoints.websecure.http.tls=true
       - --entryPoints.web.http.redirections.entryPoint.to=websecure
       - --entryPoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.web.http.redirections.entrypoint.permanent=true
       - --entryPoints.websecure.address=:443
       - --metrics.prometheus=true
       - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
       - --entrypoints.websecure.http.tls.certresolver=myresolver
       - --entryPoints.tcp-plain.address=:9000
+      - --entrypoints.websecure.http.tls.domains[0].main=nanaoware.online
+      - --entrypoints.websecure.http.tls.domains[0].sans=*.nanaoware.online
       - --certificatesresolvers.myresolver.acme.tlschallenge=true
       - --certificatesResolvers.myresolver.acme.email=owarenana06@gmail.com.com
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
-      - --experimental.plugins.sablier.modulename=github.com/acouvreur/sablier
-      - --experimental.plugins.sablier.version=v1.8.0
-
+      
 
     labels:
       - traefik.enable=true
