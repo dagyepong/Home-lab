@@ -1,8 +1,13 @@
-services:
 
+
+
+volumes:
+  letsencrypt:
+    name: letsencrypt
+
+services:
   traefik:
-    image: traefik:v3.2
-    restart: unless-stopped
+    image: traefik:latest
     ports:
       - target: 80
         published: 80
@@ -17,58 +22,48 @@ services:
         protocol: tcp
         mode: host
     networks:
-      - dockersocket
       - proxy
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - letsencrypt:/letsencrypt
       #- /var/log:/var/log
     command:
       - --api.dashboard=true
       - --log.level=INFO
-      - --log.filepath=/var/log/traefik.log
+      #- --log.filepath=/var/log/traefik.log
       - --accesslog=true
-      - --providers.docker.endpoint=tcp://dockersocket:2375
-      - --accesslog.filepath=/var/log/traefik-access.log
+      #- --accesslog.filepath=/var/log/traefik-access.log
       - --providers.docker=true
       - --providers.docker.exposedByDefault=false
       - --entryPoints.web.address=:80
       - --entryPoints.web.http.redirections.entryPoint.to=websecure
       - --entryPoints.web.http.redirections.entryPoint.scheme=https
       - --entryPoints.websecure.address=:443
-      - --metrics.prometheus=true
-      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
       - --entrypoints.websecure.http.tls.certresolver=myresolver
       - --entryPoints.tcp-plain.address=:9000
       - --certificatesresolvers.myresolver.acme.tlschallenge=true
-      - --certificatesResolvers.myresolver.acme.email=owarenana06@gmail.com.com
+      - --certificatesResolvers.myresolver.acme.email=owarenana06@gmail.com
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
-      - --experimental.plugins.sablier.modulename=github.com/acouvreur/sablier
-      - --experimental.plugins.sablier.version=v1.8.0
-
-
     labels:
       - traefik.enable=true
+      - traefik.http.routers.mydashboard.entrypoints=websecure
       - traefik.http.routers.mydashboard.rule=Host(`test.nanaoware.online`)
       - traefik.http.routers.mydashboard.service=api@internal
       - traefik.http.routers.mydashboard.middlewares=myauth
       - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+      - 'traefik.http.routers.mydashboard.middlewares=authelia@docker'
 
-  dockersocket:
-    image: nginx:alpine-slim
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
+  whoami:
+    image: traefik/whoami:v1.9
     networks:
-      - dockersocket
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    configs:
-      - source: nginx
-        target: /etc/nginx/nginx.conf
-    expose:
-      - 2375
-  
-  
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.whoami.entrypoints=websecure
+      - traefik.http.routers.whoami.rule=Host(`whoami.nanaoware.online`)
+      - traefik.http.services.whoami.loadbalancer.server.port=80
+      - 'traefik.http.routers.whoami.middlewares=authelia@docker'
+
   tcpecho-le:
     image: istio/tcp-echo-server:1.2
     networks:
@@ -76,7 +71,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.tcp.routers.tcpecho-le.entrypoints=websecure
-      - traefik.tcp.routers.tcpecho-le.rule=HostSNI(`tcp.nanaoware.online`)
+      - traefik.tcp.routers.tcpecho-le.rule=HostSNI(`tcp.example.com`)
       - traefik.tcp.routers.tcpecho-le.tls.certresolver=myresolver
       - traefik.tcp.services.tcpecho-le.loadbalancer.server.port=9000
 
@@ -89,154 +84,51 @@ services:
       - traefik.tcp.routers.tcpecho-plain.entrypoints=tcp-plain
       - traefik.tcp.routers.tcpecho-plain.rule=HostSNI(`*`)
       - traefik.tcp.services.tcpecho-plain.loadbalancer.server.port=9000
-
-configs:
-  nginx:
-    content: |
-      user root;
-      events { worker_connections 1024; }
-      http {
-        server {
-          listen 2375;
-          location ~ ^/v1\.24/(events|containers|services|version|networks|tasks) {
-            if ($$request_method != GET) { return 405; }
-            proxy_pass http://unix:/var/run/docker.sock;
-            proxy_set_header Host $$host;
-            proxy_set_header X-Real-IP $$remote_addr;
-            proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $$scheme;
-            proxy_read_timeout 3600s;
-          }
-          location / { return 405; }
-        }
-      }
-
-volumes:
-  letsencrypt:
-    name: letsencrypt
+  
 
 
-
-
-  authelia-service:
-    image: authelia/authelia:4
-    container_name: authelia-service
-    restart: unless-stopped
-    environment:
-      - TZ=Africa/Johannesburg
+  authelia:
+    image: authelia/authelia
+    container_name: authelia
     volumes:
       - ./config:/config
+    networks:
+      - proxy
+    security_opt:
+      - no-new-privileges:true
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.authelia.rule=Host(`auth.nanaoware.online`)'
       - 'traefik.http.routers.authelia.entrypoints=websecure'
       - 'traefik.http.routers.authelia.tls=true'
-      - 'traefik.http.routers.authelia.tls.certresolver=myresolver'
-      - 'traefik.http.services.authelia-service.loadbalancer.server.port=9091'
-      - 'traefik.http.middlewares.authelia.forwardauth.address=http://authelia-service:9091/api/verify?rd=https://auth.nanaoware.online'
-      - 'traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true'
-      - 'traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
-    depends_on:
-      - authelia-redis
-    networks:
-      - proxy
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "1m"
-
-  authelia-redis:
-    image: redis:7
-    container_name: authelia-redis
+      - 'traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/verify?rd=https://auth.nanaoware.online'
+      - 'traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader=true'
+      - 'traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
+      - 'traefik.http.middlewares.authelia-basic.forwardAuth.address=http://authelia:9091/api/verify?auth=basic'
+      - 'traefik.http.middlewares.authelia-basic.forwardAuth.trustForwardHeader=true'
+      - 'traefik.http.middlewares.authelia-basic.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
+      - 'traefik.http.services.authelia.loadbalancer.server.port=9091'
+    ports:
+      - 9091:9091
     restart: unless-stopped
     environment:
-      - TZ=Africa/Johannesburg
+      - TZ=Europe/London
+    healthcheck:
+      disable: true
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    volumes:
+      - /home/nana/docker/authelia/redis:/data
     networks:
       - proxy
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "1m"
-
-  one-factor-service:
-    image: ruanbekker/web-center-name-v2
-    container_name: one-factor-service
+    expose:
+      - 6379
     restart: unless-stopped
     environment:
-      - APP_TITLE=One Factor Service
-      - APP_URL=
-      - APP_TEXT=
-    depends_on:
-      - authelia-service
-    networks:
-      - proxy
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.one-factor.rule=Host(`one-factor.demo.containers.fan`)'
-      - 'traefik.http.routers.one-factor.entrypoints=websecure'
-      - 'traefik.http.routers.one-factor.tls=true'
-      - 'traefik.http.routers.one-factor.tls.certresolver=myresolver'
-      - 'traefik.http.routers.one-factor.middlewares=authelia@docker'
-      - 'traefik.http.routers.one-factor.service=one-factor-service'
-      - 'traefik.http.services.one-factor-service.loadbalancer.server.port=5000'
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "1m"
-
-  two-factor-service:
-    image: ruanbekker/web-center-name-v2
-    container_name: two-factor-service
-    restart: unless-stopped
-    environment:
-      - APP_TITLE=Two Factor Service
-      - APP_URL=
-      - APP_TEXT=
-    depends_on:
-      - authelia-service
-    networks:
-      - proxy
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.two-factor.rule=Host(`two-factor.nanaoware.online`)'
-      - 'traefik.http.routers.two-factor.entrypoints=websecure'
-      - 'traefik.http.routers.two-factor.tls=true'
-      - 'traefik.http.routers.two-factor.tls.certresolver=myresolver'
-      - 'traefik.http.routers.two-factor.middlewares=authelia@docker'
-      - 'traefik.http.routers.two-factor.service=two-factor-service'
-      - 'traefik.http.services.two-factor-service.loadbalancer.server.port=5000'
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "1m"
-
-  public-service:
-    image: ruanbekker/web-center-name-v2
-    container_name: public-service
-    restart: unless-stopped
-    environment:
-      - APP_TITLE=Public Service
-      - APP_URL=
-      - APP_TEXT=
-    depends_on:
-      - authelia-service
-    networks:
-      - proxy
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.public.rule=Host(`public.nanaoware.online`)'
-      - 'traefik.http.routers.public.entrypoints=websecure'
-      - 'traefik.http.routers.public.tls=true'
-      - 'traefik.http.routers.public.tls.certresolver=myresolver'
-      - 'traefik.http.routers.public.middlewares=authelia@docker'
-      - 'traefik.http.routers.public.service=public-service'
-      - 'traefik.http.services.public-service.loadbalancer.server.port=5000'
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "1m"
+      - TZ=Europe/London
 
 networks:
   proxy:
     external: true
-    name: docknet
