@@ -32,6 +32,8 @@ services:
       - --accesslog=true
       - --providers.docker.endpoint=tcp://dockersocket:2375
       - --accesslog.filepath=/var/log/traefik-access.log
+      - --accessLog.bufferingSize=100 # Configuring a buffer of 100 lines
+      - --accessLog.filters.statusCodes=204-299,400-499,500-599
       - --providers.docker=true
       - --providers.docker.exposedByDefault=false
       - --entryPoints.web.address=:80
@@ -50,6 +52,12 @@ services:
       - --certificatesresolvers.myresolver.acme.tlschallenge=true
       - --certificatesResolvers.myresolver.acme.email=owarenana06@gmail.com.com
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+      - --providers.file.directory=/rules # Load dynamic configuration from one or more .toml or .yml files in a directory
+      - --providers.file.watch=true # Only works on top level files in the rules folder
+     # - --certificatesResolvers.dns-cloudflare.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory # LetsEncrypt Staging Server - uncomment when testing
+     # - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.provider=cloudflare
+     # - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
+     # - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.delayBeforeCheck=90 # To delay DNS check and reduce LE hitrate
       
 
     labels:
