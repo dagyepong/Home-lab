@@ -38,7 +38,7 @@ services:
       - --providers.docker.exposedByDefault=false
       - --entryPoints.web.address=:80
       - --entrypoints.traefik.address=:8080
-       - --entrypoints.websecure.http.tls=true
+      - --entrypoints.websecure.http.tls=true
       - --entryPoints.web.http.redirections.entryPoint.to=websecure
       - --entryPoints.web.http.redirections.entryPoint.scheme=https
       - --entrypoints.web.http.redirections.entrypoint.permanent=true
