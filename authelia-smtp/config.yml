@@ -19,7 +19,7 @@ http:
         permanent: true
     authelia:
       forwardAuth:
-        address: "http://authelia:9091/api/verify?rd=https://auth.linuxpad.blog"
+        address: "http://authelia:9091/api/verify?rd=https://auth.nanaoware.online"
         trustForwardHeader: true
         authResponseHeaders:
           - Remote-User
@@ -31,7 +31,7 @@ http:
     portainer:
       entryPoints:
         - "https"
-      rule: "Host(`portainer.linuxpad.blog`)"
+      rule: "Host(`portainer.nanaoware.online`)"
       middlewares:
         - authelia
         - default-security-headers
@@ -42,7 +42,7 @@ http:
     proxmox:
       entryPoints:
         - "https"
-      rule: "Host(`proxmox.linuxpad.blog`)"
+      rule: "Host(`proxmox.nanaoware.online`)"
       middlewares:
         - authelia
         - default-security-headers
@@ -53,7 +53,7 @@ http:
     beszel:
       entryPoints:
         - "https"
-      rule: "Host(`beszel.linuxpad.blog`)"
+      rule: "Host(`beszel.nanaoware.online`)"
       middlewares:
         - authelia
         - default-security-headers
@@ -64,7 +64,7 @@ http:
     dozzle: 
       entryPoints:
         - "https"
-      rule: "Host(`dozzle.linuxpad.blog`)"
+      rule: "Host(`dozzle.nanaoware.online`)"
       middlewares:
         - authelia
         - default-security-headers
@@ -75,7 +75,7 @@ http:
     homepage:
       entryPoints:
         - "https"
-      rule: "Host(`linuxpad.blog`)"
+      rule: "Host(`homepage.nanaoware.online`)"
       middlewares:
         - authelia
         - default-security-headers
@@ -86,7 +86,7 @@ http:
     vaultwarden:
       entryPoints:
         - "https"
-      rule: "Host(`vaultwarden.linuxpad.blog`)"
+      rule: "Host(`vaultwarden.nanaoware.online`)"
       middlewares:
         - authelia
         - default-security-headers
@@ -97,7 +97,7 @@ http:
     uptime-kuma:
       entryPoints:
         - "https"
-      rule: "Host(`uptime-kuma.linuxpad.blog`)"
+      rule: "Host(`uptime-kuma.nanaoware.online`)"
       middlewares:
         - authelia
         - default-security-headers
@@ -108,7 +108,7 @@ http:
     dockge:
       entryPoints:
         - "https"
-      rule: "Host(`dockge.linuxpad.blog`)"
+      rule: "Host(`dockge.nanaoware.online`)"
       middlewares:
         - authelia
         - default-security-headers
@@ -133,36 +133,36 @@ http:
     dozzle:
       loadBalancer:
         servers:
-          - url: "http://192.168.8.188:9999"
+          - url: "http://192.168.8.183:9999"
         passHostHeader: true
     
     beszel:
       loadBalancer:
         servers:
-          - url: "http://192.168.8.188:8090"
+          - url: "http://192.168.8.183:8090"
         passHostHeader: true
 
     homepage:
       loadBalancer:
         servers:
-          - url: "http://192.168.8.188:3030"
+          - url: "http://192.168.8.183:3030"
         passHostHeader: true
     
     vaultwarden:
       loadBalancer:
         servers:
-          - url: "http://192.168.8.188:4044"
+          - url: "http://192.168.8.183:4044"
         passHostHeader: true
     
 
     uptime-kuma:
       loadBalancer:
         servers:
-          - url: "http://192.168.8.188:3001"
+          - url: "http://192.168.8.183:3001"
         passHostHeader: true
     
     dockge:
       loadBalancer:
         servers:
-          - url: "http://192.168.8.188:5001"
+          - url: "http://192.168.8.183:5001"
         passHostHeader: true
