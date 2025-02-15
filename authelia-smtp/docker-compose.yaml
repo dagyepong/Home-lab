@@ -1,4 +1,6 @@
-
+secrets:
+  cf-token:
+    file: ./cf-token
 
 services:
   traefik:
@@ -200,6 +202,3 @@ networks:
 volumes:
   letsencrypt:
     name: letsencrypt
-secrets:
-  cf-token:
-    file: ./cf-token
