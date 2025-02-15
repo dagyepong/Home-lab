@@ -13,7 +13,8 @@ services:
     env_file:
       - .env # store other secrets e.g., dashboard password
     networks:
-       proxy:
+       - proxy
+       - dockersocket
     ports:
       - 80:80
       - 443:443
@@ -94,6 +95,52 @@ services:
       - TZ=Europe/London
 
 
+  dockersocket:
+    image: nginx:alpine-slim
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - dockersocket
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    configs:
+      - source: nginx
+        target: /etc/nginx/nginx.conf
+    expose:
+      - 2375
+
+
 networks:
   proxy:
-    external: true
+    name: proxy
+  dockersocket:
+    name: dockersocket
+
+
+
+configs:
+  nginx:
+    content: |
+      user root;
+      events { worker_connections 1024; }
+      http {
+        server {
+          listen 2375;
+          location ~ ^/v1\.24/(events|containers|services|version|networks|tasks) {
+            if ($$request_method != GET) { return 405; }
+            proxy_pass http://unix:/var/run/docker.sock;
+            proxy_set_header Host $$host;
+            proxy_set_header X-Real-IP $$remote_addr;
+            proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $$scheme;
+            proxy_read_timeout 3600s;
+          }
+          location / { return 405; }
+        }
+      }
+
+
+volumes:
+  letsencrypt:
+    name: letsencrypt
