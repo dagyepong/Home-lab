@@ -1,149 +1,71 @@
 secrets:
   cf-token:
     file: ./cf-token
-
 services:
   traefik:
-    image: traefik:v3.2
-    restart: unless-stopped
-    ports:
-      - target: 80
-        published: 80
-        protocol: tcp
-        mode: host
-      - target: 443
-        published: 443
-        protocol: tcp
-        mode: host
-      - target: 9000
-        published: 9000
-        protocol: tcp
-        mode: host
-    networks:
-      - dockersocket
-      - proxy
-    volumes:
-      - letsencrypt:/letsencrypt
-      #- /var/log:/var/log
-    command:
-      - --api.dashboard=true
-      - --global.checkNewVersion=true
-      - --global.sendAnonymousUsage=true
-      - --log.level=INFO
-      - --log.filepath=/var/log/traefik.log
-      - --accesslog=true
-      - --providers.docker.endpoint=tcp://dockersocket:2375
-      - --accesslog.filepath=/var/log/traefik-access.log
-      - --accessLog.bufferingSize=100 # Configuring a buffer of 100 lines
-      - --accessLog.filters.statusCodes=204-299,400-499,500-599
-      - --providers.docker=true
-      - --providers.docker.exposedByDefault=false
-      - --entryPoints.web.address=:80
-      - --entrypoints.traefik.address=:8080
-      - --entrypoints.websecure.http.tls=true
-      - --entryPoints.web.http.redirections.entryPoint.to=websecure
-      - --entryPoints.web.http.redirections.entryPoint.scheme=https
-      - --entrypoints.web.http.redirections.entrypoint.permanent=true
-      - --entryPoints.websecure.address=:443
-      - --metrics.prometheus=true
-      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
-      - --entrypoints.websecure.http.tls.certresolver=myresolver
-      - --entryPoints.tcp-plain.address=:9000
-      - --entrypoints.websecure.http.tls.domains[0].main=nanaoware.online
-      - --entrypoints.websecure.http.tls.domains[0].sans=*.nanaoware.online
-      - --certificatesResolvers.myresolver.acme.tlschallenge=true
-      - --certificatesResolvers.myresolver.acme.email=owarenana06@gmail.com.com
-      - --certificatesResolvers.myresolver.acme.storage=/letsencrypt/acme.json
-      - --providers.file.directory=/rules # Load dynamic configuration from one or more .toml or .yml files in a directory
-      - --providers.file.watch=true # Only works on top level files in the rules folder
-      - --certificatesResolvers.myresolver.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory # LetsEncrypt Staging Server - uncomment when testing
-      - --certificatesResolvers.myresolver.acme.dnsChallenge.provimyresolver
-      - --certificatesResolvers.myresolver.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
-      - --certificatesResolvers.myresolver.acme.dnsChallenge.delayBeforeCheck=90 # To delay DNS check and reduce LE hitrate
-      
-
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.mydashboard.rule=Host(`test.nanaoware.online`)
-      - traefik.http.routers.mydashboard.service=api@internal
-      - traefik.http.routers.mydashboard.middlewares=myauth
-      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
-      - "traefik.http.routers.mydashboard-secure.middlewares=authelia@docker"
-    environment:
-      - TZ=America/Chicago
-      - CF_DNS_API_TOKEN_FILE=/run/secrets/cf-token
-    secrets:
-      - cf-token
-
-
-  dockersocket:
-    image: nginx:alpine-slim
+    image: traefik:latest # or traefik:v3.3 to pin a version
+    container_name: traefik
     restart: unless-stopped
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # helps to increase security
+    secrets:
+      - cf-token # the secret at the top of this file
+    env_file:
+      - .env # store other secrets e.g., dashboard password
     networks:
-      - dockersocket
+       proxy:
+    ports:
+      - 80:80
+      - 443:443
+     # - 10000:10000 # optional
+     # - 33073:33073 # optional
+    environment:
+      - TRAEFIK_DASHBOARD_CREDENTIALS=${TRAEFIK_DASHBOARD_CREDENTIALS}
+      # - CF_API_EMAIL=your@email.com # Cloudflare email
+      # - CF_DNS_API_TOKEN=YOUR-TOKEN # Cloudflare API Token
+      - CF_DNS_API_TOKEN_FILE=/run/secrets/cf-token # see https://doc.traefik.io/traefik/https/acme/#providers
+      # token file is the proper way to do it
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    configs:
-      - source: nginx
-        target: /etc/nginx/nginx.conf
-    expose:
-      - 2375
-
-
-
-  whoami:
-    image: traefik/whoami:v1.10
-    restart: unless-stopped
-    networks:
-      - proxy
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /home/ubuntu/docker/traefik/traefik.yaml:/traefik.yaml:ro
+      - /home/ubuntu/docker/traefik/acme.json:/acme.json
+      - /home/ubuntu/docker/traefik/config.yaml:/config.yaml:ro
+      - /home/ubuntu/docker/traefik/logs:/var/log/traefik
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.mywhoami.rule=Host(`whoami.nanaoware.online`) || PathPrefix(`/whoami`)
-      - traefik.http.services.mywhoami.loadbalancer.server.port=80
-      - "traefik.http.routers.mywhoami-secure.middlewares=authelia@docker"
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.entrypoints=http"
+      - "traefik.http.routers.traefik.rule=Host(`test.nanaoware.online`)"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_DASHBOARD_CREDENTIALS}"
+      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
+      - "traefik.http.routers.traefik-secure.entrypoints=https"
+      - "traefik.http.routers.traefik-secure.rule=Host(`test.nanaoware.online`)"
+      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
+      - "traefik.http.routers.traefik-secure.tls=true"
+      - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].main=nanaoware.online"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.nanaoware.online"
+      - "traefik.http.routers.traefik-secure.service=api@internal"
 
-  tcpecho-le:
-    image: istio/tcp-echo-server:1.2
-    networks:
-      - proxy
-    labels:
-      - traefik.enable=true
-      - traefik.tcp.routers.tcpecho-le.entrypoints=websecure
-      - traefik.tcp.routers.tcpecho-le.rule=HostSNI(`tcp.nanaoware.online`)
-      - traefik.tcp.routers.tcpecho-le.tls.certresolver=myresolver
-      - traefik.tcp.services.tcpecho-le.loadbalancer.server.port=9000
-
-  tcpecho-plain:
-    image: istio/tcp-echo-server:1.2
-    networks:
-      - proxy
-    labels:
-      - traefik.enable=true
-      - traefik.tcp.routers.tcpecho-plain.entrypoints=tcp-plain
-      - traefik.tcp.routers.tcpecho-plain.rule=HostSNI(`*`)
-      - traefik.tcp.services.tcpecho-plain.loadbalancer.server.port=9000
-
-
-
-
+# or comment this line to auto create the network
 
   authelia:
     image: authelia/authelia
     container_name: authelia
     volumes:
-      - ./config:/config
+      - /home/nana/docker/authelia/config:/config
     networks:
       - proxy
     security_opt:
       - no-new-privileges:true
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.authelia.rule=Host(`auth.nanaoware.online`)'
-      - 'traefik.http.routers.authelia.entrypoints=websecure'
+      - 'traefik.http.routers.authelia.rule=Host(`auth.linuxpad.blog`)'
+      - 'traefik.http.routers.authelia.entrypoints=https'
       - 'traefik.http.routers.authelia.tls=true'
-      - 'traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/verify?rd=https://auth.nanaoware.online'
+      - 'traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/verify?rd=https://auth.linuxpad.blog'
       - 'traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader=true'
       - 'traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
       - 'traefik.http.middlewares.authelia-basic.forwardAuth.address=http://authelia:9091/api/verify?auth=basic'
@@ -171,34 +93,7 @@ services:
     environment:
       - TZ=Europe/London
 
-configs:
-  nginx:
-    content: |
-      user root;
-      events { worker_connections 1024; }
-      http {
-        server {
-          listen 2375;
-          location ~ ^/v1\.24/(events|containers|services|version|networks|tasks) {
-            if ($$request_method != GET) { return 405; }
-            proxy_pass http://unix:/var/run/docker.sock;
-            proxy_set_header Host $$host;
-            proxy_set_header X-Real-IP $$remote_addr;
-            proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $$scheme;
-            proxy_read_timeout 3600s;
-          }
-          location / { return 405; }
-        }
-      }
 
 networks:
   proxy:
-    name: proxy
     external: true
-  dockersocket:
-    name: dockersocket
-
-volumes:
-  letsencrypt:
-    name: letsencrypt
