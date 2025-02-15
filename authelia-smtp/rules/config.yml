@@ -1,0 +1,168 @@
+http:
+  middlewares:    
+    default-security-headers:
+      headers:
+        customBrowserXSSValue: 0                            # X-XSS-Protection=1; mode=block
+        contentTypeNosniff: true                          # X-Content-Type-Options=nosniff
+        forceSTSHeader: true                              # Add the Strict-Transport-Security header even when the connection is HTTP
+        frameDeny: false                                   # X-Frame-Options=deny
+        referrerPolicy: "strict-origin-when-cross-origin"
+        stsIncludeSubdomains: true                        # Add includeSubdomains to the Strict-Transport-Security header
+        stsPreload: true                                  # Add preload flag appended to the Strict-Transport-Security header
+        stsSeconds: 3153600                              # Set the max-age of the Strict-Transport-Security header (63072000 = 2 years)
+        contentSecurityPolicy: "default-src 'self'"     
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+    https-redirectscheme:
+      redirectScheme:
+        scheme: https
+        permanent: true
+    authelia:
+      forwardAuth:
+        address: "http://authelia:9091/api/verify?rd=https://auth.nanaoware.online"
+        trustForwardHeader: true
+        authResponseHeaders:
+          - Remote-User
+          - Remote-Groups
+          - Remote-Name
+          - Remote-Email
+
+  routers:
+    portainer:
+      entryPoints:
+        - "https"
+      rule: "Host(`portainer.nanaoware.online`)"
+      middlewares:
+        - authelia
+        - default-security-headers
+        - https-redirectscheme
+      tls: {}
+      service: portainer
+
+    proxmox:
+      entryPoints:
+        - "https"
+      rule: "Host(`proxmox.nanaoware.online`)"
+      middlewares:
+        - authelia
+        - default-security-headers
+        - https-redirectscheme
+      tls: {}
+      service: proxmox
+    
+    beszel:
+      entryPoints:
+        - "https"
+      rule: "Host(`beszel.nanaoware.online`)"
+      middlewares:
+        - authelia
+        - default-security-headers
+        - https-redirectscheme
+      tls: {}
+      service: beszel
+
+    dozzle: 
+      entryPoints:
+        - "https"
+      rule: "Host(`dozzle.nanaoware.online`)"
+      middlewares:
+        - authelia
+        - default-security-headers
+        - https-redirectscheme
+      tls: {}
+      service: dozzle
+    
+    homepage:
+      entryPoints:
+        - "https"
+      rule: "Host(`homepage.nanaoware.online`)"
+      middlewares:
+        - authelia
+        - default-security-headers
+        - https-redirectscheme
+      tls: {}
+      service: homepage
+    
+    vaultwarden:
+      entryPoints:
+        - "https"
+      rule: "Host(`vaultwarden.nanaoware.online`)"
+      middlewares:
+        - authelia
+        - default-security-headers
+        - https-redirectscheme
+      tls: {}
+      service: vaultwarden
+    
+    uptime-kuma:
+      entryPoints:
+        - "https"
+      rule: "Host(`uptime-kuma.nanaoware.online`)"
+      middlewares:
+        - authelia
+        - default-security-headers
+        - https-redirectscheme
+      tls: {}
+      service: uptime-kuma
+
+    dockge:
+      entryPoints:
+        - "https"
+      rule: "Host(`dockge.nanaoware.online`)"
+      middlewares:
+        - authelia
+        - default-security-headers
+        - https-redirectscheme
+      tls: {}
+      service: dockge
+
+
+  services:
+    portainer:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.8.183:9443"
+        passHostHeader: true
+    
+    proxmox:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.8.178:8006"
+        passHostHeader: true
+    
+    dozzle:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.8.183:9999"
+        passHostHeader: true
+    
+    beszel:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.8.183:8090"
+        passHostHeader: true
+
+    homepage:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.8.183:3030"
+        passHostHeader: true
+    
+    vaultwarden:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.8.188:4044"
+        passHostHeader: true
+    
+
+    uptime-kuma:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.8.183:3001"
+        passHostHeader: true
+    
+    dockge:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.8.183:5001"
+        passHostHeader: true
