@@ -38,7 +38,7 @@ services:
       # - --providers.docker.endpoint=unix:///var/run/docker.sock # Disable for Socket Proxy. Enable otherwise.
       - --providers.docker.endpoint=tcp://socket-proxy:2375 # Enable for Socket Proxy. Disable otherwise.
       - --providers.docker.exposedByDefault=false
-      - --providers.docker.network=t3_proxy 
+      - --providers.docker.network=t3_proxy
       # - --providers.docker.swarmMode=false # Traefik v2 Swarm
       # - --providers.swarm.endpoint=tcp://127.0.0.1:2377 # Traefik v3 Swarm
       - --entrypoints.websecure.http.tls.options=tls-opts@file
@@ -71,13 +71,13 @@ services:
     volumes:
       - $DOCKERDIR/appdata/traefik3/rules/$HOSTNAME:/rules # Dynamic File Provider directory
       # - /var/run/docker.sock:/var/run/docker.sock:ro # Enable if not using Socket Proxy
-      - $DOCKERDIR/appdata/traefik3/acme/acme.json:/acme.json # Certs File 
+      - $DOCKERDIR/appdata/traefik3/acme/acme.json:/acme.json # Certs File
       - $DOCKERDIR/logs/$HOSTNAME/traefik:/logs # Traefik logs
     environment:
       - TZ=$TZ
-      - CF_DNS_API_TOKEN_FILE=/run/secrets/cf_dns_api_token    
+      - CF_DNS_API_TOKEN_FILE=/run/secrets/cf_dns_api_token
       - HTPASSWD_FILE=/run/secrets/basic_auth_credentials # HTTP Basic Auth Credentials
-      - DOMAINNAME_1 # Passing the domain name to traefik container to be able to use the variable in rules. 
+      - DOMAINNAME_1 # Passing the domain name to traefik container to be able to use the variable in rules.
     secrets:
       - cf_dns_api_token
       - basic_auth_credentials

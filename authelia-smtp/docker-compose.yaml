@@ -49,9 +49,9 @@ services:
       - --entryPoints.tcp-plain.address=:9000
       - --entrypoints.websecure.http.tls.domains[0].main=nanaoware.online
       - --entrypoints.websecure.http.tls.domains[0].sans=*.nanaoware.online
-      - --certificatesresolvers.myresolver.acme.tlschallenge=true
+      - --certificatesResolvers.myresolver.acme.tlschallenge=true
       - --certificatesResolvers.myresolver.acme.email=owarenana06@gmail.com.com
-      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+      - --certificatesResolvers.myresolver.acme.storage=/letsencrypt/acme.json
       - --providers.file.directory=/rules # Load dynamic configuration from one or more .toml or .yml files in a directory
       - --providers.file.watch=true # Only works on top level files in the rules folder
      # - --certificatesResolvers.dns-cloudflare.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory # LetsEncrypt Staging Server - uncomment when testing
