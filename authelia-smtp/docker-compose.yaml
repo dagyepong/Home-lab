@@ -69,9 +69,9 @@ services:
       - "traefik.http.routers.mydashboard-secure.middlewares=authelia@docker"
     environment:
       - TZ=America/Chicago
-      - CF_DNS_API_TOKEN_FILE=/run/secrets/cf_dns_api_token
+      - CF_DNS_API_TOKEN_FILE=/run/secrets/cf-token
     secrets:
-      - cf_dns_api_token
+      - cf-token
 
 
   dockersocket:
@@ -200,3 +200,6 @@ networks:
 volumes:
   letsencrypt:
     name: letsencrypt
+secrets:
+  cf-token:
+    file: ./cf-token
