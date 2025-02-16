@@ -1,4 +1,3 @@
-
 services:
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
@@ -15,7 +14,7 @@ services:
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/homepage/config:/app/config # Make sure your local config directory exists
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/homepage/icons:/app/public/icons
       - /var/run/docker.sock:/var/run/docker.sock:ro # (optional) For docker integrations
-      - /home/nana/docker/homepage/config:/app/config 
+      - /home/nana/docker/homepage/config:/app/config
 
     labels:
       - "traefik.enable=true"
