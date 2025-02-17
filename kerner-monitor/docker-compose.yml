@@ -1,4 +1,4 @@
-version: '3.7'
+
 services:
   kener:
     image: rajnandan1/kener:latest # assuming this is final namespace/image
@@ -28,3 +28,19 @@ services:
       - '3000:3000/tcp'
     volumes:
       - '/srv/appdata/kener/config:/config:rw'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.kerner.entrypoints=http"
+      - "traefik.http.routers.kerner.rule=Host(`kerner.nanaoware.online`)"
+      - "traefik.http.middlewares.kerner-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.kerner.middlewares=kerner-https-redirect"
+      - "traefik.http.routers.kerner-secure.entrypoints=https"
+      - "traefik.http.routers.kerner-secure.rule=Host(`kerner.nanaoware.online`)"
+      - "traefik.http.routers.kerner-secure.tls=true"
+      - "traefik.http.routers.kerner-secure.service=kerner"
+      - "traefik.http.services.kerner.loadbalancer.server.port=3000"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.kerner-secure.middlewares=authelia@docker"
+networks:
+  proxy:
+    external: true
