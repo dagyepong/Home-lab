@@ -41,7 +41,7 @@ services:
       - "traefik.http.routers.kerner-secure.service=kerner"
       - "traefik.http.services.kerner.loadbalancer.server.port=3000"
       - "traefik.docker.network=proxy"
-      - "traefik.http.routers.kerner-secure.middlewares=authelia@docker"is fortifies security by marking the container's filesystem as read-only (aka no data can be written to the container's filesystem except for explicitly defined writable volumes and bind mounts, an exception has already been defined for `/database` and `/uploads`)
+      - "traefik.http.routers.kerner-secure.middlewares=authelia@docker" #is fortifies security by marking the container's filesystem as read-only (aka no data can be written to the container's filesystem except for explicitly defined writable volumes and bind mounts, an exception has already been defined for `/database` and `/uploads`)
     restart: unless-stopped
    
 
