@@ -20,23 +20,34 @@ links:
     link: "http://192.168.8.187:8065"
     icon: "owl"
     category: 1
+
+  - name: "Adguard"
+    link: "http://192.168.8.195"
+    icon: "salesforce"
+    category: 1
+
+
   
-  - name: ""Beszel"
+  - name: "Beszel"
     link: "https://beszel.nanaoware.online"
-    icon: "pac-man"
+    icon: "pacman"
     category: 2
 
 
   - name: "Homepage"
     link: "http://192.168.8.187:3030"
-    icon: "oneUp"
+    icon: "drupal"
     category: 2
 
   - name: "链接3"
     link: "#"
     category: 3
-  - name: "链接4"
+    icon: "linux"
+
+  - name: "Linuxpad"
     link: "https://tech.nanaoware.online"
-    icon: "sprout"
+    icon: "wordpress"
+    category: 3
+
   - name: "链接5"
     link: "#"
