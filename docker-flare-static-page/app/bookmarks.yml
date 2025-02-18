@@ -49,5 +49,7 @@ links:
     icon: "wordpress"
     category: 3
 
-  - name: "链接5"
-    link: "#"
+  - name: "Traefik"
+    link: "https://traefik.linuxpad.blog"
+    icon: "bug-check"
+    category: 3
