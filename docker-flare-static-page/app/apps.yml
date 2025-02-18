@@ -50,7 +50,7 @@ links:
     link: "https://vaultwarden.nanaoware.online"
     icon: "shieldLockOpen"
   - name: "Home-Lab"
-    link: "https://github.com/dagyepong-Home-Lab"
+    link: "https://github.com/dagyepong/Home-Lab"
     icon: "github"
   - name: "Gitlab"
     link: "https://gitlab.com/dagyepong"
