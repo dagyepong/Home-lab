@@ -67,5 +67,5 @@ links:
 
   - name: "Traefik"
     link: "https://traefik.linuxpad.blog"
-    icon: "bug-check"
+    icon: "bugCheck"
     category: 3
