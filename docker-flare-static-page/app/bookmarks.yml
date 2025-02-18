@@ -34,7 +34,7 @@ links:
 
 
   - name: "Portainer"
-    link: "https://git.nanaoware.online"
+    link: "https://portainer.nanaoware.online"
     icon: "docker"
     category: 2
   
