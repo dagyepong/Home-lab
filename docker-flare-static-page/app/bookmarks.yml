@@ -1,30 +1,42 @@
 categories:
   - id: 1
-    title: 社交媒体
+    title: Stuff
   - id: 2
-    title: 参考资料
+    title: Media
   - id: 3
-    title: 在线工具
+    title: Social
   - id: "string-name"
     title: 新分类
   - id: "category-name"
     title: 新分类
 
 links:
-  - name: 微博
-    link: "https://weibo.com"
-    icon: "sinaWeibo"
+  - name: "Gotify"
+    link: "http://192.168.8.187:8447"
+    icon: "nuke"
     category: 1
 
-  - name: "知乎"
-    link: "https://zhihu.com"
-    icon: "commentQuestion"
+  - name: "it-tools"
+    link: "http://192.168.8.187:8065"
+    icon: "owl"
+    category: 1
+  
+  - name: ""Beszel"
+    link: "https://beszel.nanaoware.online"
+    icon: "pac-man"
+    category: 2
+
+
+  - name: "Homepage"
+    link: "http://192.168.8.187:3030"
+    icon: "oneUp"
     category: 2
 
   - name: "链接3"
     link: "#"
-    category: b
+    category: 3
   - name: "链接4"
-    link: "#"
+    link: "https://tech.nanaoware.online"
+    icon: "sprout"
   - name: "链接5"
     link: "#"
