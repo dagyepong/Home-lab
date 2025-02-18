@@ -58,3 +58,6 @@ links:
   - name: "设备: Wi-Fi6 AP"
     link: "http://local.deeper.network"
     icon: "routerWireless"
+  - name: "设备: Torrent"
+    link: "http://192.168.8.181:9091"
+    icon: "oneUp"
