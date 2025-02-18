@@ -99,7 +99,7 @@ services:
       - "traefik.http.routers.traefik-dashboard-nosecure.rule=Host(`${SERVICE_DOMAIN}`)"
       - "traefik.http.routers.traefik-dashboard-nosecure.service=noop@internal"
 
-      # 确保 Traefik API 接口正常使用
+      # 确保 Traefik API 接口正常使用a
       - "traefik.http.routers.traefik-dashboard-api.tls=true"
       - "traefik.http.routers.traefik-dashboard-api.entrypoints=https"
       - "traefik.http.routers.traefik-dashboard-api.middlewares=gzip"
