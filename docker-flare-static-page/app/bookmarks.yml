@@ -27,6 +27,16 @@ links:
     category: 1
 
 
+  - name: "Paperless"
+    link: "http://"
+    icon: "jira"
+    category: 2
+
+
+  - name: "Portainer"
+    link: "https://git.nanaoware.online"
+    icon: "docker"
+    category: 2
   
   - name: "Beszel"
     link: "https://beszel.nanaoware.online"
@@ -34,15 +44,21 @@ links:
     category: 2
 
 
+  - name: "Pibox"
+    link: "http://kubesail.com"
+    icon: "kubernetes"
+    category: 3
+
+
   - name: "Homepage"
     link: "http://192.168.8.187:3030"
     icon: "drupal"
     category: 2
 
-  - name: "链接3"
-    link: "#"
+  - name: "Kickstarter"
+    link: "https://kickstarter.com"
     category: 3
-    icon: "linux"
+    icon: "kickstarter"
 
   - name: "Linuxpad"
     link: "https://tech.nanaoware.online"
