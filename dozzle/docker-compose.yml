@@ -19,17 +19,17 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
-      - "traefik.http.routers.beszel-http.entrypoints=http"
-      - "traefik.http.routers.beszel-http.middlewares=redir-https"
-      - "traefik.http.routers.beszel-http.rule=Host(`beszel.linuxpad.blog`)"
-      - "traefik.http.routers.beszel-http.service=noop@internal"
-      - "traefik.http.routers.beszel-https.entrypoints=https"
-      - "traefik.http.routers.beszel-https.tls=true"
-      - "traefik.http.routers.beszel-https.middlewares=gzip"
-      - "traefik.http.routers.beszel-https.rule=Host(`beszel.linuxpad.blog`)"
-      - "traefik.http.services.beszel-backend.loadbalancer.server.scheme=http"
-      - "traefik.http.services.beszel-backend.loadbalancer.server.port=8099"
-      - "traefik.http.routers.beszel-https.middlewares=authelia@docker"
+      - "traefik.http.routers.dozzle-http.entrypoints=http"
+      - "traefik.http.routers.dozzle-http.middlewares=redir-https"
+      - "traefik.http.routers.dozzle-http.rule=Host(`dozzle.linuxpad.blog`)"
+      - "traefik.http.routers.dozzle-http.service=noop@internal"
+      - "traefik.http.routers.dozzle-https.entrypoints=https"
+      - "traefik.http.routers.dozzle-https.tls=true"
+      - "traefik.http.routers.dozzle-https.middlewares=gzip"
+      - "traefik.http.routers.dozzle-https.rule=Host(`dozzle.linuxpad.blog`)"
+      - "traefik.http.services.dozzle-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.dozzle-backend.loadbalancer.server.port=8099"
+      - "traefik.http.routers.dozzle-https.middlewares=authelia@docker"
 
 
 networks:
