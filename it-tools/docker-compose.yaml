@@ -6,6 +6,8 @@ services:
         container_name: it-tools
         networks:
           - traefik
+        ports:
+          - '3078:80'
         labels:
           - "traefik.enable=true"
           - "traefik.docker.network=traefik"
@@ -18,7 +20,7 @@ services:
           - "traefik.http.routers.it-tools-https.middlewares=gzip"
           - "traefik.http.routers.it-tools-https.rule=Host(`it-tools.linuxpad.blog`)"
           - "traefik.http.services.it-tools-backend.loadbalancer.server.scheme=http"
-          - "traefik.http.services.it-tools-backend.loadbalancer.server.port=8065"
+          - "traefik.http.services.it-tools-backend.loadbalancer.server.port=80"
           - "traefik.http.routers.it-tools-https.middlewares=authelia@docker"
 
 
