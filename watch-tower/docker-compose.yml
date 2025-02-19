@@ -28,7 +28,7 @@ services:
       #- WATCHTOWER_CLEANUP=true # remove unused images afterwards
     image: containrrr/watchtower:latest
     networks:
-      - proxy
+      - traefik
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
