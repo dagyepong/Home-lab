@@ -8,26 +8,26 @@ services:
             - SIGNUPS_ALLOWED=true
             - ADMIN_TOKEN=#sPqDJ!WxJAkA
             - I_REALLY_WANT_VOLATILE_STORAGE=true
-        ports:
-            - '4044:80'
         networks:
-            - proxy
+            - traefik
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.vaultwarden.entrypoints=http"
-            - "traefik.http.routers.vaultwarden.rule=Host(`vaultwarden.linuxpad.blog`)"
-            - "traefik.http.middlewares.vaultwarden-https-redirect.redirectscheme.scheme=https"
-            - "traefik.http.routers.vaultwarden.middlewares=vaultwarden-https-redirect"
-            - "traefik.http.routers.vaultwarden-secure.entrypoints=https"
-            - "traefik.http.routers.vaultwarden-secure.rule=Host(`vaultwarden.linuxpad.blog`)"
-            - "traefik.http.routers.vaultwarden-secure.tls=true"
-            - "traefik.http.routers.vaultwarden-secure.service=vaultwarden"
-            - "traefik.http.services.vaultwarden.loadbalancer.server.port=4044"
-            - "traefik.docker.network=proxy"
-            - "traefik.http.routers.vaultwarden-secure.middlewares=authelia@docker"
+            - "traefik.docker.network=traefik"
+            - "traefik.http.routers.vaultwarden-http.entrypoints=http"
+            - "traefik.http.routers.vaultwarden-http.middlewares=redir-https"
+            - "traefik.http.routers.vaultwarden-http.rule=Host(`vaultwarden.linuxpad.blog`)"
+            - "traefik.http.routers.vaultwarden-http.service=noop@internal"
+            - "traefik.http.routers.vaultwarden-https.entrypoints=https"
+            - "traefik.http.routers.vaultwarden-https.tls=true"
+            - "traefik.http.routers.vaultwarden-https.middlewares=gzip"
+            - "traefik.http.routers.vaultwarden-https.rule=Host(`vaultwarden.linuxpad.blog`)"
+            - "traefik.http.services.vaultwarden-backend.loadbalancer.server.scheme=http"
+            - "traefik.http.services.vaultwarden-backend.loadbalancer.server.port=4044"
+            - "traefik.http.routers.vaultwarden-https.middlewares=authelia@docker"
+
 
         image: 'vaultwarden/server:latest'
 
 networks:
-    proxy:
+    traefik:
         external: true

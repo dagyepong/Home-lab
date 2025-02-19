@@ -1,13 +1,13 @@
-version: "3"
+
 services:
   speedtest:
     container_name: speedtest-tracker
     image: henrywhitaker3/speedtest-tracker:latest
     restart: unless-stopped
-    ports:
-      - 8765:80
     volumes:
       - ./config:/config
+    networks:
+      - traefik
     environment:
       - TZ=Europe/Zurich
       - PUID=1026
@@ -18,4 +18,24 @@ services:
       options:
         max-file: "10"
         max-size: 200k
-networks: {}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.speedtest-http.entrypoints=http"
+      - "traefik.http.routers.speedtest-http.middlewares=redir-https"
+      - "traefik.http.routers.speedtest-http.rule=Host(`speedtest.linuxpad.blog`)"
+      - "traefik.http.routers.speedtest-http.service=noop@internal"
+      - "traefik.http.routers.speedtest-https.entrypoints=https"
+      - "traefik.http.routers.speedtest-https.tls=true"
+      - "traefik.http.routers.speedtest-https.middlewares=gzip"
+      - "traefik.http.routers.speedtest-https.rule=Host(`speedtest.linuxpad.blog`)"
+      - "traefik.http.services.speedtest-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.speedtest-backend.loadbalancer.server.port=8765"
+      - "traefik.http.routers.speedtest-https.middlewares=authelia@docker"
+
+
+
+
+networks:
+  traefik:
+    external: true
