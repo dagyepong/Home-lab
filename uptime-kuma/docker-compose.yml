@@ -6,31 +6,32 @@ services:
     hostname: uptime-kuma
     image: louislam/uptime-kuma
     restart: always
-    ports:
-      - 3001:3001
     dns:
       - 1.1.1.1
       - 8.8.8.8
     volumes:
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/uptimekuma:/app/data
     networks:
-      - proxy
+      - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.uptime-kuma.entrypoints=http"
-      - "traefik.http.routers.uptime-kuma.rule=Host(`uptime-kuma.linuxpad.blog`)"
-      - "traefik.http.middlewares.uptime-kuma-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.uptime-kuma.middlewares=uptime-kuma-https-redirect"
-      - "traefik.http.routers.uptime-kuma-secure.entrypoints=https"
-      - "traefik.http.routers.uptime-kuma-secure.rule=Host(`uptime-kuma.linuxpad.blog`)"
-      - "traefik.http.routers.uptime-kuma-secure.tls=true"
-      - "traefik.http.routers.uptime-kuma-secure.service=uptime-kuma"
-      - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
-      - "traefik.docker.network=proxy"
-      - "traefik.http.routers.uptime-kuma-secure.middlewares=authelia@docker"
-
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.uptime-kuma-http.entrypoints=http"
+      - "traefik.http.routers.uptime-kuma-http.middlewares=redir-https"
+      - "traefik.http.routers.uptime-kuma-http.rule=Host(`uptime-kuma.linuxpad.blog`)"
+      - "traefik.http.routers.uptime-kuma-http.service=noop@internal"
+      - "traefik.http.routers.uptime-kuma-https.entrypoints=https"
+      - "traefik.http.routers.uptime-kuma-https.tls=true"
+      - "traefik.http.routers.uptime-kuma-https.middlewares=gzip"
+      - "traefik.http.routers.uptime-kuma-https.rule=Host(`uptime-kuma.linuxpad.blog`)"
+      - "traefik.http.services.uptime-kuma-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.uptime-kuma-backend.loadbalancer.server.port=3001"
+      - "traefik.http.routers.uptime-kuma-https.middlewares=authelia@docker"
 
 
 networks:
-  proxy:
+  traefik:
     external: true
+
+
+

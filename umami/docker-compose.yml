@@ -2,8 +2,6 @@
 services:
   umami:
     image: ghcr.io/umami-software/umami:postgresql-latest
-    ports:
-      - "3021:3000"
     environment:
       DATABASE_URL: postgresql://umami:umami@db:5432/umami
       DATABASE_TYPE: postgresql
@@ -19,20 +17,25 @@ services:
       retries: 5
     
     networks:
-      - proxy
+      - traefik
 
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.umami.rule=Host(`umami.nanaoware.online`) || Host(`www.umami.nanaoware.online`)
-      - traefik.http.services.umami.loadbalancer.server.port=3021
-      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.myumami.middlewares=mywwwredirect
-      - traefik.http.routers.myumami.middlewares=myauth
-      - traefik.http.routers.myumami.service=api@internal
-      - traefik.http.routers.myumami.tls=true
-      - traefik.http.routers.myumami.tls.certresolver=myresolver
-     
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.umami-http.entrypoints=http"
+      - "traefik.http.routers.umami-http.middlewares=redir-https"
+      - "traefik.http.routers.umami-http.rule=Host(`umami.linuxpad.blog`)"
+      - "traefik.http.routers.umami-http.service=noop@internal"
+      - "traefik.http.routers.umami-https.entrypoints=https"
+      - "traefik.http.routers.umami-https.tls=true"
+      - "traefik.http.routers.umami-https.middlewares=gzip"
+      - "traefik.http.routers.umami-https.rule=Host(`umami.linuxpad.blog`)"
+      - "traefik.http.services.umami-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.umami-backend.loadbalancer.server.port=3021"
+      - "traefik.http.routers.umami-https.middlewares=authelia@docker"
+
+
+
 
 
   db:
@@ -45,7 +48,7 @@ services:
       - /srv/appdata/umami/dba:/var/lib/postgresql/data
     restart: always
     networks:
-      - proxy
+      - traefik
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
@@ -56,6 +59,7 @@ volumes:
 
   # username admin
   # psswd umami
+
 networks:
-    proxy:
-        external: true
+  traefik:
+    external: true
