@@ -3,29 +3,30 @@ services:
     image: 'henrygd/beszel'
     container_name: 'beszel'
     restart: unless-stopped
-    ports:
-      - '8090:8090'
+    
     volumes:
       - ./beszel_data:/beszel_data
     networks:
-      - proxy
+      - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.beszel.entrypoints=http"
-      - "traefik.http.routers.beszel.rule=Host(`beszel.linuxpad.blog`)"
-      - "traefik.http.middlewares.beszel-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.beszel.middlewares=portainer-https-redirect"
-      - "traefik.http.routers.beszel-secure.entrypoints=https"
-      - "traefik.http.routers.beszel-secure.rule=Host(`beszel.linuxpad.blog`)"
-      - "traefik.http.routers.beszel-secure.tls=true"
-      - "traefik.http.routers.beszel-secure.service=beszel"
-      - "traefik.http.services.beszel.loadbalancer.server.port=8090"
-      - "traefik.docker.network=proxy"
-      - "traefik.http.routers.beszel-secure.middlewares=authelia@docker"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.beszel-http.entrypoints=http"
+      - "traefik.http.routers.beszel-http.middlewares=redir-https"
+      - "traefik.http.routers.beszel-http.rule=Host(`beszel.linuxpad.blog`)"
+      - "traefik.http.routers.beszel-http.service=noop@internal"
+      - "traefik.http.routers.beszel-https.entrypoints=https"
+      - "traefik.http.routers.beszel-https.tls=true"
+      - "traefik.http.routers.beszel-https.middlewares=gzip"
+      - "traefik.http.routers.beszel-https.rule=Host(`beszel.linuxpad.blog`)"
+      - "traefik.http.services.beszel-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.beszel-backend.loadbalancer.server.port=8090"
+      - "traefik.http.routers.beszel-https.middlewares=authelia@docker"
+
 
 
 networks:
-  proxy:
-    name: proxy
+  traefik:
+    name: traefik
     external: true #do not expose external for security risk
   
