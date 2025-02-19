@@ -57,26 +57,28 @@ services:
     ports:
       - 8080:3000
     networks:
-      - proxy
+      - traefik
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.littlelink-server.entrypoints=http"
-      - "traefik.http.routers.littlelink-server.rule=Host(`link.linuxpad.blog`)"
-      - "traefik.http.middlewares.littlelink-server-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.littlelink-server.middlewares=littlelink-server-https-redirect"
-      - "traefik.http.routers.littlelink-server-secure.entrypoints=https"
-      - "traefik.http.routers.littlelink-server-secure.rule=Host(`link.linuxpad.blog`)"
-      - "traefik.http.routers.littlelink-server-secure.tls=true"
-      - "traefik.http.routers.littlelink-server-secure.service=littlelink-server"
-      - "traefik.http.services.littlelink-server.loadbalancer.server.port=8080"
-      - "traefik.docker.network=proxy"
-      - "traefik.http.routers.littlelink-server-secure.middlewares=authelia@docker"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.link-http.entrypoints=http"
+      - "traefik.http.routers.link-http.middlewares=redir-https"
+      - "traefik.http.routers.link-http.rule=Host(`link.linuxpad.blog`)"
+      - "traefik.http.routers.link-http.service=noop@internal"
+      - "traefik.http.routers.link-https.entrypoints=https"
+      - "traefik.http.routers.link-https.tls=true"
+      - "traefik.http.routers.link-https.middlewares=gzip"
+      - "traefik.http.routers.link-https.rule=Host(`link.linuxpad.blog`)"
+      - "traefik.http.services.link-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.link-backend.loadbalancer.server.port=8080"
+      - "traefik.http.routers.link-https.middlewares=authelia@docker"
+
 
 networks:
-  proxy:
+  traefik:
     name: proxy
     external: true

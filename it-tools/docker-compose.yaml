@@ -2,26 +2,26 @@
 services:
     it-tools:
         image: 'corentinth/it-tools:latest'
-        ports:
-           - '8065:80'
         restart: unless-stopped
         container_name: it-tools
         networks:
-          - proxy
+          - traefik
         labels:
           - "traefik.enable=true"
-          - "traefik.http.routers.it-tools.entrypoints=http"
-          - "traefik.http.routers.it-tools.rule=Host(`it-tools.linuxpad.blog`)"
-          - "traefik.http.middlewares.it-tools-https-redirect.redirectscheme.scheme=https"
-          - "traefik.http.routers.it-tools.middlewares=it-tools-https-redirect"
-          - "traefik.http.routers.it-tools-secure.entrypoints=https"
-          - "traefik.http.routers.it-tools-secure.rule=Host(`it-tools.linuxpad.blog`)"
-          - "traefik.http.routers.it-tools-secure.tls=true"
-          - "traefik.http.routers.it-tools-secure.service=it-tools"
-          - "traefik.http.services.it-tools.loadbalancer.server.port=8065"
-          - "traefik.docker.network=proxy"
-          - "traefik.http.routers.it-tools-secure.middlewares=authelia@docker"
+          - "traefik.docker.network=traefik"
+          - "traefik.http.routers.it-tools-http.entrypoints=http"
+          - "traefik.http.routers.it-tools-http.middlewares=redir-https"
+          - "traefik.http.routers.it-tools-http.rule=Host(`it-tools.linuxpad.blog`)"
+          - "traefik.http.routers.it-tools-http.service=noop@internal"
+          - "traefik.http.routers.it-tools-https.entrypoints=https"
+          - "traefik.http.routers.it-tools-https.tls=true"
+          - "traefik.http.routers.it-tools-https.middlewares=gzip"
+          - "traefik.http.routers.it-tools-https.rule=Host(`it-tools.linuxpad.blog`)"
+          - "traefik.http.services.it-tools-backend.loadbalancer.server.scheme=http"
+          - "traefik.http.services.it-tools-backend.loadbalancer.server.port=8065"
+          - "traefik.http.routers.it-tools-https.middlewares=authelia@docker"
+
 
 networks:
-  proxy:
+  traefik:
     external: true
