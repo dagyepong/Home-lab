@@ -31,17 +31,19 @@ services:
       - proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.watchtower.entrypoints=http"
-      - "traefik.http.routers.watchtower.rule=Host(`watchtower.linuxpad.blog`)"
-      - "traefik.http.middlewares.watchtower-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.watchtower.middlewares=watchtower-https-redirect"
-      - "traefik.http.routers.watchtower-secure.entrypoints=https"
-      - "traefik.http.routers.watchtower-secure.rule=Host(`watchtower.linuxpad.blog`)"
-      - "traefik.http.routers.watchtower-secure.tls=true"
-      - "traefik.http.routers.watchtower-secure.service=watchtower"
-      - "traefik.http.services.watchtower.loadbalancer.server.port=9080"
-      - "traefik.docker.network=proxy"
-      - "traefik.http.routers.watchtower-secure.middlewares=authelia@docker"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.watchtower-http.entrypoints=http"
+      - "traefik.http.routers.watchtower-http.middlewares=redir-https"
+      - "traefik.http.routers.watchtower-http.rule=Host(`watchtower.linuxpad.blog`)"
+      - "traefik.http.routers.watchtower-http.service=noop@internal"
+      - "traefik.http.routers.watchtower-https.entrypoints=https"
+      - "traefik.http.routers.watchtower-https.tls=true"
+      - "traefik.http.routers.watchtower-https.middlewares=gzip"
+      - "traefik.http.routers.watchtower-https.rule=Host(`watchtower.linuxpad.blog`)"
+      - "traefik.http.services.watchtower-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.watchtower-backend.loadbalancer.server.port=5005"
+      - "traefik.http.routers.watchtower-https.middlewares=authelia@docker"
+
 
 
     restart: always
@@ -54,5 +56,5 @@ services:
     working_dir: /
 
 networks:
-  proxy:
-    external: true #do not expose external for security risk
+  traefik:
+    external: true
