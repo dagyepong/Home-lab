@@ -10,6 +10,8 @@ services:
             - I_REALLY_WANT_VOLATILE_STORAGE=true
         networks:
             - traefik
+        ports:
+            - '4044:80'
         labels:
             - "traefik.enable=true"
             - "traefik.docker.network=traefik"
