@@ -4,6 +4,16 @@ services:
     image: soulteary/flare:0.5.1
     networks:
       - traefik
+    volumes:
+      - ./app:/app
+    command: flare
+    environment:
+      # 开启登陆
+      - FLARE_DISABLE_LOGIN=0
+      # 设置登陆账号
+      - FLARE_USER=flare
+      # 指定你自己的账号密码，如未设置 `FLARE_USER`，则会默认生成密码并展示在应用启动日志中
+      - FLARE_PASS=yakwasi123
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
@@ -23,4 +33,3 @@ services:
 networks:
   traefik:
     external: true
-    
