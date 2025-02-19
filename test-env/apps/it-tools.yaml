@@ -7,19 +7,22 @@ services:
       - no-new-privileges:true
     restart: unless-stopped
     networks:
-      - proxy
-    ports:
-      - 8060:8060
+      - traefik
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.it-tools.rule=Host(`tools.nanaoware.online`) || Host(`www.tools.nanaoware.online`)
-      - traefik.http.services.it-tools.loadbalancer.server.port=8060
-      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.myit-tools.middlewares=mywwwredirect
-      - traefik.http.routers.myit-tools.middlewares=dashboard
-      - traefik.http.routers.myit-tools.service=api@internal
-      - traefik.http.routers.myit-tools.tls=true
-      - traefik.http.routers.myit-tools.tls.certresolver=le
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.flare-http.entrypoints=http"
+      - "traefik.http.routers.flare-http.middlewares=redir-https"
+      - "traefik.http.routers.flare-http.rule=Host(`flare.linuxpad.blog`)"
+      - "traefik.http.routers.flare-http.service=noop@internal"
+      - "traefik.http.routers.flare-https.entrypoints=https"
+      - "traefik.http.routers.flare-https.tls=true"
+      - "traefik.http.routers.flare-https.middlewares=gzip"
+      - "traefik.http.routers.flare-https.rule=Host(`flare.linuxpad.blog`)"
+      - "traefik.http.services.flare-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.flare-backend.loadbalancer.server.port=8060"
+      - "traefik.http.routers.flare-https.middlewares=authelia@docker"
 
-
+networks:
+  traefik:
+    external: true

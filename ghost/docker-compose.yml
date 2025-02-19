@@ -36,20 +36,22 @@ services:
       #mail__options__auth__pass: ${SMTP_PASS:-SMTPPassword}
       #mail__from: ${SMTP_MAIL_FROM:-Ghost}
     networks:
-      - proxy
+      - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.ghost.entrypoints=http"
-      - "traefik.http.routers.ghost.rule=Host(`linuxpad.blog`)"
-      - "traefik.http.middlewares.ghost-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.ghost.middlewares=ghost-https-redirect"
-      - "traefik.http.routers.ghost-secure.entrypoints=https"
-      - "traefik.http.routers.ghost-secure.rule=Host(`linuxpad.blog`)"
-      - "traefik.http.routers.ghost-secure.tls=true"
-      - "traefik.http.routers.ghost-secure.service=ghost"
-      - "traefik.http.services.ghost.loadbalancer.server.port=2368"
-      - "traefik.docker.network=proxy"
-      - "traefik.http.routers.ghost-secure.middlewares=authelia@docker"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.ghost-http.entrypoints=http"
+      - "traefik.http.routers.ghost-http.middlewares=redir-https"
+      - "traefik.http.routers.ghost-http.rule=Host(`linuxpad.blog`)"
+      - "traefik.http.routers.ghost-http.service=noop@internal"
+      - "traefik.http.routers.ghost-https.entrypoints=https"
+      - "traefik.http.routers.ghost-https.tls=true"
+      - "traefik.http.routers.ghost-https.middlewares=gzip"
+      - "traefik.http.routers.ghost-https.rule=Host(`linuxpad.blog`)"
+      - "traefik.http.services.ghost-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.ghost-backend.loadbalancer.server.port=2368"
+      - "traefik.http.routers.ghost-https.middlewares=authelia@docker"
+
 
   database:
     image: mysql:8
@@ -69,7 +71,7 @@ services:
       MYSQL_USER: ${DB_USER:-ghost}
       MYSQL_PASSWORD: ${DB_USER_PASS:-DatabasePassword1234}
     networks:
-      - proxy
+      - traefik
 
   db_backup:
     container_name: db_backup
@@ -97,5 +99,5 @@ services:
     restart: always
 
 networks:
-  proxy:
+  traefik:
     external: true
