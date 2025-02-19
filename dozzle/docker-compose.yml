@@ -28,7 +28,7 @@ services:
       - "traefik.http.routers.dozzle-https.middlewares=gzip"
       - "traefik.http.routers.dozzle-https.rule=Host(`dozzle.linuxpad.blog`)"
       - "traefik.http.services.dozzle-backend.loadbalancer.server.scheme=http"
-      - "traefik.http.services.dozzle-backend.loadbalancer.server.port=8099"
+      - "traefik.http.services.dozzle-backend.loadbalancer.server.port=8080"
       - "traefik.http.routers.dozzle-https.middlewares=authelia@docker"
 
 
