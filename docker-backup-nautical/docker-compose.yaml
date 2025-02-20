@@ -5,20 +5,24 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /config:/config
-      - /destination:/app/destination 
+      - /home/nana/nautical/destination:/app/destination 
         # Alternative destination directories examples
-      - portainer_data:/data
+      - /mnt/docker-volumes/uptimekuma:/app/destination/uptimekuma
+      - /mnt/docker-volumes/ghost:/app/destination/ghost
+      - /home/nana/portiner/portainer-data:/app/destination/portainer
 
     ports:
       - "8069:8069/tcp"
     environment: # Optional variables
       - TZ=America/Los_Angeles
       - CRON_SCHEDULE=0 4 * * *
-      - SKIP_CONTAINERS=example1,example2,example3
-      - SKIP_STOPPING=example1,example2
+     # - SKIP_CONTAINERS=example1,example2,example3
+     # - SKIP_STOPPING=example1,example2
       - BACKUP_ON_START=true
       - LOG_LEVEL=INFO
       - REQUIRE_LABEL=true
+      - HTTP_REST_API_USERNAME=admin
+      - HTTP_REST_API_PASSWORD=password
 
 networks:
   traefik:
