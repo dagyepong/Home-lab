@@ -5,7 +5,10 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /config:/config
-      - /source:/app/source
+      - /destination:/app/destination 
+        # Alternative destination directories examples
+      - portainer_data:/data
+
     ports:
       - "8069:8069/tcp"
     environment: # Optional variables
