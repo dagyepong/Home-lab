@@ -41,7 +41,9 @@ services:
       - "traefik.http.routers.watchtower-https.middlewares=gzip"
       - "traefik.http.routers.watchtower-https.rule=Host(`watchtower.linuxpad.blog`)"
       - "traefik.http.services.watchtower-backend.loadbalancer.server.scheme=http"
-      - "traefik.http.services.watchtower-backend.loadbalancer.server.port=5005"
+      - "traefik.http.services.watchtower-backend.loadbalancer.server.port=9080"
+      - "nautical-backup.enable=true"
+      - "nautical-backup.stop-before-backup=true"
       - "traefik.http.routers.watchtower-https.middlewares=authelia@docker"
 
 
@@ -51,6 +53,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro # Disable for socket proxy
+    command: nautical-backup 
     ports:
       - 9080:8080
     working_dir: /
