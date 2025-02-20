@@ -4,12 +4,13 @@ services:
     container_name: nautical-backup
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /config:/config
-      - /home/nana/nautical/destination:/app/destination 
+      - /home/nana/nautical_backup/app/source:/app/source
+      - /home/nana/nautical_backup/app/destination:/app/destination
+      - /home/nana:/app/source/nana
         # Alternative destination directories examples
-      - /mnt/docker-volumes/uptimekuma:/app/destination/uptimekuma
-      - /mnt/docker-volumes/ghost:/app/destination/ghost
-      - /home/nana/portiner/portainer-data:/app/destination/portainer
+      - /mnt/docker-volumes/uptimekuma:/app/source/uptimekuma
+      - /mnt/docker-volumes/ghost:/app/source/ghost
+      - /home/nana/portiner/portainer-data:/app/source/portainer
 
     ports:
       - "8069:8069/tcp"
@@ -20,9 +21,11 @@ services:
      # - SKIP_STOPPING=example1,example2
       - BACKUP_ON_START=true
       - LOG_LEVEL=INFO
-      - REQUIRE_LABEL=true
+      - REQUIRE_LABEL=false
       - HTTP_REST_API_USERNAME=admin
       - HTTP_REST_API_PASSWORD=password
+      - ADDITIONAL_FOLDERS=/home/nana/
+      - ADDITIONAL_FOLDERS_WHEN=before
 
 networks:
   traefik:
