@@ -1,0 +1,26 @@
+
+services:
+  duplicati:
+    image: lscr.io/linuxserver/duplicati:latest
+    container_name: duplicati
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=Etc/UTC
+      - CLI_ARGS= #optional
+      - DUPLICATI__WEBSERVICE_PASSWORD=akwasi123
+      - SETTINGS_ENCRYPTION_KEY=Afiaanimah*123
+    volumes:
+      - /home/nana/duplicati/config:/config
+      - /home/nana/duplicati/backups:/backups
+      - /home/nana/duplicati/:/source
+    ports:
+      - 8200:8200
+    networks:
+      - traefik
+    restart: unless-stopped
+
+
+networks:
+  traefik:
+    external: true
