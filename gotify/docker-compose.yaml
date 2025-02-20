@@ -1,23 +1,17 @@
-## docker-compose.yml
-
-
 
 services:
   gotify:
-    image: gotify/server:latest
+    image: gotify/server
     container_name: gotify
-    hostname: gotify
+    volumes:
+      - /home/nana/gotify:/app/data
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
-    volumes:
-      - data:/app/data
     networks:
       - traefik
     environment:
-      GOTIFY_DEFAULTUSER_PASS: "password"
-      GOTIFY_DEFAULTUSER_NAME: "admin"
-      GOTIFY_REGISTRATION: "false"
+      - TZ=Europe/London
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
@@ -32,50 +26,20 @@ services:
       - "traefik.http.services.gotify-backend.loadbalancer.server.scheme=http"
       - "traefik.http.services.gotify-backend.loadbalancer.server.port=80"
       - "traefik.http.routers.gotify-https.middlewares=authelia@docker"
-
-  igotify-notification:
-    image: ghcr.io/androidseb25/igotify-notification-assist:latest
-    container_name: igotify
-    hostname: igotify
-    restart: unless-stopped
-    pull_policy: always
-    security_opt:
-      - no-new-privileges:true
-    volumes:
-      - api-data:/app/data
-    environment:
-      GOTIFY_URLS: "192.168.8.188:8447"
-      GOTIFY_CLIENT_TOKENS: ""
-      SECNTFY_TOKENS: ""
-    
-    networks:
-      - traefik
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik"
-      - "traefik.http.routers.gotify-http.entrypoints=http"
-      - "traefik.http.routers.gotify-http.middlewares=redir-https"
-      - "traefik.http.routers.gotify-http.rule=Host(`gotify.linuxpad.blog`)"
-      - "traefik.http.routers.gotify-http.service=noop@internal"
-      - "traefik.http.routers.gotify-https.entrypoints=https"
-      - "traefik.http.routers.gotify-https.tls=true"
-      - "traefik.http.routers.gotify-https.middlewares=gzip"
-      - "traefik.http.routers.gotify-https.rule=Host(`gotify.linuxpad.blog`)"
-      - "traefik.http.services.gotify-backend.loadbalancer.server.scheme=http"
-      - "traefik.http.services.gotify-backend.loadbalancer.server.port=80"
-      - "traefik.http.routers.gotify-https.middlewares=authelia@docker"
-
-
 networks:
   traefik:
-    external: true
-
-volumes:
-  data:
-  api-data:
+    external: true## docker-compose.yml
 
 
-    
 
-   
- 
+
+
+
+
+
+
+
+
+
+
+
