@@ -1,7 +1,5 @@
 
 
-version: '3.8'
-
 services:
   backup:
     image: mazzolino/restic
@@ -12,10 +10,10 @@ services:
       BACKUP_CRON: "0 */12 * * *" #this is twice daily, i.e., every 12 hours
       RESTIC_REPOSITORY: /restic
       RESTIC_PASSWORD: Afiaanimah*123
-      RESTIC_BACKUP_SOURCES: /mnt/docker-volumes /home/nana
+      RESTIC_BACKUP_SOURCES: /mnt/docker-volumes /home/nana/
       RESTIC_COMPRESSION: auto 
       RESTIC_BACKUP_ARGS: >-
-        --tag restic-proxmox #add tags, whatever you need to mark backups
+        --tag restic-docker #add tags, whatever you need to mark backups
         --verbose
       RESTIC_FORGET_ARGS: >- #change as required
         --keep-last 10
@@ -26,7 +24,8 @@ services:
     volumes:
       - /home/nana/restic/backup:/restic #change the left hand side to where you want to store the backups. As you can see I'm storing it on my NAS that is mounted to the host /home/truenas
       - /home/nana/restic/restore:/tmp-for-restore #USE THIS FOLDER FOR RESTORE - CAN VIEW EACH CONTAINER
-      - /home/nana:/mnt/docker-volumes:ro
+      - /mnt/docker-volumes:/mnt/docker-volumes:ro
+      - /home/nana:/home/nana:ro
     security_opt:
       - no-new-privileges:true
 
