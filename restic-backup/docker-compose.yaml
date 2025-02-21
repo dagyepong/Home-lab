@@ -1,5 +1,7 @@
 
 
+version: '3.8'
+
 services:
   backup:
     image: mazzolino/restic
@@ -10,7 +12,7 @@ services:
       BACKUP_CRON: "0 */12 * * *" #this is twice daily, i.e., every 12 hours
       RESTIC_REPOSITORY: /restic
       RESTIC_PASSWORD: MY_SUPER_LONG_PASSWORD
-      RESTIC_BACKUP_SOURCES: /mnt/volumes
+      RESTIC_BACKUP_SOURCES: /mnt/docker-volumes /home/nana
       RESTIC_COMPRESSION: auto 
       RESTIC_BACKUP_ARGS: >-
         --tag restic-proxmox #add tags, whatever you need to mark backups
@@ -22,9 +24,9 @@ services:
         --keep-monthly 12
       TZ: Europe/London
     volumes:
-      - /home/ubuntu/truenas/Restic-Proxmox-Backup:/restic #change the left hand side to where you want to store the backups. As you can see I'm storing it on my NAS that is mounted to the host /home/truenas
-      - /home/ubuntu/truenas/Restic-Proxmox-Backup/tmp-for-restore:/tmp-for-restore #USE THIS FOLDER FOR RESTORE - CAN VIEW EACH CONTAINER
-      - /home/ubuntu/docker:/mnt/volumes:ro
+      - /home/nana/restic/backup:/restic #change the left hand side to where you want to store the backups. As you can see I'm storing it on my NAS that is mounted to the host /home/truenas
+      - /home/nana/restic/restore:/tmp-for-restore #USE THIS FOLDER FOR RESTORE - CAN VIEW EACH CONTAINER
+      - /home/nana:/mnt/docker-volumes:ro
     security_opt:
       - no-new-privileges:true
 
