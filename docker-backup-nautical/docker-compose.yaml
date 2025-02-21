@@ -6,11 +6,20 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/nana/nautical_backup/app/source:/app/source
       - /home/nana/nautical_backup/app/destination:/app/destination
-      - /home/nana:/app/source/nana
         # Alternative destination directories examples
-      - /mnt/docker-volumes/uptimekuma:/app/source/uptimekuma
       - /mnt/docker-volumes/ghost:/app/source/ghost
-      - /home/nana/portiner/portainer-data:/app/source/portainer
+      - /home/nana/portainer/portainer-data:/app/source/portainer
+      - /home/nana/traefik:/app/source/traefik
+      - /home/nana/dozzle:/app/source/dozzle
+      - /home/nana/cronicle:/app/source/cronicle
+      - /home/nana/uptime:/app/source/uptime
+      - /home/nana/flare:/app/source/flare
+      - /home/nana/gotify:/app/source/gotify
+      - /home/nana/hoarder:/app/source/hoarder
+      - /home/nana/vault:/app/source/vault
+      - /home/nana/watchtower:/app/source/watchtower
+      - /home/nana/it-tools:/app/source/it-tools
+      - /home/nana/authelia:/app/source/authelia
 
     ports:
       - "8069:8069/tcp"
@@ -24,7 +33,7 @@ services:
       - REQUIRE_LABEL=false
       - HTTP_REST_API_USERNAME=admin
       - HTTP_REST_API_PASSWORD=password
-      - ADDITIONAL_FOLDERS=/home/nana/
+      - ADDITIONAL_FOLDERS=/home/nana/.config
       - ADDITIONAL_FOLDERS_WHEN=before
 
 networks:
