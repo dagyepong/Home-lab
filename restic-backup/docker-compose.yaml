@@ -25,7 +25,7 @@ services:
       TZ: Europe/London
     volumes:
       - /home/nana/restic/backup:/restic #change the left hand side to where you want to store the backups. As you can see I'm storing it on my NAS that is mounted to the host /home/truenas
-      - /home/nana/restic/restore:/tmp-for-restore #USE THIS FOLDER FOR RESTORE - CAN VIEW EACH CONTAINER
+      - /home/nana/restic/tmp-for-restore:/tmp-for-restore #USE THIS FOLDER FOR RESTORE - CAN VIEW EACH CONTAINER
       - /mnt/docker-volumes:/mnt/docker-volumes:ro
       - /home/nana:/home/nana:ro
     security_opt:
