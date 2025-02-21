@@ -9,7 +9,7 @@ services:
       - PUID=1000
       - PGID=1000
     networks:
-      - proxy
+      - traefik
     volumes:
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/homepage/config:/app/config # Make sure your local config directory exists
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/homepage/icons:/app/public/icons
@@ -30,5 +30,5 @@ services:
       - "traefik.docker.network=proxy"
       - "traefik.http.routers.homepage-secure.middlewares=authelia@docker"
 networks:
-  proxy:
+  traefik:
     external: true
