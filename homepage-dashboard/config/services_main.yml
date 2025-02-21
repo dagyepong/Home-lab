@@ -1,8 +1,8 @@
 - Hypervisor:
     - PVE1:
-        href: https://pve1.lan:8006/
+        href: https://192.168.8.178:8006/
         icon: proxmox.png
-        siteMonitor: https://pve1.lan:8006
+        siteMonitor: https://192.168.8.178:8006
     - Harvester:
         href: https://pve2.lan:8006/
         icon: kubernetes.svg
@@ -17,25 +17,25 @@
         siteMonitor: https://pbackup.public-domain2.fr:8007
 - Administration:
     - Adguard:
-        href: https://adguard.internal-domain.lan/
+        href: http://192.168.8.195/
         icon: adguard-home.png
-        siteMonitor: https://adguard.internal-domain.lan
+        siteMonitor: http://192.168.8.195/
         description: DNS Server and Ad Blocker
         widget:
-            password: password
+            password: akwasi123
             type: adguard
-            url: https://adguard.internal-domain.lan
-            username: admin
+            url: http://192.168.8.195/
+            username: nana
     - Traefik:
-            href: https://monitor.nanaoware.online/dashboard/
+            href: https://traefik.linuxpad.blog/dashboard/
             icon: traefik.png
             description: Reverse Proxy
             widget:
                 type: traefik
-                url: https://monitor.nanaoware.online
-                siteMonitor: https://monitor.nanaoware.online/dashboard/
-                username: nana
-                password: akosua123
+                url: https://traefik.linuxpad.blog
+                siteMonitor: https://traefik.linuxpad.blog/dashboard/
+                username: test
+                password: test
 
     - Authentik:
         href: https://idp.nanaoware.online
@@ -66,13 +66,13 @@
         description: Kubernetes Storage
         siteMonitor: https://longhorn.internal-domain.lan
     - Portainer:
-        href: https://portainer.internal-domain.lan/
+        href: https://portainer.linuxpad.blog/
         icon: portainer.png
         description: Docker Manager
-        siteMonitor: https://portainer.internal-domain.lan
+        siteMonitor: https://portainer.linuxpad.blog
         widget:
             type: portainer
-            url:
+            url: https://portainer.linuxpad.blog
             key:
             env: 2
     - Dockge:
@@ -100,6 +100,35 @@
         icon: mailu.png
         description: Mail Server
         siteMonitor: https://mail.public-domain2.fr/admin
+    - Nautical Backup:
+        icon: https://raw.githubusercontent.com/Minituff/nautical-backup/main/docs/media/Logo-large.png
+        description: Docker Volume Backups
+        widget:
+            type: customapi
+            url: http://192.168.8.188:8069/api/v1/nautical/dashboard
+            username: admin
+            password: password
+            method: GET
+            mappings:
+            - field: number_of_containers
+              label: Total Containers
+        
+            - field: completed
+              label: Completed
+        
+            - field: skipped
+              label: Skipped
+        
+            - field: errors
+              label: errors
+        
+            - field: last_cron 
+              label: Last Run
+              format: relativeDate # (1)!
+
+            - field: next_cron
+              label: Next Run
+
 - Personal:
     - Nextcloud:
         href: https://cloud.public-domain2.fr/
@@ -112,14 +141,14 @@
             username: password
             password:
     - Immich:
-        href: https://photos.public-domain2.fr/
+        href: https://immich.nanaoware.online
         icon: immich.png
         description: Photo Manager
-        siteMonitor: https://photos.public-domain2.fr/
+        siteMonitor: https://immich.nanaoware.online/
         widget: 
             type: immich
-            url: https://photos.public-domain2.fr
-            key: password
+            url: https://immich.nanaoware.online
+            key: 
     - Pterodactyl:
         href: https://pterodactyl.internal-domain.lan/
         icon: pterodactyl.png
@@ -145,15 +174,25 @@
         siteMonitor: https://homeassistant.internal-domain.lan
 - UndefinedDev:
     - Ghost:
-        href: https://public-domain.fr/
+        href: https://linuxpad.blog/
         icon: ghost.png
         description: Personal Blog
-        siteMonitor: https://public-domain.fr
+        siteMonitor: https://linuxpad.blog
     - Ghost Administration:
-        href:
+        href: https://linuxpad.blog/ghost
         icon: ghost.png
         description: Admin Page
-        siteMonitor:
+        siteMonitor: https://linuxpad.blog/ghost
+    - Wordpress:
+        href: https://tech.nanaoware.online
+        icon: wordpress.png
+        description: Blog
+        siteMonitor: https://tech.nanaoware.online
+    - Wordpress Administration:
+        href: https://tech.nanaoware.online/wp-admin
+        icon: wordpress.png
+        description: Admin Page
+        siteMonitor: https://tech.nanaoware.online/wp-admin
     - Matomo:
         href: https://analytics.public-domain.fr/
         icon: matomo.png
@@ -185,39 +224,31 @@
         siteMonitor: https://syncthing.raspberrypi.nana.local.kubegateway.com
 - Monitoring:
     - Uptime Kuma:
-        href: http://frontline.public-domain2.fr:3001
+        href: https://uptime-kuma.linuxpad.blog
         icon: uptime-kuma.png
         description: Uptime Monitoring
-        siteMonitor: http://frontline.public-domain2.fr:3001
+        siteMonitor: https://uptime-kuma.linuxpad.blog
         widget:
             slug: home
             type: uptimekuma
-            url: http://frontline.public-domain2.fr:3001
+            url: http://uptime-kuma.linuxpad.blog
     - Beszel:
-        href: https://beszel.internal-domain.lan/
+        href: https://beszel.linuxpad.blog/
         icon: beszel.png
-        description: Chat Server
-        siteMonitor: https://beszel.internal-domain.lan
+        description: Monitoring Server
+        siteMonitor: https://beszel.linuxpad.blog
         widget:
             type: beszel
-            url: http://beszel.host.or.ip
-            username: username # email
-            password: password
+            url: https://beszel.linuxpad.blog
+            username: owarenana06@gmail.com # email
+            password: akwasi123
             systemId: systemId # optional
             version: 2 # optional, default is 1
     - Dozzle:
-        href:
+        href: https://dozzle.linuxpad.blog
         icon: dozzle.png
-        siteMonitor:
-        description:
-    - Scrutiny:
-        href: https://scrutiny.internal-domain.lan
-        siteMonitor: https://scrutiny.internal-domain.lan
-        icon: scrutiny.png
-        description: S.M.A.R.T Monitoring
-        widget:
-            type: scrutiny
-            url: https://scrutiny.internal-domain.lan
+        siteMonitor: https://dozzle.linuxpad.blog
+        description: Log Mgt
     - Speedtest:
         href: https://speedtest.internal-domain.lan/
         siteMonitor: https://speedtest.internal-domain.lan
@@ -252,7 +283,7 @@
         description: Metrics Database
 - Devices:
     - Switch:
-        href: http://10.10.1.5/
+        href: http://192.168.8.1/
         icon: tp-link.png
         description: Core Switch
     - Deeper Connect (Wifi):
@@ -273,25 +304,25 @@
             interfaceName: eth0 # optional
 - Media:
     - Jellyfin:
-        href: https://jellyfin.public-domain2.fr/
+        href: https://jellyfin.nanaoware.online/
         icon: jellyfin.png
         description: Media Server
-        siteMonitor: https://jellyfin.public-domain2.fr
+        siteMonitor: https://jellyfin.nanaoware.online
         widget:
-            key: password
+            key: 
             type: jellyfin
-            url: https://jellyfin.public-domain2.fr
+            url: https://jellyfin.nanaoware.online
             enableBlocks: true
             enableNowPlaying: true
     - Plex:
-        href:
+        href: https://plex.nanaoware.online/
         icon: plex.png
         description: Media Server
-        siteMonitor:
+        siteMonitor: https://plex.nanaoware.online
         widget:
             key:
             type: plex
-            url:
+            url: https://plex.nanaoware.online
     - Transmission:
         href: https://transmission.internal-domain.lan/
         icon: transmission.png
