@@ -13,7 +13,7 @@ services:
       - /home/nana/dozzle:/app/source/dozzle
       - /home/nana/cronicle:/app/source/cronicle
       - /home/nana/uptime:/app/source/uptime
-      - /home/nana/flare:/app/source/flare
+      - /home/nana/nautical-backup:/app/source/nautical-backup
       - /home/nana/gotify:/app/source/gotify
       - /home/nana/hoarder:/app/source/hoarder
       - /home/nana/vault:/app/source/vault
@@ -35,6 +35,22 @@ services:
       - HTTP_REST_API_PASSWORD=password
       - ADDITIONAL_FOLDERS=/home/nana/.config
       - ADDITIONAL_FOLDERS_WHEN=before
+
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.nautical-backup-http.entrypoints=http"
+      - "traefik.http.routers.nautical-backup-http.middlewares=redir-https"
+      - "traefik.http.routers.nautical-backup-http.rule=Host(`nautical-backup.linuxpad.blog`)"
+      - "traefik.http.routers.nautical-backup-http.service=noop@internal"
+      - "traefik.http.routers.nautical-backup-https.entrypoints=https"
+      - "traefik.http.routers.nautical-backup-https.tls=true"
+      - "traefik.http.routers.nautical-backup-https.middlewares=gzip"
+      - "traefik.http.routers.nautical-backup-https.rule=Host(`nautical-backup.linuxpad.blog`)"
+      - "traefik.http.services.nautical-backup-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.nautical-backup-backend.loadbalancer.server.port=8069"
+      - "traefik.http.routers.nautical-backup-https.middlewares=authelia@docker"
 
 networks:
   traefik:
