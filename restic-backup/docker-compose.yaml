@@ -1,18 +1,6 @@
-version: "3"
+version: "3.3"
 
 services:
-  reseticity:
-    image: ghcr.io/ad-on-is/resticity
-    container_name: resticity
-    hostname: nana
-    ports:
-    - 11278:11278
-    volumes:
-    - /mnt/docker-volumes:/mnt/docker-volumes:ro # Add the paths that you want resticity to grant access to
-    - /home/nana:/home/nana:ro
-    #- /path/to/config.json:/config.json # changeMe
-
-
   backup:
     image: mazzolino/restic
     container_name: restic
@@ -37,9 +25,9 @@ services:
         --keep-monthly 12
       TZ: Europe/London
     volumes:
-      - /home/nana/restic/backup:/restic #change the left hand side to where you want to store the backups. As you can see I'm storing it on my NAS that is mounted to the host /home/truenas
-      - /home/nana/restic/tmp-for-restore:/restic #USE THIS FOLDER FOR RESTORE - CAN VIEW EACH CONTAINER
-      - /mnt/docker-volumes:/mnt/docker-volumes:ro
+      - /home/nana/nas/backup:/restic #change the left hand side to where you want to store the backups. As you can see I'm storing it on my NAS that is mounted to the host /home/truenas
+      - /home/nana/nas/tmp-for-restore:/tmp-for-restore#USE THIS FOLDER FOR RESTORE - CAN VIEW EACH CONTAINER
+      - /var/lib/docker/volumes:/mnt/docker-volumes:ro
       - /home/nana:/home/nana:ro
     security_opt:
       - no-new-privileges:true
