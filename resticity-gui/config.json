@@ -1,0 +1,22 @@
+{
+    "repo": "/home/nana/resticity/backup",
+    "passwd": "akwasi123",
+    "dry-run": false,
+    "init": false,
+    "entry": [
+      {
+        "tag": ["home", "data"],
+        "source": ["${HOME}/nana"],
+        "keeplast": "NaN",
+        "skip": false,
+        "exclude": ["**/.*", "**/*.o", "**/*.o.d", "**/.local"]
+      },
+      {
+        "tag": ["config"],
+        "source": ["/etc", "${HOME}/.config"],
+        "sudo": true,
+        "skip": false,
+        "exclude": ["**/.*"]
+      }
+    ]
+  }
