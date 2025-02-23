@@ -1,12 +1,12 @@
 version: "3"
 services:
   reseticity:
-  image: ghcr.io/ad-on-is/resticity
-  container_name: resticity
-  hostname: nana
-  ports:
-    - 11278:11278
-  volumes:
-    - /var/lib/docker/volumes:/mnt/docker-volumes:ro # Add the paths that you want resticity to grant access to
-    - /home/nana:/home/nana:ro # Add the paths that you want resticity to grant access to
-    - /home/nana/resticty/config.json:/config.json # changeMe
+    image: ghcr.io/ad-on-is/resticity
+    container_name: resticity
+    hostname: nana
+    ports:
+      - 11278:11278
+    volumes:
+      - /var/lib/docker/volumes:/mnt/docker-volumes:ro # Add the paths that you want resticity to grant access to
+      - /home/nana:/home/nana:ro # Add the paths that you want resticity to grant access to
+      - /home/nana/resticty/config.json:/config.json # changeMe
