@@ -80,5 +80,5 @@ services:
 
 networks:
   traefik:
-    name: proxy
+    name: traefik
     external: true
