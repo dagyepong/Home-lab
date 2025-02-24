@@ -21,7 +21,7 @@ services:
       - "traefik.http.routers.portainer-https.middlewares=gzip"
       - "traefik.http.routers.portainer-https.rule=Host(`portainer.linuxpad.blog`)"
       - "traefik.http.services.portainer-backend.loadbalancer.server.scheme=http"
-      - "traefik.http.services.portainer-backend.loadbalancer.server.port=9443"
+      - "traefik.http.services.portainer-backend.loadbalancer.server.port=9000"
       - "traefik.http.routers.portainer-https.middlewares=authelia@docker"
 
 volumes:
