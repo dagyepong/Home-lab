@@ -14,14 +14,14 @@ services:
       - "traefik.docker.network=traefik"
       - "traefik.http.routers.portainer-http.entrypoints=http"
       - "traefik.http.routers.portainer-http.middlewares=redir-https"
-      - "traefik.http.routers.portainer-http.rule=Host(`uptime-kuma.linuxpad.blog`)"
+      - "traefik.http.routers.portainer-http.rule=Host(`portainer.linuxpad.blog`)"
       - "traefik.http.routers.portainer-http.service=noop@internal"
       - "traefik.http.routers.portainer-https.entrypoints=https"
       - "traefik.http.routers.portainer-https.tls=true"
       - "traefik.http.routers.portainer-https.middlewares=gzip"
-      - "traefik.http.routers.portainer-https.rule=Host(`uptime-kuma.linuxpad.blog`)"
+      - "traefik.http.routers.portainer-https.rule=Host(`portainer.linuxpad.blog`)"
       - "traefik.http.services.portainer-backend.loadbalancer.server.scheme=http"
-      - "traefik.http.services.portainer-backend.loadbalancer.server.port=9000"
+      - "traefik.http.services.portainer-backend.loadbalancer.server.port=9443"
       - "traefik.http.routers.portainer-https.middlewares=authelia@docker"
 
 volumes:
