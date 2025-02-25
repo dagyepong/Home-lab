@@ -4,5 +4,7 @@ services:
     image: soulteary/certs-maker:v3.8.0
     environment:
       - CERT_DNS=lab.com,*.lab.com,*.data.lab.com
+      - FOR_FIREFOX=ON    #Enhance Firefox compatibility
+
     volumes:
       - ./ssl:/ssl
