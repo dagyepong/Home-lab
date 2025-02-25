@@ -85,17 +85,19 @@ services:
       traefik:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.paperless.entrypoints=http"
-      - "traefik.http.routers.paperless.rule=Host(`paperless.jimsgarage.co.uk`)"
-      - "traefik.http.middlewares.paperless-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.paperless.middlewares=paperless-https-redirect"
-      - "traefik.http.routers.paperless-secure.entrypoints=https"
-      - "traefik.http.routers.paperless-secure.rule=Host(`paperless.jimsgarage.co.uk`)"
-      - "traefik.http.routers.paperless-secure.tls=true"
-      - "traefik.http.routers.paperless-secure.tls.certresolver=cloudflare" # change this to your cert resolver
-      - "traefik.http.routers.paperless-secure.service=paperless" 
-      - "traefik.http.services.paperless.loadbalancer.server.port=8000"
-      - "traefik.docker.network=proxy"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.paperless-http.entrypoints=http"
+      - "traefik.http.routers.paperless-http.middlewares=redir-https"
+      - "traefik.http.routers.paperless-http.rule=Host(`paperless.linuxpad.blog`)"
+      - "traefik.http.routers.paperless-http.service=noop@internal"
+      - "traefik.http.routers.paperless-https.entrypoints=https"
+      - "traefik.http.routers.paperless-https.tls=true"
+      - "traefik.http.routers.paperless-https.middlewares=gzip"
+      - "traefik.http.routers.paperless-https.rule=Host(`paperless.linuxpad.blog`)"
+      - "traefik.http.services.paperless-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.paperless-backend.loadbalancer.server.port=8000"
+      - "traefik.http.routers.paperless-https.middlewares=authelia@docker"
+
 
   gotenberg:
     image: docker.io/gotenberg/gotenberg:7.10
