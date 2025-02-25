@@ -74,12 +74,12 @@ services:
       PAPERLESS_TIKA_ENABLED: 1
       PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
       PAPERLESS_TIKA_ENDPOINT: http://tika:9998
-      PAPERLESS_URL: https://paperless.jimsgarage.co.uk
+      PAPERLESS_URL: https://paperless.linuxpad.blog
       PAPERLESS_ADMIN_USER: paperless
       PAPERLESS_ADMIN_PASSWORD: paperless
       PAPERLESS_APPS: "allauth.socialaccount.providers.openid_connect"
       # Find out how to configure Authentik: https://youtu.be/enwFWELCYJo
-      PAPERLESS_SOCIALACCOUNT_PROVIDERS: '{"openid_connect": {"APPS": [{"provider_id": "authentik","name": "Authentik SSO","client_id": "BnxpFXvscduU2PdAdPaCelphhDYpAXo9upbAUS3F","secret": "0JcyunvA0Ra25i49zULTbro0jdbH9gHrdnSDExT9Ze2TNoB8so9B8AbdB7riYjYHPZfwuWtAeTCpwPAi2Sct7M8w3y8VTPPxwgFG1JzdoWdxLgUz0NO6l3L2UFBmzQ5m","settings": { "server_url": "https://authentik.jimsgarage.co.uk/application/o/paperless-ngx/.well-known/openid-configuration"}}]}}'
+      PAPERLESS_SOCIALACCOUNT_PROVIDERS: '{"openid_connect": {"APPS": [{"provider_id": "authentik","name": "Authentik SSO","client_id": "BnxpFXvscduU2PdAdPaCelphhDYpAXo9upbAUS3F","secret": "0JcyunvA0Ra25i49zULTbro0jdbH9gHrdnSDExT9Ze2TNoB8so9B8AbdB7riYjYHPZfwuWtAeTCpwPAi2Sct7M8w3y8VTPPxwgFG1JzdoWdxLgUz0NO6l3L2UFBmzQ5m","settings": { "server_url": "https://authentik.linuxpad.blog/application/o/paperless-ngx/.well-known/openid-configuration"}}]}}'
     networks:
       paperless:
       traefik:
