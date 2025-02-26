@@ -19,7 +19,7 @@ services:
     env_file:
       - .env
     networks:
-      proxy:
+      traefik:
   redis:
     image: docker.io/library/redis:alpine
     command: --save 60 1 --loglevel warning
@@ -33,7 +33,7 @@ services:
     volumes:
       - redis:/data
     networks:
-      proxy:
+      traefik:
   server:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2023.10.7}
     restart: unless-stopped
@@ -58,20 +58,21 @@ services:
       - redis
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.authentik.entrypoints=http"
-      - "traefik.http.routers.authentik.rule=Host(`authentik.linuxpad.blog`)"
-      - "traefik.http.middlewares.authentik-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.authentik.middlewares=authentik-https-redirect"
-      - "traefik.http.routers.authentik-secure.entrypoints=https"
-      - "traefik.http.routers.authentik-secure.rule=Host(`authentik.linuxpad.blog`)"
-      - "traefik.http.routers.authentik-secure.tls=true"
-      - "traefik.http.routers.authentik-secure.service=authentik"
-      - "traefik.http.services.authentik.loadbalancer.server.port=8088"
-      - "traefik.docker.network=proxy"
-      - "traefik.http.routers.authentik-secure.middlewares=authelia@docker"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.authentik-http.entrypoints=http"
+      - "traefik.http.routers.authentik-http.middlewares=redir-https"
+      - "traefik.http.routers.authentik-http.rule=Host(`authentik.linuxpad.blog`)"
+      - "traefik.http.routers.authentik-http.service=noop@internal"
+      - "traefik.http.routers.authentik-https.entrypoints=https"
+      - "traefik.http.routers.authentik-https.tls=true"
+      - "traefik.http.routers.authentik-https.middlewares=gzip"
+      - "traefik.http.routers.authentik-https.rule=Host(`authentik.linuxpad.blog`)"
+      - "traefik.http.services.authentik-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.authentik-backend.loadbalancer.server.port=8088"
+      - "traefik.http.routers.authentik-https.middlewares=authelia@docker"
 
     networks:
-      proxy:
+      traefik:
   worker:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2023.10.7}
     restart: unless-stopped
@@ -94,7 +95,7 @@ services:
       - postgresql
       - redis
     networks:
-      proxy:
+      traefik:
 
 volumes:
   database:
@@ -102,5 +103,5 @@ volumes:
   redis:
     driver: local
 networks:
-  proxy:
+  traefik:
     external: true
