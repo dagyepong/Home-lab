@@ -68,7 +68,7 @@ services:
       - "traefik.http.routers.authentik-https.middlewares=gzip"
       - "traefik.http.routers.authentik-https.rule=Host(`authentik.linuxpad.blog`)"
       - "traefik.http.services.authentik-backend.loadbalancer.server.scheme=http"
-      - "traefik.http.services.authentik-backend.loadbalancer.server.port=8088"
+      - "traefik.http.services.authentik-backend.loadbalancer.server.port=9000"
       - "traefik.http.routers.authentik-https.middlewares=authelia@docker"
 
     networks:
