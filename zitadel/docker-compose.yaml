@@ -16,7 +16,7 @@ services:
       ZITADEL_FIRSTINSTANCE_ORG_HUMAN_USERNAME: Admin1!@zitadel.linuxpad.blog
       ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORD: Password1!
     ports:
-      - "8080:8080"
+      - "8085:3000"
     volumes:
       - "./example-zitadel-config.yaml:/example-zitadel-config.yaml:ro"
       - "./example-zitadel-secrets.yaml:/example-zitadel-secrets.yaml:ro"
