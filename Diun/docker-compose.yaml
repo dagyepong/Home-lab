@@ -18,16 +18,16 @@ services:
       - "DIUN_PROVIDERS_DOCKER=true"
       - "DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT=true"
 
-      - "DIUN_NOTIF_GOTIFY_ENDPOINT=https://gotify.linuxpad.blog"
-      - "DIUN_NOTIF_GOTIFY_TOKEN=AYgfdfQaRk3Pb1x" # get your token from Gotify UI
-      - "DIUN_NOTIF_GOTIFY_PRIORITY=1"
-      - "DIUN_NOTIF_GOTIFY_TIMEOUT=10s"
+     # - "DIUN_NOTIF_GOTIFY_ENDPOINT=https://gotify.linuxpad.blog"
+     # - "DIUN_NOTIF_GOTIFY_TOKEN=AYgfdfQaRk3Pb1x" # get your token from Gotify UI
+     # - "DIUN_NOTIF_GOTIFY_PRIORITY=1"
+     # - "DIUN_NOTIF_GOTIFY_TIMEOUT=10s"
 
-     # - "DIUN_NOTIF_DISCORD_WEBHOOKURL=https://discord.com/api/webhooks/1230110122752217159/OWcRAUUbT3QFUSs3z35TCD9dUkM26PH0iNY1RNdgqlzoAMC81SZM_iwQ5wuyY8cyFoqL" # change to your webhook
-      # - "DIUN_NOTIF_DISCORD_MENTIONS" # (comma separated)
-      #- "DIUN_NOTIF_DISCORD_RENDERFIELDS=true"
-      #- "DIUN_NOTIF_DISCORD_TIMEOUT=10s"
-      # - "DIUN_NOTIF_DISCORD_TEMPLATEBODY"
+      - "DIUN_NOTIF_DISCORD_WEBHOOKURL=https://discordapp.com/api/webhooks/1345641126480056331/cjtAjW_9HXbe7oyW8WeDva6zA9_SWYzbd-KP4tHwbPMJv3PjHe-OGHGcyA_-1w7a4O1w" # change to your webhook
+      - "DIUN_NOTIF_DISCORD_MENTIONS" # (comma separated)
+      - "DIUN_NOTIF_DISCORD_RENDERFIELDS=true"
+      - "DIUN_NOTIF_DISCORD_TIMEOUT=10s"
+      - "DIUN_NOTIF_DISCORD_TEMPLATEBODY"
 
     labels:
       - "diun.enable=true"
