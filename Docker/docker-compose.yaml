@@ -7,38 +7,49 @@ include:
     # TRAEFIK (CORE)
     #############################################################################
 
-    - apps/traefik/docker-compose.yaml # Traefik (Reverse Proxy)
-    - apps/duckdns.yaml # DuckDNS (Dynamic DNS)
-    - apps/oauth.yaml # OAuth (Authentication)
-    - apps/socket-proxy.yaml # Docker Socket Proxy (Security)
+    - apps/traefik.yaml # Traefik (Reverse Proxy) + Socket-Proxy + Authelia
+    - apps/zitadel.yaml # Zitadel (Security)
+    - apps/flare.yaml # Flare (Dashboard)
+    - apps/bunker-web.yaml # Bunker Web (Bouncer)
+    - apps/fial2ban.yaml # Fail2Ban (Security)
 
     #############################################################################
     # MEDIA
     #############################################################################
 
-    - apps/heimdall.yaml # Heimdall (Landing Page)
-    - apps/plex.yaml # Plex (Media Server)
-    - apps/sonarr.yaml # Sonarr (TV Show Downloads)
-    - apps/radarr.yaml # Radarr (Movie Downloads)
-    - apps/prowlarr.yaml # Prowlarr (Indexer)
-    - apps/overseerr.yaml # Overseerr (Media Requests)
-    - apps/tautulli.yaml # Tautulli (Plex Analytics)
-    - apps/transmission.yaml # Transmission (Torrents Behind VPN)
-    - apps/sabnzbd.yaml # SABnzbd (Usenet Downloading)
-    - apps/nzbhydra.yaml # NZBHydra2 (Usenet Browsing)
-    # - apps/readarr.yaml # Readarr (Ebook Downloads)
-    # - apps/calibre.yaml # Calibre (Books Management)
-    # - apps/calibre-web.yaml # Calibre Web-UI
+    - apps/immich.yaml # Immich (Photos Backup)
+    - apps/owncloud.yaml # Owncloud (Data Server)
+    - apps/nextcloud.yaml # Nextcloud (Home Server)
+    - apps/hoarder.yaml # Hoarder (Bookmarks Manager)
+    - apps/paperless.yaml # Paperless (File Storage)
+    - apps/link.yaml # Little-link (Link Page)
+    - apps/it-tools.yaml # Tools (It Tools)
+    - apps/cronicle.yaml # Cronicle (Cron Job)
+    - apps/gitea.yaml # Gitea (Git Server)
+    - apps/photoprism.yaml # Photoprism (Photo Management)
 
     #############################################################################
     # UTILITIES
     #############################################################################
 
     - apps/watchtower.yaml #  Watchtower (Container Updating)
-    # - apps/postgres.yaml # PostgreSQL (Shared Database)
-    # - apps/sftpgo.yaml # SFTPGo (File Management)
-    # - apps/pihole.yaml # Pi-hole (DNS Ad-Blocking)
-    # - apps/portainer.yaml # Portainer (Container Management)
+    - apps/diun.yaml # Diun (Docker Image Update Notifier)
+    - apps/speed-test.yaml # Speedtest (Internet Speed Test)
+    - apps/pihole.yaml # Pi-hole (DNS Ad-Blocking)
+    - apps/portainer.yaml # Portainer (Container Management)
+    - apps/uptime-kuma.yaml # Uptime Kuma (Monitoring)
+    - apps/restic.yaml # Restic (Backup)
+    - apps/vaultwarden.yaml # Vaultwarden (Password Manager)
+    - apps/umami.yaml # Umami (Analytics)
+    - apps/pwgen.yaml # Pwgen (Password Generator)
+    - apps/ghost.yaml # Ghost (Blog)
+    - apps/wordpress.yaml # Wordpress (Blog)
+    - apps/rxresume.yaml # RxResume (Resume)
+    - apps/gotify.yaml # Gotify (Notification)
+    - apps/glance.yaml # Glances (System Monitor)
+    - apps/tor.yaml # Tor (Anonymity)
+    - apps/dozzle.yaml # Dozzle (Log Viewer)
+    - apps/beszel.yaml # Beszel (Log Viewer)
 
     #############################################################################
     # MISCELLANEOUS
@@ -47,11 +58,11 @@ include:
     #############################################################################
 
     # - apps/chat-gpt-next-web.yaml # ChatGPT Next Web
-    # - apps/chatgpt-in-slack.yaml # ChatGPT Slack Bot
-    # - apps/libreoffice.yaml # LibreOffice (Office Suite)
-    # - apps/umami.yaml # Umami Analytics
-    # - apps/homeassistant/docker-compose.yaml # Home Assistant (Smart Home)
-    # - apps/healthchecks.yaml # Healthchecks (Monitoring)
+    - apps/pico-share.yaml # File Sharing
+    - apps/ollama.yaml # Ollama (AI Suite)
+    - apps/deepseek.yaml # Deepseek Analytics
+    - apps/homeassistant/docker-compose.yaml # Home Assistant (Smart Home)
+    - apps/healthchecks.yaml # Healthchecks (Monitoring)
 
 ################################################################################
 # NETWORK CONFIGURATION
