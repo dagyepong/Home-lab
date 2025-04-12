@@ -1,0 +1,39 @@
+services:
+  pocket-id:
+    image: ghcr.io/pocket-id/pocket-id
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - 3000:80
+    volumes:
+      - "./data:/app/backend/data"
+    # Optional healthcheck  
+    healthcheck:
+      test: "curl -f http://localhost/health"
+      interval: 1m30s
+      timeout: 5s
+      retries: 2
+      start_period: 10s
+    networks:
+      - traefik 
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.pocket-id-http.entrypoints=http"
+      - "traefik.http.routers.pocket-id-http.middlewares=redir-https"
+      - "traefik.http.routers.pocket-id-http.rule=Host(`pocket-id.linuxpad.blog`)"
+      - "traefik.http.routers.pocket-id-http.service=noop@internal"
+      - "traefik.http.routers.pocket-id-https.entrypoints=https"
+      - "traefik.http.routers.pocket-id-https.tls=true"
+      - "traefik.http.routers.pocket-id-https.middlewares=gzip"
+      - "traefik.http.routers.pocket-id-https.rule=Host(`pocket-id.linuxpad.blog`)"
+      - "traefik.http.services.pocket-id-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.pocket-id-backend.loadbalancer.server.port=80"
+      - "traefik.http.routers.pocket-id-https.middlewares=authelia@docker"
+
+
+
+
+networks:
+  traefik:
+    external: true
