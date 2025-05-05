@@ -1,0 +1,28 @@
+services:
+  omni-tools:
+    image: iib0011/omni-tools:latest
+    container_name: omni-tools
+    restart: unless-stopped
+    #ports:
+    #  - "8080:80"
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.omni-tools-http.entrypoints=http"
+      - "traefik.http.routers.omni-tools-http.middlewares=redir-https"
+      - "traefik.http.routers.omni-tools-http.rule=Host(`omni-tools.linuxpad.blog`)"
+      - "traefik.http.routers.omni-tools-http.service=noop@internal"
+      - "traefik.http.routers.omni-tools-https.entrypoints=https"
+      - "traefik.http.routers.omni-tools-https.tls=true"
+      - "traefik.http.routers.omni-tools-https.middlewares=gzip"
+      - "traefik.http.routers.omni-tools-https.rule=Host(`omni-tools.linuxpad.blog`)"
+      - "traefik.http.services.omni-tools-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.omni-tools-backend.loadbalancer.server.port=80"
+      - "traefik.http.routers.omni-tools-https.middlewares=authelia@docker"
+
+
+networks:
+    traefik:
+      external: true
