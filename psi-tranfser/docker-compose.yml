@@ -10,20 +10,26 @@ services:
         ports:
             - 3060:3000
         networks:
-            - proxy
+            - traefik
+       
         labels:
-            - traefik.enable=true
-            - traefik.http.routers.psitransfer.rule=Host(`psi.nanaoware.online`) || Host(`www.psi.nanaoware.online`)
-            - traefik.http.services.psitransfer.loadbalancer.server.port=3060
-            - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-            - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-            - traefik.http.routers.mypsitransfer.middlewares=mywwwredirect
-            - traefik.http.routers.mypsitransfer.middlewares=dashboard
-            - traefik.http.routers.mypsitransfer.service=api@internal
-            - traefik.http.routers.mypsitransfer.tls=true
-            - traefik.http.routers.mypsitransfer.tls.certresolver=le
+            - "traefik.enable=true"
+            - "traefik.docker.network=traefik"
+            - "traefik.http.routers.psitransfer-http.entrypoints=http"
+            - "traefik.http.routers.psitransfer-http.middlewares=redir-https"
+            - "traefik.http.routers.psitransfer-http.rule=Host(`psitransfer.linuxpad.blog`)"
+            - "traefik.http.routers.psitransfer-http.service=noop@internal"
+            - "traefik.http.routers.psitransfer-https.entrypoints=https"
+            - "traefik.http.routers.psitransfer-https.tls=true"
+            - "traefik.http.routers.psitransfer-https.middlewares=gzip"
+            - "traefik.http.routers.psitransfer-https.rule=Host(`psitransfer.linuxpad.blog`)"
+            - "traefik.http.services.psitransfer-backend.loadbalancer.server.scheme=http"
+            - "traefik.http.services.psitransfer-backend.loadbalancer.server.port=3060"
+            - "traefik.http.routers.psitransfer-https.middlewares=authelia@docker"
+
 
 
 networks:
-  proxy:
+  traefik:
     external: true
+
