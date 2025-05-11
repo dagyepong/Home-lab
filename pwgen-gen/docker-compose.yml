@@ -8,3 +8,26 @@ services:
     ports:
       - 5069:5069
     restart: unless-stopped
+    networks:
+      - traefik
+    labels:
+            - "traefik.enable=true"
+            - "traefik.docker.network=traefik"
+            - "traefik.http.routers.pwgen-http.entrypoints=http"
+            - "traefik.http.routers.pwgen-http.middlewares=redir-https"
+            - "traefik.http.routers.pwgen-http.rule=Host(`pwgen.linuxpad.blog`)"
+            - "traefik.http.routers.pwgen-http.service=noop@internal"
+            - "traefik.http.routers.pwgen-https.entrypoints=https"
+            - "traefik.http.routers.pwgen-https.tls=true"
+            - "traefik.http.routers.pwgen-https.middlewares=gzip"
+            - "traefik.http.routers.pwgen-https.rule=Host(`pwgen.linuxpad.blog`)"
+            - "traefik.http.services.pwgen-backend.loadbalancer.server.scheme=http"
+            - "traefik.http.services.pwgen-backend.loadbalancer.server.port=5069"
+            - "traefik.http.routers.pwgen-https.middlewares=authelia@docker"
+
+
+
+networks:
+  traefik:
+    external: true
+
