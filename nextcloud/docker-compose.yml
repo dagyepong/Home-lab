@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     networks:
       - cloud
-      - proxy
+      - traefik
     depends_on:
       - nextclouddb
       - redis
@@ -29,7 +29,7 @@ services:
       - "traefik.http.routers.nextcloud-secure.tls=true"
       - "traefik.http.routers.nextcloud-secure.service.nextcloud"
       - "traefik.http.services.nextcloud.loadbalancer.server.port=8081"
-      - "traefik.docker.network=proxy"
+      - "traefik.docker.network=traefik"
       - "traefik.http.routers.nextcloud-secure.middlewares=authelia@docker"
 
 
@@ -50,7 +50,7 @@ services:
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     networks:
       - cloud
-      - proxy
+      - traefik
     volumes:
       - /srv/appdata/nextcloud/nextclouddb:/var/lib/mysql
     environment:
@@ -69,11 +69,11 @@ services:
       - /srv/appdata/nextcloud/redis:/data
     networks:
       - cloud
-      - proxy
+      - traefik
 
 networks:
   cloud:
     name: cloud
     driver: bridge
-  proxy:
+  traefik:
     external: true
