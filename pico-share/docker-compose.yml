@@ -11,16 +11,24 @@ services:
     volumes:
       - ./data:/data
     networks:
-      - proxy
+      - traefik
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.mypicoshare.rule=Host(`picoshare.nanaoware.online`)
-      - traefik.http.routers.mypicoshare.service=api@internal
-      - traefik.http.routers.mypicoshare.middlewares=myauth
-      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+            - "traefik.enable=true"
+            - "traefik.docker.network=traefik"
+            - "traefik.http.routers.picoshare-http.entrypoints=http"
+            - "traefik.http.routers.picoshare-http.middlewares=redir-https"
+            - "traefik.http.routers.picoshare-http.rule=Host(`picoshare.linuxpad.blog`)"
+            - "traefik.http.routers.picoshare-http.service=noop@internal"
+            - "traefik.http.routers.picoshare-https.entrypoints=https"
+            - "traefik.http.routers.picoshare-https.tls=true"
+            - "traefik.http.routers.picoshare-https.middlewares=gzip"
+            - "traefik.http.routers.picoshare-https.rule=Host(`picoshare.linuxpad.blog`)"
+            - "traefik.http.services.picoshare-backend.loadbalancer.server.scheme=http"
+            - "traefik.http.services.picoshare-backend.loadbalancer.server.port=4001"
+            - "traefik.http.routers.picoshare-https.middlewares=authelia@docker"
 
 
 
 networks:
-  proxy:
+  traefik:
     external: true
