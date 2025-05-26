@@ -12,14 +12,40 @@ categories:
 
 links:
   - name: "Gotify"
-    link: "http://192.168.8.187:8447"
+    link: "https://gotify.linuxpad.blog"
     icon: "nuke"
     category: 1
 
-  - name: "it-tools"
-    link: "http://192.168.8.187:8065"
+  - name: "Uptime-Kuma"
+    link: "https://uptime-kuma.linuxpad.blog"
+    icon: "uptime-kuma"
+    category: 1
+
+  - name: "Linuxpad IT Tools" 
+    link: "https://it-tools.linuxpad.blog"
     icon: "owl"
     category: 1
+
+  - name: "Cronicle"
+    link: "https://cronicle.linuxpad.blog"
+    icon: "jira"
+    category: 1
+
+  - name: "Pico-share"
+    link: "https://pico.linuxpad.blog"
+    icon: "jira"
+    category: 3
+
+  - name: "Pwgen"
+    link: "https://pwgen.linuxpad.blog"
+    icon: "salesforce"
+    category: 2
+
+  - name: "Zitadel"
+    link: "https://zitadel.linuxpad.blog"
+    icon: "jira"
+    category: 1
+
 
   - name: "Adguard"
     link: "http://192.168.8.195"
@@ -28,18 +54,18 @@ links:
 
 
   - name: "Paperless"
-    link: "http://"
+    link: "https://paperless.linuxpad.blog"
     icon: "jira"
     category: 2
 
 
   - name: "Portainer"
-    link: "https://portainer.nanaoware.online"
+    link: "https://portainer.linuxpad.blog"
     icon: "docker"
     category: 2
   
   - name: "Beszel"
-    link: "https://beszel.nanaoware.online"
+    link: "https://beszel.linuxpad.blog"
     icon: "pacman"
     category: 2
 
