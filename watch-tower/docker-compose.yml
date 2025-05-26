@@ -51,7 +51,6 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro # Disable for socket proxy
-    command: nautical-backup 
     ports:
       - 9080:8080
     working_dir: /
