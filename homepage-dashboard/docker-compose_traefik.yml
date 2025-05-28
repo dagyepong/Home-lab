@@ -8,6 +8,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
+      - HOMEPAGE_ALLOWED_HOST=https://homepage.linuxpad.blog
     networks:
       - traefik
     volumes:
