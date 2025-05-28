@@ -27,7 +27,7 @@ services:
       - "traefik.http.routers.homepage-secure.tls=true"
       - "traefik.http.routers.homepage-secure.service=homepage"
       - "traefik.http.services.homepage.loadbalancer.server.port=3030"
-      - "traefik.docker.network=proxy"
+      - "traefik.docker.network=traefik"
       - "traefik.http.routers.homepage-secure.middlewares=authelia@docker"
 networks:
   traefik:
