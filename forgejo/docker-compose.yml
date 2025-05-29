@@ -1,0 +1,72 @@
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: forgejo-db
+    volumes:
+      - forgejo_db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+  forgejo:
+    image: codeberg.org/forgejo/forgejo:latest
+    container_name: forgejo
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000" # Port pour l'interface web
+      - "2222:22"   # Port pour SSH (optionnel)
+    volumes:
+      - forgejo_data:/data
+      - ./config/app.ini:/etc/forgejo/app.ini
+
+    networks:
+      - traefik
+    environment:
+      DATABASE_TYPE: ${DATABASE_TYPE}
+      DATABASE_HOST: db
+      DATABASE_PORT: ${DATABASE_PORT}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_NAME: ${DATABASE_NAME}
+      ROOT_URL: ${ROOT_URL}
+      LFS_ENABLED: ${LFS_ENABLED}
+      OFFLINE_MODE: ${OFFLINE_MODE}
+    restart: unless-stopped
+
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.forgejo-http.entrypoints=http"
+      - "traefik.http.routers.forgejo-http.middlewares=redir-https"
+      - "traefik.http.routers.forgejo-http.rule=Host(`forgejo.linuxpad.blog`)"
+      - "traefik.http.routers.forgejo-http.service=noop@internal"
+      - "traefik.http.routers.forgejo-https.entrypoints=https"
+      - "traefik.http.routers.forgejo-https.tls=true"
+      - "traefik.http.routers.forgejo-https.middlewares=gzip"
+      - "traefik.http.routers.forgejo-https.rule=Host(`forgejo.linuxpad.blog`)"
+      - "traefik.http.services.forgejo-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.forgejo-backend.loadbalancer.server.port=3000"
+      - "traefik.http.routers.forgejo-https.middlewares=authelia@docker"
+
+volumes:
+  forgejo_db_data:
+  forgejo_data:
+
+
+
+networks:
+  traefik:
+    name: traefik
+    external: true #do not expose external for security risk
+ 
