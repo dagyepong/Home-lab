@@ -16,6 +16,11 @@ links:
     icon: "nuke"
     category: 1
 
+  - name: "Forgejo"
+    link: "https://gorgejo.linuxpad.blog"
+    icon: "owl"
+    category: 1
+    
   - name: "Uptime-Kuma"
     link: "https://uptime-kuma.linuxpad.blog"
     icon: "uptime-kuma"
