@@ -1,4 +1,4 @@
-services:
+ervices:
   beszel:
     image: 'henrygd/beszel'
     container_name: 'beszel'
