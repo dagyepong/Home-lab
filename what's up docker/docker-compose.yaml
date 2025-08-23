@@ -14,6 +14,9 @@ services:
       - WUD_TRIGGER_SMTP_GMAIL_TO=<YOUR-GMAIL-ACCOUNT>
       - WUD_TRIGGER_SMTP_GMAIL_TLS_ENABLED=true 
       - WUD_UI_BASE_URL=https://wud.linuxpad.blog
+      - WUD_TRIGGER_DOCKER_LOCAL_PRUNE=true
+      
+
     networks:
       - traefik
     labels:
