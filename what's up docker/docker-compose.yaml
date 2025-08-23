@@ -1,0 +1,41 @@
+services:
+  whatsupdocker:
+    image: getwud/wud
+    container_name: wud
+    environment:
+      - WUD_WATCHER_LOCAL_CRON=0 6 * * *
+      - WUD_AUTH_BASIC_MY_USER=test
+      - WUD_AUTH_BASIC_MY_HASH=$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
+      - WUD_TRIGGER_SMTP_GMAIL_HOST=smtp.gmail.com
+      - WUD_TRIGGER_SMTP_GMAIL_PORT=465
+      - WUD_TRIGGER_SMTP_GMAIL_USER=<YOUR-GMAIL-ACCOUNT>
+      - WUD_TRIGGER_SMTP_GMAIL_PASS=<THE-APP-PASSWORD>
+      - WUD_TRIGGER_SMTP_GMAIL_FROM=<YOUR-GMAIL-ACCOUNT>
+      - WUD_TRIGGER_SMTP_GMAIL_TO=<YOUR-GMAIL-ACCOUNT>
+      - WUD_TRIGGER_SMTP_GMAIL_TLS_ENABLED=true 
+    ports:
+      - 3000:3000
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.watchtower-http.entrypoints=http"
+      - "traefik.http.routers.watchtower-http.middlewares=redir-https"
+      - "traefik.http.routers.watchtower-http.rule=Host(`watchtower.linuxpad.blog`)"
+      - "traefik.http.routers.watchtower-http.service=noop@internal"
+      - "traefik.http.routers.watchtower-https.entrypoints=https"
+      - "traefik.http.routers.watchtower-https.tls=true"
+      - "traefik.http.routers.watchtower-https.middlewares=gzip"
+      - "traefik.http.routers.watchtower-https.rule=Host(`watchtower.linuxpad.blog`)"
+      - "traefik.http.services.watchtower-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.watchtower-backend.loadbalancer.server.port=9080"
+      - "traefik.http.routers.watchtower-https.middlewares=authelia@docker"
+    restart: always
+
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+networks:
+  traefik:
+    external: true
