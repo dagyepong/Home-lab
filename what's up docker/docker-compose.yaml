@@ -8,14 +8,14 @@ services:
       - WUD_AUTH_BASIC_MY_HASH=$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
       - WUD_TRIGGER_SMTP_GMAIL_HOST=smtp.gmail.com
       - WUD_TRIGGER_SMTP_GMAIL_PORT=465
-      - WUD_TRIGGER_SMTP_GMAIL_USER=<YOUR-GMAIL-ACCOUNT>
-      - WUD_TRIGGER_SMTP_GMAIL_PASS=<THE-APP-PASSWORD>
+      - WUD_TRIGGER_SMTP_GMAIL_USER=owarenana06@gmail.com
+      - WUD_TRIGGER_SMTP_GMAIL_PASS=ngii wnwv rssn fkud
       - WUD_TRIGGER_SMTP_GMAIL_FROM=<YOUR-GMAIL-ACCOUNT>
-      - WUD_TRIGGER_SMTP_GMAIL_TO=<YOUR-GMAIL-ACCOUNT>
+      - WUD_TRIGGER_SMTP_GMAIL_TO=owarenana06@gmail.com
       - WUD_TRIGGER_SMTP_GMAIL_TLS_ENABLED=true 
       - WUD_UI_BASE_URL=https://wud.linuxpad.blog
       - WUD_TRIGGER_DOCKER_LOCAL_PRUNE=true
-      
+
 
     networks:
       - traefik
