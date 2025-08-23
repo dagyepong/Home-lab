@@ -15,6 +15,7 @@ services:
       # 指定你自己的账号密码，如未设置 `FLARE_USER`，则会默认生成密码并展示在应用启动日志中
       - FLARE_PASS=akwasi123
     labels:
+      - "wud.watch=false"
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
       - "traefik.http.routers.flare-http.entrypoints=http"
