@@ -15,6 +15,8 @@ services:
       - WUD_TRIGGER_SMTP_GMAIL_TLS_ENABLED=true 
       - WUD_UI_BASE_URL=https://wud.linuxpad.blog
       - WUD_TRIGGER_DOCKER_LOCAL_PRUNE=true
+      - WUD_TRIGGER_TELEGRAM_1_BOTTOKEN=
+      - WUD_TRIGGER_TELEGRAM_1_CHATID=
 
 
     networks:
