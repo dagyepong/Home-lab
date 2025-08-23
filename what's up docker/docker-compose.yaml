@@ -13,24 +13,23 @@ services:
       - WUD_TRIGGER_SMTP_GMAIL_FROM=<YOUR-GMAIL-ACCOUNT>
       - WUD_TRIGGER_SMTP_GMAIL_TO=<YOUR-GMAIL-ACCOUNT>
       - WUD_TRIGGER_SMTP_GMAIL_TLS_ENABLED=true 
-    ports:
-      - 3000:3000
+      - WUD_UI_BASE_URL=https://wud.linuxpad.blog
     networks:
       - traefik
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
-      - "traefik.http.routers.watchtower-http.entrypoints=http"
-      - "traefik.http.routers.watchtower-http.middlewares=redir-https"
-      - "traefik.http.routers.watchtower-http.rule=Host(`watchtower.linuxpad.blog`)"
-      - "traefik.http.routers.watchtower-http.service=noop@internal"
-      - "traefik.http.routers.watchtower-https.entrypoints=https"
-      - "traefik.http.routers.watchtower-https.tls=true"
-      - "traefik.http.routers.watchtower-https.middlewares=gzip"
-      - "traefik.http.routers.watchtower-https.rule=Host(`watchtower.linuxpad.blog`)"
-      - "traefik.http.services.watchtower-backend.loadbalancer.server.scheme=http"
-      - "traefik.http.services.watchtower-backend.loadbalancer.server.port=9080"
-      - "traefik.http.routers.watchtower-https.middlewares=authelia@docker"
+      - "traefik.http.routers.wud-http.entrypoints=http"
+      - "traefik.http.routers.wud-http.middlewares=redir-https"
+      - "traefik.http.routers.wud-http.rule=Host(`wud.linuxpad.blog`)"
+      - "traefik.http.routers.wud-http.service=noop@internal"
+      - "traefik.http.routers.wud-https.entrypoints=https"
+      - "traefik.http.routers.wud-https.tls=true"
+      - "traefik.http.routers.wud-https.middlewares=gzip"
+      - "traefik.http.routers.wud-https.rule=Host(`wud.linuxpad.blog`)"
+      - "traefik.http.services.wud-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.wud-backend.loadbalancer.server.port=3000"
+      - "traefik.http.routers.wud-https.middlewares=authelia@docker"
     restart: always
 
 
