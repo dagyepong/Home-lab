@@ -10,7 +10,7 @@ services:
       - WUD_TRIGGER_SMTP_GMAIL_PORT=465
       - WUD_TRIGGER_SMTP_GMAIL_USER=owarenana06@gmail.com
       - WUD_TRIGGER_SMTP_GMAIL_PASS=ngii wnwv rssn fkud
-      - WUD_TRIGGER_SMTP_GMAIL_FROM=<YOUR-GMAIL-ACCOUNT>
+      - WUD_TRIGGER_SMTP_GMAIL_FROM=owarenana06@gmail.com
       - WUD_TRIGGER_SMTP_GMAIL_TO=owarenana06@gmail.com
       - WUD_TRIGGER_SMTP_GMAIL_TLS_ENABLED=true 
       - WUD_UI_BASE_URL=https://wud.linuxpad.blog
