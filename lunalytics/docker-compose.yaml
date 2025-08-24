@@ -1,0 +1,30 @@
+# docker-compose.yml
+services:
+  lunalytics:
+    image: ksjaay/lunalytics:latest
+    container_name: lunalytics
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.luna-http.entrypoints=http"
+      - "traefik.http.routers.luna-http.middlewares=redir-https"
+      - "traefik.http.routers.luna-http.rule=Host(`luna.linuxpad.blog`)"
+      - "traefik.http.routers.luna-http.service=noop@internal"
+      - "traefik.http.routers.luna-https.entrypoints=https"
+      - "traefik.http.routers.luna-https.tls=true"
+      - "traefik.http.routers.luna-https.middlewares=gzip"
+      - "traefik.http.routers.luna-https.rule=Host(`luna.linuxpad.blog`)"
+      - "traefik.http.services.luna-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.luna-backend.loadbalancer.server.port=2308"
+      - "traefik.http.routers.luna-https.middlewares=authelia@docker"
+    restart: always
+
+
+networks:
+  traefik:
+    external: true
