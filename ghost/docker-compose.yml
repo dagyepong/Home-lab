@@ -35,6 +35,8 @@ services:
       #mail__options__auth__user: ${SMTP_USER:-ghost@example.com}
       #mail__options__auth__pass: ${SMTP_PASS:-SMTPPassword}
       #mail__from: ${SMTP_MAIL_FROM:-Ghost}
+      security__staffDeviceVerification: false  
+
     networks:
       - traefik
     labels:
