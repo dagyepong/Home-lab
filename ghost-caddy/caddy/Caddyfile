@@ -1,0 +1,19 @@
+{
+    # Your email for LetsEncrypt warnings/notices.
+    email owarenana06@gmail.com
+
+    # Staging LetsEncrypt server to use while testing.
+    # Uncomment this before going to production!
+    acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+}
+
+# Basic virtual host definition to feed traffic into the
+# Ghost container when it arrives.
+example.com {
+    reverse_proxy ghost:2368
+}
+
+# OPTIONAL: Redirect traffic to 'www' to the bare domain.
+www.example.com {
+    redir https://linuxpad.blog
+}

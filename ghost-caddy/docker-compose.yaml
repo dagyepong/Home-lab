@@ -1,0 +1,73 @@
+---
+version: '3.8'
+services:
+
+  # OPTIONAL
+  # Watchtower monitors all running containers and updates
+  # them when the upstream container repo is updated.
+  watchtower:
+    image: docker.io/containrrr/watchtower:latest
+    container_name: watchtower
+    restart: unless-stopped
+    hostname: coreos-ghost-deployment
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=3600
+    command:
+      - --cleanup
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    privileged: true
+
+  # Caddy acts as our external-facing webserver and handles
+  # getting TLS certs from LetsEncrypt.
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    depends_on:
+      - ghost
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:Z
+      - ghost:/var/www/html
+      - caddy_data:/data
+      - caddy_config:/config
+
+  # The Ghost blog software itself
+  ghost:
+    image: docker.io/library/ghost:5
+    container_name: ghost
+    restart: always
+    depends_on:
+      - ghostdb
+    environment:
+      url: https://linuxpad.blog
+      database__client: mysql
+      database__connection__host: ghostdb
+      database__connection__user: ghost
+      database__connection__password: GHOST_PASSWORD_FOR_MARIADB
+      database__connection__database: ghostdb
+    volumes:
+      - ghost:/var/lib/ghost/content
+
+  # Our MariaDB database
+  ghostdb:
+    image: docker.io/library/mariadb:11
+    container_name: ghostdb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: A_SECURE_ROOT_PASSWORD
+      MYSQL_USER: ghost
+      MYSQL_PASSWORD: GHOST_PASSWORD_FOR_MARIADB
+      MYSQL_DATABASE: ghostdb
+    volumes:
+      - ghostdb:/var/lib/mysql
+
+volumes:
+  caddy_config:
+  caddy_data:
+  ghost:
+  ghostdb:
