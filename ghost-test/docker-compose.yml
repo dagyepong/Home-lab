@@ -56,6 +56,13 @@ services:
       - "traefik.http.routers.ghost-https.rule=Host(`linuxpad.blog`)"
       - "traefik.http.services.ghost-backend.loadbalancer.server.scheme=http"
       - "traefik.http.services.ghost-backend.loadbalancer.server.port=2368"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:2368/ghost/api/admin/site/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 90s
+    
     restart: unless-stopped
     depends_on:
       mysql:
