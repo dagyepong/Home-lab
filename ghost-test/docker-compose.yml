@@ -41,12 +41,8 @@ services:
       database__connection__password: ${GHOST_DB_PASSWORD}
     networks:
       - traefik
-    healthcheck:
-      test: timeout 10s bash -c ':> /dev/tcp/127.0.0.1/2368' || exit 1
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 90s
+    expose:
+    - "2368"
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
@@ -60,7 +56,6 @@ services:
       - "traefik.http.routers.ghost-https.rule=Host(`linuxpad.blog`)"
       - "traefik.http.services.ghost-backend.loadbalancer.server.scheme=http"
       - "traefik.http.services.ghost-backend.loadbalancer.server.port=2368"
-      - "traefik.http.routers.ghost-https.middlewares=authelia@docker"
     restart: unless-stopped
     depends_on:
       mysql:
