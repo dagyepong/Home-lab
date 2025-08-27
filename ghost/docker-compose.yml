@@ -29,12 +29,12 @@ services:
       database__connection__database: ${DB_NAME:-ghost}
       url: https://linuxpad.blog # adjust to your domain and correct protocol handler + port
       #NODE_ENV: developmnent # default is production already
-      #mail__transport: SMTP
-      #mail__options__host: ${SMTP_HOST:-smtp.google.com}
-      #mail__options__port: ${SMTP_PORT:-587}
-      #mail__options__auth__user: ${SMTP_USER:-ghost@example.com}
-      #mail__options__auth__pass: ${SMTP_PASS:-SMTPPassword}
-      #mail__from: ${SMTP_MAIL_FROM:-Ghost}
+      mail__transport: "${MAIL_TRANSPORT}"
+      mail__options__host: "${MAIL_HOST}"
+      mail__options__port: "${MAIL_PORT}"
+      mail__options__secureConnection: "${MAIL_SECURE_CONNECTION}"
+      mail__options__auth__user: "${MAIL_USER}"
+      mail__options__auth__pass: "${MAIL_PASSWORD}"
       security__staffDeviceVerification: false  
 
     networks:
