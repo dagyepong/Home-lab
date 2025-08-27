@@ -1,6 +1,4 @@
 networks:
-  ghost-network:
-    external: true
   traefik:
     external: true
 
@@ -22,7 +20,7 @@ services:
       MYSQL_PASSWORD: ${GHOST_DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${GHOST_DB_ADMIN_PASSWORD}
     networks:
-      - ghost-network
+      - traefik
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "127.0.0.1"]
       interval: 10s
@@ -44,7 +42,6 @@ services:
       database__connection__user: ${GHOST_DB_USER}
       database__connection__password: ${GHOST_DB_PASSWORD}
     networks:
-      - ghost-network
       - traefik
     healthcheck:
       test: timeout 10s bash -c ':> /dev/tcp/127.0.0.1/2368' || exit 1
@@ -102,7 +99,7 @@ services:
       MYSQL_BACKUP_NAME: ${MYSQL_BACKUP_NAME}
       DATA_BACKUP_NAME: ${DATA_BACKUP_NAME}
     networks:
-      - ghost-network
+      - traefik
     restart: unless-stopped
     depends_on:
       mysql:
