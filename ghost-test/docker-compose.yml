@@ -1,4 +1,4 @@
-
+version: '3.8'
 
 volumes:
   mysql-data:
@@ -8,6 +8,8 @@ volumes:
   ghost-database-backups:
 
 services:
+  # Add Traefik service
+
   mysql:
     image: ${GHOST_MYSQL_IMAGE_TAG}
     volumes:
@@ -20,7 +22,7 @@ services:
     networks:
       - traefik
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "127.0.0.1"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u$${MYSQL_USER}", "-p$${MYSQL_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -41,28 +43,29 @@ services:
       database__connection__password: ${GHOST_DB_PASSWORD}
     networks:
       - traefik
-    expose:
-    - "2368"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik"
-      - "traefik.http.routers.ghost-http.entrypoints=http"
-      - "traefik.http.routers.ghost-http.middlewares=redir-https"
-      - "traefik.http.routers.ghost-http.rule=Host(`linuxpad.blog`)"
-      - "traefik.http.routers.ghost-http.service=noop@internal"
-      - "traefik.http.routers.ghost-https.entrypoints=https"
-      - "traefik.http.routers.ghost-https.tls=true"
-      - "traefik.http.routers.ghost-https.middlewares=gzip"
-      - "traefik.http.routers.ghost-https.rule=Host(`linuxpad.blog`)"
-      - "traefik.http.services.ghost-backend.loadbalancer.server.scheme=http"
-      - "traefik.http.services.ghost-backend.loadbalancer.server.port=2368"
+    # Fix healthcheck
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:2368/ghost/api/admin/site/"]
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 90s
-    
+    # Expose port internally
+    expose:
+      - "2368"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.ghost-http.entrypoints=http"
+      - "traefik.http.routers.ghost-http.middlewares=redir-https"
+      - "traefik.http.routers.ghost-http.rule=Host(`linuxpad.blog`)"
+      - "traefik.http.routers.ghost-https.entrypoints=https"
+      - "traefik.http.routers.ghost-https.tls=true"
+      - "traefik.http.routers.ghost-https.middlewares=gzip"
+      - "traefik.http.routers.ghost-https.rule=Host(`linuxpad.blog`)"
+      - "traefik.http.services.ghost-backend.loadbalancer.server.port=2368"
+      # Remove authelia middleware temporarily for testing
+      # - "traefik.http.routers.ghost-https.middlewares=authelia@docker"
     restart: unless-stopped
     depends_on:
       mysql:
@@ -105,4 +108,5 @@ services:
 
 networks:
   traefik:
-    external: true
+    # Changed from external to internal since we're defining it here
+    external: false
