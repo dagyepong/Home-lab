@@ -2,7 +2,7 @@
         admin 0.0.0.0:2019
 }
 
-*.jimsgarage.co.uk {
+*.nanaoware.online {
         tls {
                 dns cloudflare {env.CF_API_TOKEN}
                 propagation_delay 2m
@@ -16,12 +16,12 @@
                 file_server
         }
 
-        @trueNAS host truenas.jimsgarage.co.uk
+        @trueNAS host truenas.nanaoware.online
         handle @trueNAS {
                 reverse_proxy 192.168.6.2:80
         }
 
-        @portainer host caddy-portainer.jimsgarage.co.uk
+        @portainer host caddy-portainer.nanaoware.online
         handle @portainer {
                 reverse_proxy https://portainer:9443 {
                     transport http {
