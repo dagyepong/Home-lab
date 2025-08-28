@@ -6,7 +6,6 @@ volumes:
   ghost-mysql-backup:
   ghost-data-backups:
   ghost-database-backups:
-  traefik-certificates:
 
 services:
   mysql:
