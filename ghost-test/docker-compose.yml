@@ -43,6 +43,8 @@ services:
       - 2368
     ports:
       - 2368:2368
+    networks:
+      - traefik
     volumes:
       - ghost-data:${DATA_PATH}
     environment:
@@ -74,9 +76,6 @@ services:
       - "traefik.http.services.ghost-backend.loadbalancer.server.scheme=http"
       - "traefik.http.services.ghost-backend.loadbalancer.server.port=2368"
       - "traefik.http.routers.ghost-https.middlewares=authelia@docker"
-
-    networks:
-      - traefik
 
 
   backups:
