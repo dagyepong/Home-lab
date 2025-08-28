@@ -3,9 +3,6 @@
 volumes:
   mysql-data:
   ghost-data:
-  ghost-mysql-backup:
-  ghost-data-backups:
-  ghost-database-backups:
 
 services:
   mysql:
@@ -46,7 +43,8 @@ services:
     networks:
       - traefik
     volumes:
-      - ghost-data:${DATA_PATH}
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/ghost/content:/var/lib/ghost/content
+
     environment:
       database__client: mysql
       database__connection__host: mysql
@@ -78,40 +76,30 @@ services:
       - "traefik.http.routers.ghost-https.middlewares=authelia@docker"
 
 
-  backups:
-    image: ${GHOST_MYSQL_IMAGE_TAG}
-    command: >-
-      sh -c 'sleep $BACKUP_INIT_SLEEP &&
-      while true; do
-        mysqldump -h mysql -u $GHOST_DB_USER -p"$GHOST_DB_PASSWORD" $GHOST_DB_NAME | gzip > "$MYSQL_BACKUPS_PATH/$MYSQL_BACKUP_NAME-$(date '+%Y-%m-%d_%H-%M').gz" &&
-        tar -zcpf $DATA_BACKUPS_PATH/$DATA_BACKUP_NAME-$(date "+%Y-%m-%d_%H-%M").tar.gz $DATA_PATH &&
-        find $MYSQL_BACKUPS_PATH -type f -mtime +$MYSQL_BACKUP_PRUNE_DAYS | xargs rm -f &&
-        find $DATA_BACKUPS_PATH -type f -mtime +$DATA_BACKUP_PRUNE_DAYS | xargs rm -f;
-        sleep $BACKUP_INTERVAL; done'
-    volumes:
-      - ghost-mysql-backup:/var/lib/mysql
-      - ghost-data:${DATA_PATH}
-      - ghost-data-backups:${DATA_BACKUPS_PATH}
-      - ghost-database-backups:${MYSQL_BACKUPS_PATH}
-    environment:
-      GHOST_DB_NAME: ${GHOST_DB_NAME}
-      GHOST_DB_USER: ${GHOST_DB_USER}
-      GHOST_DB_PASSWORD: ${GHOST_DB_PASSWORD}
-      BACKUP_INIT_SLEEP: ${BACKUP_INIT_SLEEP}
-      BACKUP_INTERVAL: ${BACKUP_INTERVAL}
-      MYSQL_BACKUP_PRUNE_DAYS: ${MYSQL_BACKUP_PRUNE_DAYS}
-      DATA_BACKUP_PRUNE_DAYS: ${DATA_BACKUP_PRUNE_DAYS}
-      MYSQL_BACKUPS_PATH: ${MYSQL_BACKUPS_PATH}
-      DATA_BACKUPS_PATH: ${DATA_BACKUPS_PATH}
-      DATA_PATH: ${DATA_PATH}
-      MYSQL_BACKUP_NAME: ${MYSQL_BACKUP_NAME}
-      DATA_BACKUP_NAME: ${DATA_BACKUP_NAME}
-    networks:
-      - traefik
-    restart: unless-stopped
+  db_backup:
+    container_name: db_backup
+    image: tiredofit/db-backup
     depends_on:
-      mysql:
-        condition: service_healthy
+      - mysql
+      - ghost
+    volumes:
+      - ../backups/ghost_db/:/backup
+      #- ./post-script.sh:/assets/custom-scripts/post-script.sh
+    environment:
+      # - DEBUG_MODE=TRUE
+      - DB_TYPE=mysql
+      - DB_HOST=ghost_mysql
+      - DB_NAME=${DB_NAME:-ghost}
+      - DB_USER=${DB_USER:-ghost}
+      - DB_PASS=${DB_USER_PASS:-DatabasePassword1234}
+      - DB_BACKUP_INTERVAL=720          # backup 12 hours 12 * 60
+      - DB_BACKUP_BEGIN=0000      # backup starts immediately
+      - DB_CLEANUP_TIME=72000     # clean backups that are older than 72000 minutes
+      - DB_CHECKSUM=SHA1
+      - DB_COMPRESSION=GZ
+      - DB_SPLIT_DB=true
+      - CONTAINER_ENABLE_MONITORING=FALSE
+    restart: always
 
 networks:
   traefik:
