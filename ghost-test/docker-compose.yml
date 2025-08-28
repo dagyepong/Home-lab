@@ -15,7 +15,8 @@ services:
       MYSQL_PASSWORD: ${GHOST_DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${GHOST_DB_ADMIN_PASSWORD}
     networks:
-      - traefik
+      - ghost-network
+
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "127.0.0.1"]
       interval: 10s
@@ -42,6 +43,7 @@ services:
       - 2368:2368
     networks:
       - traefik
+      - ghost-network
     volumes:
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/ghost/content:/var/lib/ghost/content
 
@@ -102,5 +104,7 @@ services:
     restart: always
 
 networks:
+  ghost-network:
+    external: true
   traefik:
     external: true
