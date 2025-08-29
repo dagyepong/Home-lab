@@ -1,59 +1,16 @@
-
-
-volumes:
-  mysql-data:
-  ghost-data:
+version: '3.8'
 
 services:
-  mysql:
-    image: ${GHOST_MYSQL_IMAGE_TAG}
-    volumes:
-      - mysql-data:/var/lib/mysql
-    environment:
-      MYSQL_DATABASE: ${GHOST_DB_NAME}
-      MYSQL_USER: ${GHOST_DB_USER}
-      MYSQL_PASSWORD: ${GHOST_DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${GHOST_DB_ADMIN_PASSWORD}
-    networks:
-      - ghost-network
-
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "127.0.0.1"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 60s
-    restart: unless-stopped
-
   ghost:
-    image: ${GHOST_IMAGE_TAG}
-    container_name: ghost
-    restart: always
-    depends_on:
-      mysql:
-        condition: service_healthy
-    healthcheck:
-      test: "/usr/bin/nc localhost 2368 || exit 1"
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    expose:
-      - 2368
-    ports:
-      - 2368:2368
-    networks:
-      - traefik
-      - ghost-network
-    volumes:
-      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/ghost/content:/var/lib/ghost/content
-
+    image: ghost:latest
     environment:
-      database__client: mysql
-      database__connection__host: mysql
-      database__connection__database: ${GHOST_DB_NAME}
-      database__connection__user: ${GHOST_DB_USER}
-      database__connection__password: ${GHOST_DB_PASSWORD}
-      url: ${GHOST_URL}
+      # see https://ghost.org/docs/config/#configuration-options
+      database__client: ${DB_CLIENT:-mysql}
+      database__connection__host: ${DB_HOST:-database}
+      database__connection__user: ${DB_USER:-ghost}
+      database__connection__password: ${DB_USER_PASS:-DatabasePassword1234}
+      database__connection__database: ${DB_NAME:-ghost}
+      url: https://linuxpad.blog # adjust to your domain and correct protocol handler + port
       #NODE_ENV: developmnent # default is production already
       mail__transport: "${MAIL_TRANSPORT}"
       mail__options__host: "${MAIL_HOST}"
@@ -61,7 +18,12 @@ services:
       mail__options__secureConnection: "${MAIL_SECURE_CONNECTION}"
       mail__options__auth__user: "${MAIL_USER}"
       mail__options__auth__pass: "${MAIL_PASSWORD}"
-      security__staffDeviceVerification: false
+      security__staffDeviceVerification: false  
+    volumes:
+      - ghost_content:/var/lib/ghost/content
+    networks:
+      - ghost_network
+      - traefik
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
@@ -76,35 +38,40 @@ services:
       - "traefik.http.services.ghost-backend.loadbalancer.server.scheme=http"
       - "traefik.http.services.ghost-backend.loadbalancer.server.port=2368"
       - "traefik.http.routers.ghost-https.middlewares=authelia@docker"
-
-
-  db_backup:
-    container_name: db_backup
-    image: tiredofit/db-backup
-    depends_on:
-      - mysql
-      - ghost
-    volumes:
-      - ../backups/ghost_db/:/backup
-      #- ./post-script.sh:/assets/custom-scripts/post-script.sh
+  db:
+    image: mysql:8
     environment:
-      # - DEBUG_MODE=TRUE
-      - DB_TYPE=mysql
-      - DB_HOST=ghost_mysql
-      - DB_NAME=${DB_NAME:-ghost}
-      - DB_USER=${DB_USER:-ghost}
-      - DB_PASS=${DB_USER_PASS:-DatabasePassword1234}
-      - DB_BACKUP_INTERVAL=720          # backup 12 hours 12 * 60
-      - DB_BACKUP_BEGIN=0000      # backup starts immediately
-      - DB_CLEANUP_TIME=72000     # clean backups that are older than 72000 minutes
-      - DB_CHECKSUM=SHA1
-      - DB_COMPRESSION=GZ
-      - DB_SPLIT_DB=true
-      - CONTAINER_ENABLE_MONITORING=FALSE
-    restart: always
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:-DatabaseRootPassword54321}
+      MYSQL_DATABASE: ${DB_NAME:-ghost}
+      MYSQL_USER: ${DB_USER:-ghost}
+      MYSQL_PASSWORD: ${DB_USER_PASS:-DatabasePassword1234}
+    
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/ghost/mysql:/var/lib/mysql
+    networks:
+      - ghost_network
+
+
+  ghost-backup:
+    image: bennetimo/ghost-backup
+    environment:
+      DB_CLIENT: mysql
+      DB_HOST: db
+      DB_USER: ghost
+      DB_PASSWORD: ${DB_USER_PASS:-DatabasePassword1234}
+      DB_NAME: ghost_db
+      BACKUP_INTERVAL: 24h # Daily backups
+    volumes:
+      - ghost_content:/var/lib/ghost/content:ro # Read-only access to content for backup
+      - ./backups:/backups # Store backups here
+    depends_on:
+      - db
+
+volumes:
+  ghost_content:
+  db_data:
 
 networks:
-  ghost-network:
-    external: true
+  ghost_network:
   traefik:
-    external: true
+    external: true # If Traefik is in a separate docker-compose file
