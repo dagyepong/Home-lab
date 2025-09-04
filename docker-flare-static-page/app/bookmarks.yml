@@ -17,7 +17,7 @@ links:
     category: 1
 
   - name: "Forgejo"
-    link: "https://gorgejo.linuxpad.blog"
+    link: "https://forgejo.linuxpad.blog"
     icon: "owl"
     category: 1
     
@@ -74,6 +74,15 @@ links:
     icon: "pacman"
     category: 2
 
+  - name: "Dozzle"
+    link: "https://dozzle.linuxpad.blog"
+    icon: "pacman"
+    category: 2
+  
+  - name: "Lunarlytics"
+    link: "https://luna.linuxpad.blog"
+    icon: "pacman"
+    category: 2
 
   - name: "Pibox"
     link: "http://kubesail.com"
