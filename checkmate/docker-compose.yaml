@@ -4,9 +4,6 @@ services:
     restart: always
     environment:
       UPTIME_APP_API_BASE_URL: "https://checkmate.linuxpad.blog/api/v1"
-    #ports:
-    #  - "80:80"
-    #  - "443:443"
     depends_on:
       - server
     networks:
@@ -16,15 +13,14 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
       - "traefik.http.routers.checkmate-http.entrypoints=http"
-      - "traefik.http.routers.checkmate-http.middlewares=redir-https"
       - "traefik.http.routers.checkmate-http.rule=Host(`checkmate.linuxpad.blog`)"
-      - "traefik.http.routers.checkmate-http.service=noop@internal"
+      - "traefik.http.routers.checkmate-http.middlewares=redirect-to-https"
       - "traefik.http.routers.checkmate-https.entrypoints=https"
+      - "traefik.http.routers.checkmate-https.rule=Host(`checkmate.linuxpad.blog`)"
       - "traefik.http.routers.checkmate-https.tls=true"
       - "traefik.http.routers.checkmate-https.middlewares=gzip"
-      - "traefik.http.routers.checkmate-https.rule=Host(`checkmate.linuxpad.blog`)"
-      - "traefik.http.services.checkmate-backend.loadbalancer.server.scheme=http"
-      - "traefik.http.services.checkmate-backend.loadbalancer.server.port=80"
+      - "traefik.http.routers.checkmate-https.service=client-service"
+      - "traefik.http.services.client-service.loadbalancer.server.port=80"
       - "traefik.http.routers.checkmate-https.middlewares=authelia@docker"
 
   server:
@@ -43,6 +39,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - checkmate
+      
   redis:
     image: bluewaveuptime/uptime_redis:latest
     restart: always
@@ -58,6 +55,7 @@ services:
       start_period: 5s
     networks:
       - checkmate
+      
   mongodb:
     image: bluewaveuptime/uptime_database_mongo:latest
     restart: always
