@@ -4,6 +4,9 @@ services:
     restart: always
     environment:
       UPTIME_APP_API_BASE_URL: "https://checkmate.linuxpad.blog/api/v1"
+    #ports:
+    #  - "80:80"
+    #  - "443:443"
     depends_on:
       - server
     networks:
@@ -11,18 +14,16 @@ services:
       - checkmate
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=traefik"
-      - "traefik.http.routers.checkmate-http.entrypoints=http"
-      - "traefik.http.routers.checkmate-http.rule=Host(`checkmate.linuxpad.blog`)"
-      - "traefik.http.routers.checkmate-http.middlewares=redirect-to-https"
-      - "traefik.http.routers.checkmate-https.entrypoints=https"
-      - "traefik.http.routers.checkmate-https.rule=Host(`checkmate.linuxpad.blog`)"
-      - "traefik.http.routers.checkmate-https.tls=true"
-      - "traefik.http.routers.checkmate-https.middlewares=gzip"
-      - "traefik.http.routers.checkmate-https.service=client-service"
-      - "traefik.http.services.client-service.loadbalancer.server.port=80"
-      - "traefik.http.routers.checkmate-https.middlewares=authelia@docker"
-
+      - "traefik.http.routers.checkmate.entrypoints=http"
+      - "traefik.http.routers.checkmate.rule=Host(`checkmate.linuxpad.blog`)"
+      - "traefik.http.middlewares.checkmate-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.checkmate.middlewares=checkmate-https-redirect"
+      - "traefik.http.routers.checkmate-secure.entrypoints=https"
+      - "traefik.http.routers.checkmate-secure.rule=Host(`checkmate.linuxpad.blog`)"
+      - "traefik.http.routers.checkmate-secure.tls=true"
+      - "traefik.http.routers.checkmate-secure.service=checkmate"
+      - "traefik.http.services.checkmate.loadbalancer.server.port=80"
+      - "traefik.docker.network=proxy"
   server:
     image: bluewaveuptime/uptime_server:latest
     restart: always
@@ -39,7 +40,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - checkmate
-      
   redis:
     image: bluewaveuptime/uptime_redis:latest
     restart: always
@@ -55,7 +55,6 @@ services:
       start_period: 5s
     networks:
       - checkmate
-      
   mongodb:
     image: bluewaveuptime/uptime_database_mongo:latest
     restart: always
