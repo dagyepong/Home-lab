@@ -62,6 +62,8 @@ services:
       # 自动申请证书
       - "--certificatesresolvers.le.acme.email=${ACME_EMAIL}"
       - "--certificatesresolvers.le.acme.storage=/data/ssl/acme.json"
+            # Use the Let's Encrypt staging server for testing
+      - "--certificatesresolvers.le.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory"
       - "--certificatesresolvers.le.acme.dnsChallenge.resolvers=1.1.1.1:53,8.8.8.8:53"
       - "--certificatesresolvers.le.acme.dnsChallenge.provider=${ACME_PROVIDER}"
       - "--certificatesresolvers.le.acme.dnsChallenge.delayBeforeCheck=30"
