@@ -1,0 +1,29 @@
+services:
+  stargate:
+    image: stargate:latest
+    environment:
+      - AUTH_HOST=auth.example.com
+      - PASSWORDS=plaintext:yourpassword
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.auth.entrypoints=http"
+      - "traefik.http.routers.auth.rule=Host(`auth.example.com`) || Path(`/_session_exchange`)"
+      - "traefik.http.middlewares.stargate.forwardauth.address=http://stargate/_auth"
+
+  your-service:
+    image: your-service:latest
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.your-service.entrypoints=http"
+      - "traefik.http.routers.your-service.rule=Host(`your-service.example.com`)"
+      - "traefik.http.routers.your-service.middlewares=stargate"  # Use Stargate middleware
+
+networks:
+  traefik:
+    external: true
