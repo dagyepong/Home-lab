@@ -2,15 +2,16 @@ services:
   stargate:
     image: stargate:latest
     environment:
-      - AUTH_HOST=auth.example.com
-      - PASSWORDS=plaintext:yourpassword
+      - AUTH_HOST=stargate.linuxpad.blog
+      - PASSWORDS=plaintext:akwasi123
     networks:
       - traefik
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
       - "traefik.http.routers.auth.entrypoints=http"
-      - "traefik.http.routers.auth.rule=Host(`auth.example.com`) || Path(`/_session_exchange`)"
+      - "traefik.http.routers.auth.rule=Host(`stargate.linuxpad.blog`) || Path(`/_session_exchange`)"
+      - "traefik.http.services.uptime-kuma-backend.loadbalancer.server.port=8085"
       - "traefik.http.middlewares.stargate.forwardauth.address=http://stargate/_auth"
 
   your-service:
@@ -22,6 +23,7 @@ services:
       - "traefik.docker.network=traefik"
       - "traefik.http.routers.your-service.entrypoints=http"
       - "traefik.http.routers.your-service.rule=Host(`your-service.example.com`)"
+      - "traefik.http.services.uptime-kuma-backend.loadbalancer.server.port=3001"
       - "traefik.http.routers.your-service.middlewares=stargate"  # Use Stargate middleware
 
 networks:
