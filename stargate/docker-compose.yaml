@@ -29,3 +29,13 @@ services:
 networks:
   traefik:
     external: true
+
+
+
+
+docker run -d \
+  --name stargate \
+  -p 85:80 \
+  -e AUTH_HOST=auth.example.com \
+  -e PASSWORDS=plaintext:yourpassword \
+  stargate:latest
