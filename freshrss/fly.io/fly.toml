@@ -1,0 +1,66 @@
+# fly.toml app configuration file generated for freshrss-abraxas on 2023-06-11T17:38:31+05:30
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+# flyctl launch
+# FIXME: Find a way to create a smaller volumes
+# flyctl volumes create freshrss_abraxas_data --region sin --size 1
+# dlyctl deploy
+
+app            = "freshrss-abraxas"
+kill_signal    = "SIGINT"
+kill_timeout   = 5
+processes      = []
+primary_region = "sin"
+
+# https://fly.io/docs/apps/autostart-stop/#fly-proxy-starts-machines
+[http_service]
+    internal_port        = 8080
+    force_https          = true
+    auto_stop_machines   = true
+    auto_start_machines  = true
+    min_machines_running = 0
+
+
+[build]
+    image = "freshrss/freshrss:latest"
+
+[env]
+    FRESHRSS_ENV = "production"
+    CRON_MIN     = '3,33'
+    TZ           = "Asia/Kolkata"
+
+[mounts]
+    source      = "freshrss_abraxas_data"
+    destination = "/var/www/FreshRSS/data"
+
+[experimental]
+    allowed_public_ports = []
+    auto_rollback        = true
+
+[[services]]
+    http_checks   = []
+    internal_port = 80
+    processes     = ["app"]
+    protocol      = "tcp"
+    script_checks = []
+    [services.concurrency]
+        hard_limit = 25
+        soft_limit = 20
+        type       = "connections"
+
+    [[services.ports]]
+        force_https = true
+        handlers    = ["http"]
+        port        = 80
+
+    [[services.ports]]
+        handlers = ["tls", "http"]
+        port     = 443
+
+    [[services.tcp_checks]]
+        grace_period  = "1s"
+        interval      = "15s"
+        restart_limit = 0
+        timeout       = "2s"

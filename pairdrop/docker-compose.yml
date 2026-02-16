@@ -1,0 +1,18 @@
+---
+services:
+  pairdrop:
+    image: lscr.io/linuxserver/pairdrop:latest
+    container_name: pairdrop
+    environment:
+      - PUID=2002
+      - PGID=2003
+      - TZ=Asia/Kolkata
+      - RATE_LIMIT=false
+      - WS_FALLBACK=false
+      - DEBUG_MODE=false
+    ports:
+      - 3090:3000
+    restart: unless-stopped
+    labels:
+      - 'kopia_backup'
+      - 'com.centurylinklabs.watchtower.enable=true'

@@ -1,0 +1,25 @@
+services:
+  cusdis:
+    image: "djyde/cusdis"
+    ports:
+      - "9300:3000"
+    env_file:
+      - .env
+    environment:
+      - USERNAME=${USERNAME}
+      - PASSWORD=${PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://192.168.1.3:9300}
+      - DB_TYPE=${DB_TYPE:-sqlite}
+      - DB_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@cusdis_pgsql:5432/${POSTGRES_DB}
+  pgsql:
+    image: "postgres:13"
+    hostname: cusdis_pgsql
+    volumes:
+      - "/opt/cusdis/data:/var/lib/postgresql/data"
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}

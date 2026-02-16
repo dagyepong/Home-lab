@@ -1,0 +1,24 @@
+---
+services:
+  syncthing:
+    image: ghcr.io/linuxserver/syncthing
+    container_name: syncthing
+    hostname: syncthing-niflheim
+    environment:
+      - PUID=2002
+      - PGID=2003
+      - TZ=Asia/Kolkata
+    volumes:
+      - /opt/syncthing/config:/config
+      - /home/abraxas/Documents/Obsidian/:/data/Obsidian
+      # - /opt/backup:/opt/backup
+    ports:
+      - 8384:8384 # webui
+      - 22000:22000 # listening
+      - 21027:21027/udp # protocol discovery
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      - "kopia_backup"
+      - "com.centurylinklabs.watchtower.enable=true"

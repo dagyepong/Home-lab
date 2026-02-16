@@ -1,0 +1,94 @@
+# Usage:
+#     docker compose run archivebox init --setup
+#     docker compose up
+#     echo "https://example.com" | docker compose run archivebox archivebox add
+#     docker compose run archivebox add --depth=1 https://example.com/some/feed.rss
+#     docker compose run archivebox config --set MEDIA_MAX_SIZE=750m
+#     docker compose run archivebox help
+# Documentation:
+#     https://github.com/ArchiveBox/ArchiveBox/wiki/Docker#docker-compose
+---
+services:
+  archivebox:
+    image: archivebox/archivebox:latest
+    hostname: archivebox
+    container_name: archivebox
+    command: server --quick-init 0.0.0.0:8000
+    ports:
+      - 8009:8000
+    volumes:
+      # - /media/externalHdd/niflheim/archivebox/data:/data
+      - /opt/archivebox/data:/data
+      # - ./etc/crontabs:/var/spool/cron/crontabs  # uncomment this and archivebox_scheduler below to set up automatic recurring archive jobs
+    env_file:
+      - .env
+    environment:
+      - ALLOWED_HOSTS=* # restrict this to only accept incoming traffic via specific domain name
+      - PUBLIC_INDEX=False # set to False to prevent anonymous users from viewing snapshot list
+      - PUBLIC_SNAPSHOTS=False # set to False to prevent anonymous users from viewing snapshot content
+      - PUBLIC_ADD_VIEW=False # set to True to allow anonymous users to submit new URLs to archive
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - PUID=2002
+      - PGID=2003
+      # - SEARCH_BACKEND_ENGINE=sonic # uncomment these and sonic container below for better full-text search
+      # - SEARCH_BACKEND_HOST_NAME=sonic
+      # - SEARCH_BACKEND_PASSWORD=${SEARCH_BACKEND_PASSWORD}
+      - MEDIA_MAX_SIZE=250m # increase this filesize limit to allow archiving larger audio/video files
+      - TIMEOUT=60 # increase this number to 120+ seconds if you see many slow downloads timing out
+      # - CHECK_SSL_VALIDITY=True         # set to False to disable strict SSL checking (allows saving URLs w/ broken certs)
+      # - SAVE_ARCHIVE_DOT_ORG=True       # set to False to disable submitting all URLs to Archive.org when archiving
+
+  # After starting, backfill any existing Snapshots into the full-text index:
+  #   $ docker-compose run archivebox update --index-only
+
+  # sonic:
+  #   image: valeriansaliou/sonic:v1.4.7
+  #   hostname: sonic
+  #   container_name: sonic
+  #   expose:
+  #     - 1491
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - SEARCH_BACKEND_PASSWORD=${SEARCH_BACKEND_PASSWORD}
+  #   volumes:
+  #     - ./sonic.cfg:/etc/sonic.cfg:ro
+  #     # - /media/externalHdd/niflheim/archivebox/data/sonic:/var/lib/sonic/store
+  #     - /opt/archivebox/data/sonic:/var/lib/sonic/store
+
+  ### Example: Enable ability to run regularly scheduled archiving tasks by uncommenting this container
+  #   $ docker compose run archivebox schedule --every=day --depth=1 'https://example.com/some/rss/feed.xml'
+  # then restart the scheduler container to apply the changes to the schedule
+  #   $ docker compose restart archivebox_scheduler
+
+  # archivebox_scheduler:
+  #    image: ${DOCKER_IMAGE:-archivebox/archivebox:dev}
+  #    command: schedule --foreground
+  #    environment:
+  #        - MEDIA_MAX_SIZE=750m               # increase this number to allow archiving larger audio/video files
+  #        # - TIMEOUT=60                      # increase if you see timeouts often during archiving / on slow networks
+  #        # - ONLY_NEW=True                   # set to False to retry previously failed URLs when re-adding instead of skipping them
+  #        # - CHECK_SSL_VALIDITY=True         # set to False to allow saving URLs w/ broken SSL certs
+  #        # - SAVE_ARCHIVE_DOT_ORG=True       # set to False to disable submitting URLs to Archive.org when archiving
+  #        # - PUID=502                        # set to your host user's UID & GID if you encounter permissions issues
+  #        # - PGID=20
+  #    volumes:
+  #        - ./data:/data
+  #        - ./etc/crontabs:/var/spool/cron/crontabs
+  #    # cpus: 2                               # uncomment / edit these values to limit container resource consumption
+  #    # mem_limit: 2048m
+  #    # shm_size: 1024m
+
+  ### Example: Run PYWB in parallel and auto-import WARCs from ArchiveBox
+
+  # pywb:
+  #     image: webrecorder/pywb:latest
+  #     entrypoint: /bin/sh -c '(wb-manager init default || test $$? -eq 2) && wb-manager add default /archivebox/archive/*/warc/*.warc.gz; wayback;'
+  #     environment:
+  #         - INIT_COLLECTION=archivebox
+  #     ports:
+  #         - 8080:8080
+  #     volumes:
+  #         - ./data:/archivebox
+  #         - ./data/wayback:/webarchive

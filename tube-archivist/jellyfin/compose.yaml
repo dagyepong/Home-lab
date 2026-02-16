@@ -1,0 +1,17 @@
+---
+services:
+  tubearchivist-jf:
+    image: bbilly1/tubearchivist-jf
+    container_name: tubearchivist-jf
+    environment:
+      - TA_URL=http://192.168.1.6:9800
+      - TA_TOKEN=${TA_TOKEN}
+      - JF_URL=http://192.168.1.6:8096
+      - JF_TOKEN=${JA_TOKEN}
+    volumes:
+      - /media/externalHdd/niflheim/tubearchivist/media:/youtube
+    expose:
+      - "8001"
+    labels:
+      - 'kopia_backup'
+      - 'com.centurylinklabs.watchtower.enable=true'

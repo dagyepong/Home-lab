@@ -1,0 +1,18 @@
+---
+services:
+  librespeed:
+    container_name: librespeed
+    image: lscr.io/linuxserver/librespeed:latest
+    environment:
+      - PUID=2002
+      - PGID=2003
+      - TZ=Asia/Kolkata
+      - PASSWORD=${PASSWORD}
+      - CUSTOM_RESULTS=false
+      - DB_TYPE=sqlite
+      - IPINFO_APIKEY=${ACCESS_TOKEN}
+    ports:
+      - 9380:80
+    volumes:
+      - /opt/librespeed/config:/config
+    restart: unless-stopped

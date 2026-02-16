@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: linkwarden-postgres
+    env_file: .env
+    volumes:
+      - /opt/linkwarden/pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  linkwarden:
+    container_name: linkwarden
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@linkwarden-postgres:5432/postgres
+    image: ghcr.io/linkwarden/linkwarden:latest
+    ports:
+      - 8534:3000
+    volumes:
+      - /opt/linkwarden/data:/data/data
+    restart: unless-stopped
+    depends_on:
+      - postgres

@@ -1,0 +1,28 @@
+---
+services:
+  swag:
+    image: lscr.io/linuxserver/swag:latest
+    container_name: swag
+    hostname: swag
+    cap_add:
+      - NET_ADMIN
+    env_file:
+      - .env
+    environment:
+      - URL= abr4xa5.duckdns.org
+      - VALIDATION=duckdns
+      - SUBDOMAINS=wildcard
+      - DOCKER_MODS=linuxserver/mods:swag-dashboard
+      - PUID=2002
+      - PGID=2003
+      - TZ=Asia/Kolkata
+    volumes:
+      - /opt/swag/config:/config
+    ports:
+      - 443:443
+      # dashboard on port 81 https://github.com/linuxserver/docker-mods/tree/swag-dashboard#internal-access-using-server-ip81
+      - 81:81
+    restart: unless-stopped
+    labels:
+      - 'kopia_backup'
+      - 'com.centurylinklabs.watchtower.enable=true'

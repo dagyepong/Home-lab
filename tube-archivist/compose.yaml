@@ -1,0 +1,59 @@
+---
+services:
+  tubearchivist:
+    container_name: tubearchivist
+    restart: unless-stopped
+    image: bbilly1/tubearchivist
+    ports:
+      - 9800:8000
+    volumes:
+      - /media/externalHdd/niflheim/tubearchivist/media:/youtube
+      - /media/externalHdd/niflheim/tubearchivist/cache:/cache
+    env_file:
+      - .env
+    environment:
+      - ES_URL=http://archivist-es:9200 # protocol + port
+      - REDIS_HOST=archivist-redis # NO protocol
+      - HOST_UID=2002
+      - HOST_GID=2003
+      - TA_HOST=yt.lan.niflheim.online 192.168.1.6
+      - TA_USERNAME=${TA_USERNAME}
+      - TA_PASSWORD=${TA_PASSWORD}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - TZ=Asia/Kolkata
+    depends_on:
+      - archivist-es
+      - archivist-redis
+
+  archivist-redis:
+    image: redis/redis-stack-server
+    container_name: archivist-redis
+    hostname: archivist-redis
+    restart: unless-stopped
+    expose:
+      - "6379"
+    volumes:
+      - /opt/tubearchivist/redis:/data
+    depends_on:
+      - archivist-es
+
+  archivist-es:
+    image: elasticsearch:8.8.1 # for bbilly1/tubearchivist-es
+    container_name: archivist-es
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}" # matching Elasticsearch password
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "xpack.security.enabled=true"
+      - "discovery.type=single-node"
+      - "path.repo=/usr/share/elasticsearch/data/snapshot"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /media/externalHdd/niflheim/tubearchivist/es:/usr/share/elasticsearch/data # check for permission error when using bind mount, see readme -> chmod
+    expose:
+      - "9200"

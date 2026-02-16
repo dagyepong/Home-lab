@@ -1,0 +1,14 @@
+---
+services:
+  yacht:
+    container_name: yacht:latest
+    restart: unless-stopped
+    ports:
+      - 8005:8000
+    volumes:
+      - yacht:/config
+      - /var/run/docker.sock:/var/run/docker.sock
+    image: selfhostedpro/yacht
+
+volumes:
+  yacht:

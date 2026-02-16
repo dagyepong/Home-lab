@@ -1,0 +1,25 @@
+---
+services:
+  samba:
+    image: elswork/samba
+    container_name: samba
+    environment:
+      TZ: "Asia/Kolkata"
+    ports:
+      - "139:139"
+      - "445:445"
+    restart: unless-stopped
+    volumes:
+      - /media/externalHdd:/share/folder
+      - /opt/samba:/etc/samba
+    command: '-u "2002:2003:abraxas:abraxas:smb_passwd" -s "ExternalHdd:/share/folder:rw:abraxas"'
+    networks:
+      - default
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      - "kopia_backup"
+      - "com.centurylinklabs.watchtower.enable=true"
+
+networks:
+  default:

@@ -1,0 +1,17 @@
+# docker run cloudflare/cloudflared:latest tunnel --no-autoupdate run --token
+---
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflare-tunnel-niflheim-bifrost
+    restart: unless-stopped
+    command: tunnel run
+    network_mode: "host"
+    env_file:
+      - .env
+      # - TUNNEL_TOKEN=TOKEN_FROM_DASHBOARD
+    volumes:
+      - /opt/cloudflare-tunnel/cloudflared:/etc/cloudflared
+    labels:
+      - 'kopia_backup'
+      - 'com.centurylinklabs.watchtower.enable=true'

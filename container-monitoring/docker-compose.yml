@@ -1,0 +1,166 @@
+---
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    hostname: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - /opt/prometheus/config:/etc/prometheus/:ro
+      - /opt/prometheus/data:/prometheus
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--web.enable-lifecycle"
+      - "--storage.tsdb.retention.time=120h"
+    labels:
+      - 'kopia_backup'
+      - 'com.centurylinklabs.watchtower.enable=true'
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    hostname: grafana
+    ports:
+      - "3003:3000"
+    volumes:
+      - /opt/grafana:/var/lib/grafana
+    depends_on:
+      - cadvisor
+      - prometheus
+    restart: unless-stopped
+    labels:
+      - 'kopia_backup'
+      - 'com.centurylinklabs.watchtower.enable=true'
+
+  cadvisor:
+    # latest doesn't pull arm, for some reason its pointing to an old version that doesn't support arm
+    image: gcr.io/cadvisor/cadvisor:v0.47.0
+    container_name: cadvisor
+    hostname: cadvisor
+    # Not exposing port because in the same stack
+    # ports:
+    #   - 8081:8080
+    volumes:
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+      - /sys:/sys:ro
+      - /var/run:/var/run:ro
+      - /:/rootfs:ro
+      - /sys/fs/cgroup:/cgroup:ro
+      - /etc/machine-id:/etc/machine-id:ro
+      - /etc/localtime:/etc/localtime:ro
+    deploy:
+      resources:
+        reservations:
+          memory: 80M
+    command:
+      - "--storage_duration=1m0s"
+      - "--allow_dynamic_housekeeping=true"
+      - "--housekeeping_interval=30s"
+      - "--global_housekeeping_interval=30s"
+      - "--event_storage_age_limit=default=0"
+      - "--event_storage_event_limit=default=0"
+      - "--disable_metrics=percpu,sched,tcp,udp,disk,diskIO,hugetlb,referenced_memory,cpu_topology,resctrl"
+    devices:
+      - /dev/kmsg
+    cap_add:
+      - SYS_PTRACE
+    privileged: true
+    # FIXME: Add proper healthcheck
+    # healthcheck:
+    #   test: wget --quiet --tries=1 --spider http://cadvisor:8080/healthz || exit 1
+    #   interval: 15s
+    #   timeout: 15s
+    #   retries: 5
+    #   start_period: 30s
+    labels:
+      - 'com.centurylinklabs.watchtower.enable=true'
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    hostname: node_exporter
+    pid: host
+    # ports:
+    #   - "9100:9100"
+    volumes:
+      - '/:/host:ro,rslave'
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+
+    command:
+      - '--path.rootfs=/host'
+      - "--collector.arp"
+      - "--collector.bcache"
+      - "--collector.bonding"
+      - "--collector.btrfs"
+      - "--collector.conntrack"
+      - "--collector.cpu"
+      - "--collector.cpufreq"
+      - "--collector.diskstats"
+      - "--collector.dmi"
+      - "--collector.edac"
+      - "--collector.entropy"
+      - "--collector.fibrechannel"
+      - "--collector.filefd"
+      - "--collector.filesystem"
+      - "--collector.hwmon"
+      - "--collector.infiniband"
+      - "--collector.ipvs"
+      - "--collector.loadavg"
+      - "--collector.mdadm"
+      - "--collector.meminfo"
+      - "--collector.netclass"
+      - "--collector.netdev"
+      - "--collector.netstat"
+      - "--collector.nfs"
+      - "--collector.nfsd"
+      - "--collector.nvme"
+      - "--collector.os"
+      - "--collector.powersupplyclass"
+      - "--collector.pressure"
+      - "--collector.rapl"
+      - "--collector.schedstat"
+      - "--collector.sockstat"
+      - "--collector.softnet"
+      - "--collector.stat"
+      - "--collector.tapestats"
+      - "--collector.textfile"
+      - "--collector.thermal_zone"
+      - "--collector.time"
+      - "--collector.timex"
+      - "--collector.udp_queues"
+      - "--collector.uname"
+      - "--collector.vmstat"
+      - "--collector.xfs"
+      - "--collector.zfs"
+      - "--collector.buddyinfo"
+      - "--collector.drbd"
+      - "--collector.ethtool"
+      - "--collector.interrupts"
+      - "--collector.ksmd"
+      - "--collector.lnstat"
+      - "--collector.logind"
+      - "--collector.meminfo_numa"
+      - "--collector.mountstats"
+      - "--collector.network_route"
+      - "--collector.ntp"
+      - "--collector.processes"
+      - "--collector.qdisc"
+      - "--collector.runit"
+      - "--collector.supervisord"
+      - "--collector.systemd"
+      - "--collector.tcpstat"
+      - "--collector.wifi"
+      - "--collector.zoneinfo"
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--collector.filesystem.ignored-mount-points='^(/rootfs|/host|)/(sys|proc|dev|host|etc)($$|/)'"
+      - "--collector.filesystem.ignored-fs-types='^(sys|proc|auto|cgroup|devpts|ns|au|fuse\\.lxc|mqueue)(fs|)$$'"
+    privileged: true
+    restart: unless-stopped
+    labels:
+      - 'com.centurylinklabs.watchtower.enable=true'

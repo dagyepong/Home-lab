@@ -1,0 +1,23 @@
+---
+services:
+  transmission:
+    image: linuxserver/transmission:latest
+    container_name: transmission-test
+    hostname: transmission
+    environment:
+      - PUID=2002
+      - PGID=2003
+      - TZ=Asia/Kolkata
+      - DOCKER_MODS=linuxserver/mods:transmission-floodui
+    ports:
+      - 9091:9091 # Web UI port
+      - 51413:51413 # Torrent port (TCP)
+      - 51413:51413/udp # Torrent port (UDP)
+    volumes:
+      - /opt/transmission/config:/config
+      - /media/externalHdd/niflheim/transmission/downloads:/data/downloads
+      - /media/externalHdd/niflheim/transmission/incomplete-downloads:/data/incomplete
+    restart: unless-stopped
+    labels:
+      - "kopia_backup"
+      - "com.centurylinklabs.watchtower.enable=true"

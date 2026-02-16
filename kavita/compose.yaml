@@ -1,0 +1,18 @@
+---
+services:
+  kavita:
+    image: lscr.io/linuxserver/kavita:latest
+    container_name: kavita
+    environment:
+      - PUID=2002
+      - PGID=2003
+      - TZ=Asia/Kolkata
+    volumes:
+      - /opt/kavita/config:/config
+      - /opt/kavita/data:/data
+    ports:
+      - 5005:5000
+    restart: unless-stopped
+    labels:
+      - 'kopia_backup'
+      - 'com.centurylinklabs.watchtower.enable=true'

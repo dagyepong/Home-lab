@@ -1,0 +1,46 @@
+# https://github.com/Bruceforce/vaultwarden-backup
+---
+services:
+  vaultwarden:
+    container_name: vaultwarden
+    hostname: vaultwarden
+    image: vaultwarden/server:latest-alpine
+    dns:
+      - 1.1.1.1
+    environment:
+      - LOG_FILE=/data/logs/access.log
+      - WEBSOCKET_ENABLED=true
+      - ROCKET_ENV=prod
+      - ROCKET_WORKERS=10
+      - TZ=Asia/Kolkata
+      - LOG_LEVEL=error
+      - EXTENDED_LOGGING=true
+    ports:
+      - 8888:80
+    volumes:
+      - /opt/vaultwarden/data:/data
+      - /opt/vaultwarden/logs:/data/logs
+    restart: unless-stopped
+
+  vaultwarden-backup:
+    container_name: vaultwarden-backup
+    hostname: vaultwarden-backup
+    image: bruceforce/vaultwarden-backup:latest
+    init: true
+
+    volumes:
+      - /opt/vaultwarden/data:/data/
+      - /opt/vaultwarden/backup:/vaultwarden-backup
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      - TIMESTAMP=true
+      - DELETE_AFTER=30
+      - UID=0
+      - GID=0
+      - TZ=Asia/Kolkata
+      - BACKUP_DIR=/vaultwarden-backup
+      - CRON_TIME=50 3 * * *
+    restart: unless-stopped
+    depends_on:
+      - vaultwarden

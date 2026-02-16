@@ -1,0 +1,15 @@
+---
+services:
+  linx:
+    container_name: linx-server
+    image: andreimarcu/linx-server
+    command: -config /linx.conf
+    ports:
+      - "9595:8080"
+    volumes:
+      - /media/externalHdd/niflheim/linx:/files
+      - /opt/linx/linx.conf:/linx.conf:ro
+    restart: unless-stopped
+    labels:
+      - "kopia_backup"
+      - "com.centurylinklabs.watchtower.enable=true"

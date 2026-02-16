@@ -1,0 +1,10 @@
+services:
+  private-pdf:
+    build:
+      context: .
+      target: builder
+    image: private-pdf:latest
+    container_name: private-pdf
+    ports:
+      - "8345:8000"
+    # restart: unless-stopped

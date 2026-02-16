@@ -1,0 +1,13 @@
+---
+services:
+  snippet-box:
+    image: pawelmalak/snippet-box:arm
+    container_name: snippet-box
+    volumes:
+      - /opt/snippet-box/data:/app/data
+    ports:
+      - 5001:5000
+    restart: unless-stopped
+    labels:
+      - 'kopia_backup'
+      - 'com.centurylinklabs.watchtower.enable=true'

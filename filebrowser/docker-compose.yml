@@ -1,0 +1,25 @@
+---
+services:
+  file-browser:
+    image: filebrowser/filebrowser
+    container_name: file-browser
+    # FIXME: using root, becuase the directories are by root
+    # ! ideally not recommended
+    user: 0:0
+    ports:
+      - 9080:80
+    volumes:
+      - /opt/filebrowser/srv:/srv
+      # Mounting addintional directories at /srv
+      - /media/externalHdd:/srv/segateDisk
+      - /home/abraxas:/srv/niflheim
+
+      # Both filles need to created and owned by the user specific above or atleast has access to
+      - /opt/filebrowser/filebrowser.db:/database.db
+      # - /opt/filebrowser/settings.json:/.filebrowser.json
+    restart: always
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      - "kopia_backup"
+      - "com.centurylinklabs.watchtower.enable=true"

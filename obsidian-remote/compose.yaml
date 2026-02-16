@@ -1,0 +1,27 @@
+# https://github.com/sytone/obsidian-remote
+---
+services:
+  obsidian:
+    # image: ghcr.io/sytone/obsidian-remote:latest
+    # ARM image on docker-hub
+    image: sytone/obsidian-remote:arm64
+    container_name: obsidian-remote
+    ports:
+      - 6080:8080
+      - 6443:8443
+      - 27123:27123 # REST API HTTP
+      - 27124:27124 # REST API HTTPS
+    volumes:
+      - /opt/obsidian-remote/vaults:/vaults
+      - /opt/obsidian-remote/config:/config
+    env_file:
+      - .env
+    environment:
+      - PUID=2002
+      - PGID=2003
+      - TZ=Asia/Kolkata
+      - KEYBOARD=en-us-qwerty
+      - DOCKER_MODS=linuxserver/mods:universal-git # Use to add mods to the container like git.
+      - CUSTOM_USER=${CUSTOM_USER}
+      - PASSWORD=${PASSWORD}
+    restart: unless-stopped

@@ -1,0 +1,21 @@
+---
+services:
+
+  freshrss:
+    image: freshrss/freshrss:arm
+    container_name: freshrss
+    # platform: linux/arm/v7
+    hostname: freshrss
+    ports:
+      - 7080:80
+    logging:
+      options:
+        max-size: 10m
+    volumes:
+      - /opt/freshrss/data:/var/www/FreshRSS/data
+      - /opt/freshrss/extensions:/var/www/FreshRSS/extensions
+    environment:
+      TZ: Asia/Kolkata
+      CRON_MIN: '3,33'
+      FRESHRSS_ENV: development
+    restart: unless-stopped
