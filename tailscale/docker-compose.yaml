@@ -1,33 +1,21 @@
-# Connect to tailscale and Login (when not using the auth key)
-# docker-compose exec tailscale tailscale up
-
-# Connect with exit node enabled and subnets advertised
-# docker exec tailscale tailscale up --advertise-exit-node --advertise-routes=192.168.1.0/24
-# docker compose exec tailscale tailscale up
-
-# Get status
-# docker exec tailscale tailscale status
----
+version: '3.9'
 services:
   tailscale:
-    container_name: tailscale
-    hostname: niflheim # Used by MagicDNS
-    image: tailscale/tailscale:stable
-    volumes:
-      - /opt/tailscale-vpn:/var/lib # State data will be stored in this directory
-      - /dev/net/tun:/dev/net/tun # Required for tailscale to work
+    image: tailscale/tailscale
+    container_name: tailscaled
     cap_add:
-      - net_admin
-      - sys_module
-    command: tailscaled
-    privileged: true
-    restart: always
+      - NET_ADMIN
+      - NET_RAW
+    environment:
+#      - TS_HOSTNAME=${TS_HOSTNAME} # Usually not necessary for your hostname to be the same name on the tailscale network
+       - TS_AUTHKEY=${TS_AUTHKEY} # Generate auth keys here: https://login.tailscale.com/admin/settings/keys
+#      - TS_ROUTES=${TS_ROUTES} # Creates a subnet router for Tailscale. Use your subnet's CIDR in the form: 192.168.1.0/24
+#      - TS_ACCEPT_DNS=${TS_ACCEPT_DNS} # Set to false for Pi-hole Docker setups
+      - TS_SOCKET=${TS_SOCKET} # Specifying the /var/lib/tailscale/tailscaled.sock location allows use of standard Tailscale commands 
+      - TS_EXTRA_ARGS=${TS_EXTRA_ARGS} # Add any other supported arguments in the docker commandline style: e.g. --advertise-exit-node
+      - TS_STATE_DIR=${TS_STATE_DIR} # Required to create a persistent container state that will survive reboots
+    volumes:
+      - /data:/var/lib # Creates a tailscale directory under /data for persistence
+      - /dev/net/tun:/dev/net/tun
     network_mode: host
-
-    # FIXME: tailscale doesn't seem to recognise env variables, https://hub.docker.com/r/tailscale/tailscale
-    env_file:
-      - .env
-    labels:
-      - 'kopia_backup'
-      # Disable automatic watchtower updates to prevent braking changes
-      # - 'com.centurylinklabs.watchtower.enable=true'
+    restart: unless-stopped
