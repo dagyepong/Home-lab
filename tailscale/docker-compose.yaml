@@ -8,7 +8,7 @@ services:
       - NET_RAW
     environment:
 #      - TS_HOSTNAME=${TS_HOSTNAME} # Usually not necessary for your hostname to be the same name on the tailscale network
-       - TS_AUTHKEY=${TS_AUTHKEY} # Generate auth keys here: https://login.tailscale.com/admin/settings/keys
+      - TS_AUTHKEY=${TS_AUTHKEY} # Generate auth keys here: https://login.tailscale.com/admin/settings/keys
 #      - TS_ROUTES=${TS_ROUTES} # Creates a subnet router for Tailscale. Use your subnet's CIDR in the form: 192.168.1.0/24
 #      - TS_ACCEPT_DNS=${TS_ACCEPT_DNS} # Set to false for Pi-hole Docker setups
       - TS_SOCKET=${TS_SOCKET} # Specifying the /var/lib/tailscale/tailscaled.sock location allows use of standard Tailscale commands 
