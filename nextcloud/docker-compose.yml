@@ -1,38 +1,17 @@
-
-
 services:
   nextcloud:
     image: nextcloud
     container_name: nextcloud
     restart: unless-stopped
-    networks:
-      - cloud
-      - traefik
+    network_mode: service:tailscale
     depends_on:
       - nextclouddb
       - redis
-    ports:
-      - 8081:80
     volumes:
       - /srv/appdata/nextcloud/html:/var/www/html
       - /srv/appdata/nextcloud/custom_apps:/var/www/html/custom_apps
       - /srv/appdata/nextcloud/config:/var/www/html/config
       - /srv/appdata/nextcloud/data:/var/www/html/data
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.nextcloud.entrypoints=http"
-      - "traefik.http.routers.nextcloud.rule=Host(nextcloud.linuxpad.blog`)"
-      - "traefik.http.middlewares.nextcloud-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.nextcloud.middlewares.nextcloud-https-redirect"
-      - "traefik.http.routers.nextcloud-secure.entrypoints=https"
-      - "traefik.http.routers.nextcloud-secure.rule=Host(nextcloud.linuxpad.blog`)"
-      - "traefik.http.routers.nextcloud-secure.tls=true"
-      - "traefik.http.routers.nextcloud-secure.service.nextcloud"
-      - "traefik.http.services.nextcloud.loadbalancer.server.port=8081"
-      - "traefik.docker.network=traefik"
-      - "traefik.http.routers.nextcloud-secure.middlewares=authelia@docker"
-
-
     environment:
       - PUID=1000
       - PGID=1000
@@ -50,7 +29,6 @@ services:
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     networks:
       - cloud
-      - traefik
     volumes:
       - /srv/appdata/nextcloud/nextclouddb:/var/lib/mysql
     environment:
@@ -69,7 +47,22 @@ services:
       - /srv/appdata/nextcloud/redis:/data
     networks:
       - cloud
-      - traefik
+
+  tailscale:
+    image: tailscale/tailscale:latest
+    container_name: tailscale
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    volumes:
+      - /var/lib/tailscale:/var/lib/tailscale
+    environment:
+      - TS_AUTHKEY=tskey-auth-XXXXXXXXXXXXX  # Replace with your key
+      - TS_HOSTNAME=nextcloud
+      - TS_STATE_DIR=/var/lib/tailscale
+    restart: unless-stopped
 
 networks:
   cloud:

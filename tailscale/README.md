@@ -148,3 +148,21 @@ Select the hostname from the menu in the top right corner to start using an exit
 [Tailscale Pi-hole Setup · Erraticbits](https://www.erraticbits.ca/post/2022/tailscale_pihole/?utm_content=August+Newsletter&utm_medium=email_action&utm_source=customer.io)
 [How to Set Up Tailscale on Docker in 2023 - WunderTech](https://www.wundertech.net/how-to-set-up-tailscale-on-docker/)
 [Build a Tailscale exit node with firewalld · Major Hayden](https://major.io/2022/10/27/build-a-tailscale-exit-node-with-firewalld/)
+
+
+### Proxmox Lxc Debian Issues:
+
+```bash
+cd /etc/pve/nodes/pve/lxc
+```
+
+```bash
+nano 104.conf
+```
+
+## Paste this code:
+
+```bash
+lxc.cgroup2.devices.allow: c 10:200 rwm
+lxc.mount.entry: /dev/net dev/net none bind,create=dir
+```
