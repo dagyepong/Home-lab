@@ -10,13 +10,31 @@ services:
     environment:
       - LOG_FILE=/data/logs/access.log
       - WEBSOCKET_ENABLED=true
+      - SIGNUPS_ALLOWED=true
+      - ADMIN_TOKEN=#sPqDJ!WxJAkA
+      - I_REALLY_WANT_VOLATILE_STORAGE=true
       - ROCKET_ENV=prod
       - ROCKET_WORKERS=10
-      - TZ=Asia/Kolkata
+      - TZ=America/Chicago
       - LOG_LEVEL=error
       - EXTENDED_LOGGING=true
     ports:
-      - 8888:80
+      - 4044:80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.vaultwarden-http.entrypoints=http"
+      - "traefik.http.routers.vaultwarden-http.middlewares=redir-https"
+      - "traefik.http.routers.vaultwarden-http.rule=Host(`vaultwarden.linuxpad.blog`)"
+      - "traefik.http.routers.vaultwarden-http.service=noop@internal"
+      - "traefik.http.routers.vaultwarden-https.entrypoints=https"
+      - "traefik.http.routers.vaultwarden-https.tls=true"
+      - "traefik.http.routers.vaultwarden-https.middlewares=gzip"
+      - "traefik.http.routers.vaultwarden-https.rule=Host(`vaultwarden.linuxpad.blog`)"
+      - "traefik.http.services.vaultwarden-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.vaultwarden-backend.loadbalancer.server.port=4044"
+      - "traefik.http.routers.vaultwarden-https.middlewares=authelia@docker"
+
     volumes:
       - /opt/vaultwarden/data:/data
       - /opt/vaultwarden/logs:/data/logs
@@ -38,9 +56,13 @@ services:
       - DELETE_AFTER=30
       - UID=0
       - GID=0
-      - TZ=Asia/Kolkata
+      - TZ=America/Chicago
       - BACKUP_DIR=/vaultwarden-backup
       - CRON_TIME=50 3 * * *
     restart: unless-stopped
     depends_on:
       - vaultwarden
+
+networks:
+    traefik:
+        external: true
