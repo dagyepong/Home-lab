@@ -166,3 +166,28 @@ nano 104.conf
 lxc.cgroup2.devices.allow: c 10:200 rwm
 lxc.mount.entry: /dev/net dev/net none bind,create=dir
 ```
+
+### Exposing Homelab Services to Tailscale
+At this point, you now have a working Tailscale network between your
+homelab server and a client device. To access your apps through
+Tailscale, you need to enable and create a “serve” proxy on your
+server.
+
+Start by checking the port number of the homelab service that you want
+to expose:
+
+```bash
+docker ps --format "{{.Names}}: {{.Ports}}"
+```
+
+For example, if I want to access my Linkwarden server’s web dashboard
+through Tailscale, I would need to expose port 3000.
+
+Run the following command to create a Tailscale server proxy. This
+will generate the TLS certificates to secure your homelab service and
+start the proxy on the background:
+
+```bash
+sudo tailscale serve --bg --https=443 3000
+```
+
