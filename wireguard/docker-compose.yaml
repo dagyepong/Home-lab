@@ -12,6 +12,25 @@ services:
     ports:
       - "5000:5000"
       - "51820:51820/udp"
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.wg-http.entrypoints=http"
+      - "traefik.http.routers.wg-http.middlewares=redir-https"
+      - "traefik.http.routers.wg-http.rule=Host(`wg.linuxpad.blog`)"
+      - "traefik.http.routers.wg-http.service=noop@internal"
+      - "traefik.http.routers.wg-https.entrypoints=https"
+      - "traefik.http.routers.wg-https.tls=true"
+      - "traefik.http.routers.wg-https.middlewares=gzip"
+      - "traefik.http.routers.wg-https.rule=Host(`wg.linuxpad.blog`)"
+      - "traefik.http.services.wg-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.wg-backend.loadbalancer.server.port=5000"
+      - "traefik.http.routers.wg-https.middlewares=authelia@docker"
+
+
+
 
   wireguard-ui:
     image: ngoduykhanh/wireguard-ui:latest
@@ -38,3 +57,7 @@ services:
     volumes:
       - ./db:/app/db
       - ./config:/etc/wireguard
+
+networks:
+  traefik:
+    external: true
