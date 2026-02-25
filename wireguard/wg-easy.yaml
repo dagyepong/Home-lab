@@ -39,3 +39,5 @@ networks:
   traefik:
     external: true
 
+volumes:
+  etc_wireguard:
