@@ -1,63 +1,44 @@
-version: "3"
+volumes:
+  etc_wireguard:
 
 services:
+  wg-easy:
+    #environment:
+    #  Optional:
+    #  - PORT=51821
+    #  - HOST=0.0.0.0
+    #  - INSECURE=false
 
-  wireguard:
-    image: linuxserver/wireguard:v1.0.20210914-ls7 #Use this image, latest seems to have issues
-    container_name: wireguard
-    cap_add:
-      - NET_ADMIN
-    volumes:
-      - ./config:/config
-    ports:
-      - "5000:5000"
-      - "51820:51820/udp"
+    image: ghcr.io/wg-easy/wg-easy:15
+    container_name: wg-easy
     networks:
-      - traefik
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik"
-      - "traefik.http.routers.wg-http.entrypoints=http"
-      - "traefik.http.routers.wg-http.middlewares=redir-https"
-      - "traefik.http.routers.wg-http.rule=Host(`wg.linuxpad.blog`)"
-      - "traefik.http.routers.wg-http.service=noop@internal"
-      - "traefik.http.routers.wg-https.entrypoints=https"
-      - "traefik.http.routers.wg-https.tls=true"
-      - "traefik.http.routers.wg-https.middlewares=gzip"
-      - "traefik.http.routers.wg-https.rule=Host(`wg.linuxpad.blog`)"
-      - "traefik.http.services.wg-backend.loadbalancer.server.scheme=http"
-      - "traefik.http.services.wg-backend.loadbalancer.server.port=5000"
-      - "traefik.http.routers.wg-https.middlewares=authelia@docker"
-
-
-
-
-  wireguard-ui:
-    image: ngoduykhanh/wireguard-ui:latest
-    container_name: wireguard-ui
-    depends_on:
-      - wireguard
+      wg:
+        ipv4_address: 10.42.42.42
+        ipv6_address: fdcc:ad94:bacf:61a3::2a
+    volumes:
+      - etc_wireguard:/etc/wireguard
+      - /lib/modules:/lib/modules:ro
+    ports:
+      - "51820:51820/udp"
+      - "51821:51821/tcp"
+    restart: unless-stopped
     cap_add:
       - NET_ADMIN
-    network_mode: service:wireguard
-    environment:
-      - SENDGRID_API_KEY
-      - EMAIL_FROM_ADDRESS
-      - EMAIL_FROM_NAME
-      - SESSION_SECRET
-      - WGUI_USERNAME=admin
-      - WGUI_PASSWORD=password
-      - WG_CONF_TEMPLATE
-      - WGUI_MANAGE_START=true
-      - WGUI_MANAGE_RESTART=true
-    logging:
-      driver: json-file
-      options:
-        max-size: 50m
-    volumes:
-      - ./db:/app/db
-      - ./config:/etc/wireguard
+      - SYS_MODULE
+      # - NET_RAW # ⚠️ Uncomment if using Podman
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv6.conf.all.disable_ipv6=0
+      - net.ipv6.conf.all.forwarding=1
+      - net.ipv6.conf.default.forwarding=1
 
 networks:
-  traefik:
-    external: true
+  wg:
+    driver: bridge
+    enable_ipv6: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.42.42.0/24
+        - subnet: fdcc:ad94:bacf:61a3::/64
