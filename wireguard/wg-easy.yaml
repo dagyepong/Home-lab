@@ -1,23 +1,26 @@
-version: '3.8'
+name: my-wireguard-project
 services:
-  wg-easy:
-    image: ghcr.io/wg-easy/wg-easy  # The Docker image to use.
-    container_name: wg-easy         # Name of the container.
-    environment:                    # Environment variables to configure the instance.
-      - LANG=en                     # Language settings.
-      - WG_HOST=<Your IP/Domain>    # Public IP or domain name where WG-Easy is accessible.
-      - PASSWORD_HASH='<🚨YOUR_ADMIN_PASSWORD_HASH>' # Bcrypt hash for Web UI login.
-      - PORT=51821                  # Port for the web interface.
-      - WG_PORT=51820               # WireGuard port for VPN traffic.
-    volumes:
-      - ./wg-easy/:/etc/wireguard   # Volume mapping for WireGuard configuration files.
-    ports:
-      - "51820:51820/udp"           # UDP port used by WireGuard.
-      - "51821:51821/tcp"           # TCP port for accessing the web interface.
-    cap_add:                        # Capabilities required for managing networking features.
-      - NET_ADMIN
-      - SYS_MODULE
-    sysctls:                        # Kernel parameters that need to be set for WireGuard.
-      - net.ipv4.conf.all.src_valid_mark=1
-      - net.ipv4.ip_forward=1
-    restart: unless-stopped         # Ensures the container restarts automatically unless manually stopped.
+    amnezia-wg-easy:
+        container_name: amnezia-wg-easy
+        environment:
+            - LANG=en
+            - WG_HOST=192.168.1.140
+            - PASSWORD_HASH=$2a$12$qIqztWwjTh3B.ovxjjwRueveyPHQgje3daiwZuO1Qnv0tbqZHhpbS
+            - PORT=51821
+            - WG_PORT=51820
+        volumes:
+            - ~/.amnezia-wg-easy:/etc/wireguard
+            - /lib/modules:/lib/modules:ro
+        ports:
+            - 51820:51820/udp
+            - 51821:51821/tcp
+        cap_add:
+            - NET_ADMIN
+            - SYS_MODULE
+        sysctls:
+            - net.ipv4.conf.all.src_valid_mark=1
+            - net.ipv4.ip_forward=1
+        devices:
+            - /dev/net/tun:/dev/net/tun
+        restart: unless-stopped
+        image: ghcr.io/w0rng/amnezia-wg-easy
