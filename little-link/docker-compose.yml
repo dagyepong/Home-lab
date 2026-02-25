@@ -53,7 +53,7 @@ services:
       - GHOST=https://linuxpad.blog
       - FACEBOOK=https://www.facebook.com/profile.php?id=100094076774707&mibextid=ZbWKwL
       - PATREON=https://patreon.com/Linuxpad?utm_medium=clipboard_copy&utm_source=copyLink&utm_campaign=creatorshare_creator&utm_content=join_link
-      - FOOTER=Linuxpad © 2025
+      - FOOTER=Linuxpad © 2026
     ports:
       - 8080:3000
     networks:
