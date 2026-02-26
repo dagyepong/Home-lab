@@ -1,40 +1,47 @@
+volumes:
+  etc_wireguard:
+
 services:
-  amnezia-wg-easy:
-    image: ghcr.io/deckersu/amnezia-wg-easy:latest
-    container_name: amnezia-wg-easy
+  wgandamneziawg-easy:
     environment:
-      # Required: your server's IP or domain
-      - WG_HOST=192.168.1.141
-      # Authentication (use bcrypt hash or plain password; the image supports plain)
-      - PASSWORD=your_secure_password   # change this!
-      # Ports
-      - PORT=51821
-      - WG_PORT=51820
-      # DNS
-      - WG_DEFAULT_DNS=1.1.1.1
-      # CRITICAL: Add S3 and S4 set to 0
-      - S3=0
-      - S4=0
-      # Optional Amnezia junk parameters (you can adjust)
-      - JC=4
-      - JMIN=40
-      - JMAX=70
-      # H1-H4 are usually fixed, but you can set them if needed
-      - H1=1
-      - H2=2
-      - H3=3
-      - H4=4
+      # Изменение языка:
+      # (Supports: en, ru)
+      - LANG=en
+      # ⚠️ Обязательно:
+      # Измените это значение на публичное имя хоста (FQDN) или IP-адрес Вашего VPN-сервера.
+      - WG_HOST=raspberrypi.local 
+      # - PROTOCOL=http # По умолчанию http, если будет ошибка с сертифкатами, так же поднимется http, путь до сертификатов для https нужно добавить в разделе volumes в данном файле (docker-compose.yml). Сертификаты принимаются с названием и форматом только таким server.crt и server.key
+      - USERNAME_HASH=$$2y$$10$$hBCoykrB95WSzuV4fafBzOHWKu9sbyVa34GJr8VV5R/pIelfEMYyG # обязательно нужно указывать хеш имени пользователя (если предполагается использование), (нужны двойные $$, хэш 'foobar123'; см. "How_to_generate_an_bcrypt_hash.md" для генерации хеша) - https://github.com/nonenulldev404/wgandamneziawg-easy/blob/wgandamneziawg-easy/How_to_generate_an_bcrypt_hash.md
+      - PASSWORD_HASH=$$2y$$10$$hBCoykrB95WSzuV4fafBzOHWKu9sbyVa34GJr8VV5R/pIelfEMYyG # обязательно нужно указывать хеш пароля (если предполагается использование), (нужны двойные $$, хэш 'foobar123'; см. "How_to_generate_an_bcrypt_hash.md" для генерации хеша) - https://github.com/nonenulldev404/wgandamneziawg-easy/blob/wgandamneziawg-easy/How_to_generate_an_bcrypt_hash.md
+      # - WEBUI_HOST=0.0.0.0 # IP-адрес или FQDN (доменное имя), к которому привязан веб-интерфейс.
+      # - WG_DEVICE=eth0 # Ethernet-устройство, через которое должен пересылаться трафик Wireguard и AmneziaWG внутри контейнера.
+      # - PORT=51821 # Измените TCP-порт для веб-интерфейса, если хотите использовать другой.
+      # - WG_PORT=51820 # Если вы меняете WG_PORT, не забудьте также изменить открытый порт PORT. Публичный UDP порт Вашего VPN-сервера. Wireguard и AmneziaWG будет прослушивать его (в противном случае — порт по умолчанию) внутри контейнера Docker.
+      # - WG_CONFIG_PORT=92820 # Порт UDP, используемый в Home Assistant Plugin - подробнее Порт UDP, используемый в Home Assistant Plugin - подробнее https://github.com/adriy-be/homeassistant-addons-jdeath/tree/main/wgeasy
+      # - WG_DEFAULT_ADDRESS=10.8.0.x # Диапазон IP-адресов клиентов (Вашей сети VPN). Измените, если хотите другую сеть.
+      # - WG_DEFAULT_DNS=1.1.1.1 # DNS-сервер, который клиенты будут использовать. Если задано пустое значение, клиенты не будут использовать DNS.
+      # - WG_MTU=1420 # MTU, который будут использовать клиенты. Сервер использует WG MTU по умолчанию.
+      # - WG_ALLOWED_IPS=192.168.15.0/24, 10.0.1.0/24 # Разрешенные IP-адреса, которые будут использовать клиенты.
+      # - WG_PERSISTENT_KEEPALIVE=25 # Значение в секундах для поддержания "соединения" открытым. Если это значение равно 0, то соединения не будут поддерживаться.
+      # - WG_PRE_UP=echo "Pre Up" > /etc/wireguard/pre-up.txt # Перед поднятием интерфейса - Подготовка (например, настройка firewall). Смотрите config.js для значения по умолчанию. - подробнее https://github.com/nonenulldev404/wgandamneziawg-easy/blob/wgandamneziawg-easy/src/config.js
+      # - WG_POST_UP=echo "Post Up" > /etc/wireguard/post-up.txt # После поднятия интерфейса - Роутинг, NAT, правила iptables и т.п. Смотрите config.js для значения по умолчанию. - подробнее https://github.com/nonenulldev404/wgandamneziawg-easy/blob/wgandamneziawg-easy/src/config.js
+      # - WG_PRE_DOWN=echo "Pre Down" > /etc/wireguard/pre-down.txt # Перед остановкой интерфейса - Очистка или подготовка к отключению. Смотрите config.js для значения по умолчанию. - подробнее https://github.com/nonenulldev404/wgandamneziawg-easy/blob/wgandamneziawg-easy/src/config.js
+      # - WG_POST_DOWN=echo "Post Down" > /etc/wireguard/post-down.txt # После остановки интерфейса - Финальная очистка. Смотрите config.js для значения по умолчанию. - подробнее https://github.com/nonenulldev404/wgandamneziawg-easy/blob/wgandamneziawg-easy/src/config.js
+      # - UI_CHART_TYPE=2 # (UI_CHART_TYPE=0 # Диаграммы отключены, UI_CHART_TYPE=1 # Линейная диаграмма, UI_CHART_TYPE=2 # Диаграмма с областями, UI_CHART_TYPE=3 # Столбчатая диаграмма.)
+
+    image: ghcr.io/nonenulldev404/wgandamneziawg-easy:latest
+    container_name: wgandamneziawg-easy
     volumes:
-      - ./amnezia-wg-easy:/etc/amnezia/amneziawg   # note the path
+      - etc_wireguard:/etc/wireguard
+      # - /path/your/certs:/etc/wireguard/certs:ro # где /path/your/certs - путь до папки на Вашем хосте, где будет развернут VPN-сервер с Вашими сертификатами для https
     ports:
-      - "51820:51820/udp"
-      - "51821:51821/tcp"
+      - "51820:51820/udp" # Если вы изменили переменную WG_PORT, не забудьте здесь указать это значение
+      - "51821:51821/tcp" # Если вы изменили переменную PORT, не забудьте здесь указать это значение
     restart: unless-stopped
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
+      # - NET_RAW # ⚠️ Раскомментируйте, если используете Podman
     sysctls:
       - net.ipv4.ip_forward=1
       - net.ipv4.conf.all.src_valid_mark=1
-    devices:
-      - /dev/net/tun:/dev/net/tun
