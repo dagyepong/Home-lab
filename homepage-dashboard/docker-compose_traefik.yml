@@ -26,7 +26,7 @@ services:
       - "traefik.http.routers.homepage-https.middlewares=gzip"
       - "traefik.http.routers.homepage-https.rule=Host(`homepage.linuxpad.blog`)"
       - "traefik.http.services.homepage-backend.loadbalancer.server.scheme=http"
-      - "traefik.http.services.homepage-backend.loadbalancer.server.port=5005"
+      - "traefik.http.services.homepage-backend.loadbalancer.server.port=3000"
       - "traefik.http.routers.homepage-https.middlewares=authelia@docker"
 
     security_opt:
