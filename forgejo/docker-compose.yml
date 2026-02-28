@@ -2,7 +2,7 @@
 services:
   db:
     image: postgres:15-alpine
-    container_name: forgejo-db
+    container_name: dots-db
     volumes:
       - forgejo_db_data:/var/lib/postgresql/data
     environment:
@@ -16,9 +16,9 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
-  forgejo:
-    image: codeberg.org/forgejo/forgejo:1.21
-    container_name: forgejo
+  dots:
+    image: codeberg.org/dots/dots:1.21
+    container_name: dots
     depends_on:
       db:
         condition: service_healthy
@@ -27,7 +27,7 @@ services:
       - "2222:22"   # Port pour SSH (optionnel)
     volumes:
       - forgejo_data:/data
-      - ./config/app.ini:/etc/forgejo/app.ini
+      - ./config/app.ini:/etc/dots/app.ini
 
     networks:
       - traefik
@@ -47,17 +47,17 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
-      - "traefik.http.routers.forgejo-http.entrypoints=http"
-      - "traefik.http.routers.forgejo-http.middlewares=redir-https"
-      - "traefik.http.routers.forgejo-http.rule=Host(`forgejo.linuxpad.blog`)"
-      - "traefik.http.routers.forgejo-http.service=noop@internal"
-      - "traefik.http.routers.forgejo-https.entrypoints=https"
-      - "traefik.http.routers.forgejo-https.tls=true"
-      - "traefik.http.routers.forgejo-https.middlewares=gzip"
-      - "traefik.http.routers.forgejo-https.rule=Host(`forgejo.linuxpad.blog`)"
-      - "traefik.http.services.forgejo-backend.loadbalancer.server.scheme=http"
-      - "traefik.http.services.forgejo-backend.loadbalancer.server.port=3000"
-      - "traefik.http.routers.forgejo-https.middlewares=authelia@docker"
+      - "traefik.http.routers.dots-http.entrypoints=http"
+      - "traefik.http.routers.dots-http.middlewares=redir-https"
+      - "traefik.http.routers.dots-http.rule=Host(`dots.linuxpad.blog`)"
+      - "traefik.http.routers.dots-http.service=noop@internal"
+      - "traefik.http.routers.dots-https.entrypoints=https"
+      - "traefik.http.routers.dots-https.tls=true"
+      - "traefik.http.routers.dots-https.middlewares=gzip"
+      - "traefik.http.routers.dots-https.rule=Host(`dots.linuxpad.blog`)"
+      - "traefik.http.services.dots-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.dots-backend.loadbalancer.server.port=3000"
+      - "traefik.http.routers.dots-https.middlewares=authelia@docker"
 
 volumes:
   forgejo_db_data:
