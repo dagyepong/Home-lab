@@ -89,6 +89,7 @@ services:
       - DB_CLEANUP_TIME=72000
       - DB_CHECKSUM=SHA1
       - DB_COMPRESSION=GZ
+      - DB_DUMP_TARGET=/backup # Add this line
       - DB_SPLIT_DB=true
     restart: always
     command: dump
