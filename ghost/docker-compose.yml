@@ -76,22 +76,22 @@ services:
     image: databack/mysql-backup:latest
     depends_on:
       - database
-      - ghost
     volumes:
       - ../backups/ghost_db/:/backup
     environment:
       - DB_TYPE=mysql
-      - DB_HOST=ghost_db
+      - DB_SERVER=ghost_db
       - DB_NAME=${DB_NAME:-ghost}
       - DB_USER=${DB_USER:-ghost}
       - DB_PASS=${DB_USER_PASS:-DatabasePassword1234}
       - DB_DUMP_FREQ=720
       - DB_DUMP_BEGIN=0000
       - DB_CLEANUP_TIME=72000
-      - CHECKSUM=SHA1
-      - COMPRESSION=GZ
-      - SPLIT_DB=true
+      - DB_CHECKSUM=SHA1
+      - DB_COMPRESSION=GZ
+      - DB_SPLIT_DB=true
     restart: always
+    command: dump
 
 networks:
   traefik:
