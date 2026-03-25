@@ -1,4 +1,4 @@
-
+version: '3.8'
 
 services:
 
@@ -73,26 +73,26 @@ services:
 
   db_backup:
     container_name: db_backup
-    image: prodrigestivill/mysql-backup:latest
+    image: databack/mysql-backup:latest
     depends_on:
       - database
       - ghost
     volumes:
-      - ../backups/ghost_db/:/backups
+      - ../backups/ghost_db/:/backup
     environment:
-      - MYSQL_HOST=ghost_db
-      - MYSQL_DATABASE=${DB_NAME:-ghost}
-      - MYSQL_USER=${DB_USER:-ghost}
-      - MYSQL_PASSWORD=${DB_USER_PASS:-DatabasePassword1234}
-      - MYSQLDUMP_OPTS=--single-transaction --routines --triggers --opt
-      - BACKUP_FREQUENCY=12h
-      - BACKUP_TIME=00:00
-      - BACKUP_KEEP_DAYS=7
-      - BACKUP_KEEP_WEEKS=4
-      - COMPRESSION=gzip
-      - MD5=TRUE
+      - DB_TYPE=mysql
+      - DB_HOST=ghost_db
+      - DB_NAME=${DB_NAME:-ghost}
+      - DB_USER=${DB_USER:-ghost}
+      - DB_PASS=${DB_USER_PASS:-DatabasePassword1234}
+      - DB_DUMP_FREQ=720
+      - DB_DUMP_BEGIN=0000
+      - DB_CLEANUP_TIME=72000
+      - CHECKSUM=SHA1
+      - COMPRESSION=GZ
+      - SPLIT_DB=true
     restart: always
 
 networks:
   traefik:
-    external: true
+    external: true   
