@@ -1,0 +1,38 @@
+---
+services:
+  lab-dash:
+      container_name: lab-dash
+      image: ghcr.io/anthonygress/lab-dash:latest
+      privileged: true
+      #network_mode: host # for monitoring network usage stats. run `sudo ufw allow 2022/tcp` on ubuntu to allow access through firewall
+      environment:
+        - SECRET=YOUR_SECRET_KEY # any random string for used for encryption.
+        # You can run `openssl rand -base64 32` to generate a key
+      volumes:
+        - /sys:/sys:ro
+        - /docker/lab-dash/config:/config
+        - /docker/lab-dash/uploads:/app/public/uploads
+        - /var/run/docker.sock:/var/run/docker.sock
+      restart: unless-stopped
+      networks:
+      - traefik
+      labels:
+            - "traefik.enable=true"
+            - "traefik.docker.network=traefik"
+            - "traefik.http.routers.lab-http.entrypoints=http"
+            - "traefik.http.routers.lab-http.middlewares=redir-https"
+            - "traefik.http.routers.lab-http.rule=Host(`lab.linuxpad.blog`)"
+            - "traefik.http.routers.lab-http.service=noop@internal"
+            - "traefik.http.routers.lab-https.entrypoints=https"
+            - "traefik.http.routers.lab-https.tls=true"
+            - "traefik.http.routers.lab-https.middlewares=gzip"
+            - "traefik.http.routers.lab-https.rule=Host(`lab.linuxpad.blog`)"
+            - "traefik.http.services.lab-backend.loadbalancer.server.scheme=http"
+            - "traefik.http.services.lab-backend.loadbalancer.server.port=2022"
+            - "traefik.http.routers.lab-https.middlewares=authelia@docker"
+
+
+
+networks:
+  traefik:
+    external: true
