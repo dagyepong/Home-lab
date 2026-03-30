@@ -25,7 +25,7 @@ services:
     container_name: dockpeek
     environment:
       # Authentification Dockpeek
-      - SECRET_KEY=ma-key-de-malade
+      - SECRET_KEY=}k*(QMeihB!r
       - USERNAME=nana
       - PASSWORD=MotDePasseFort
 
