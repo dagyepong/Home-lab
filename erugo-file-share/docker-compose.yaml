@@ -5,8 +5,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./erugo-storage:/var/www/html/storage
-    ports:
-      - "9998:80"
+    networks:
+      - traefik
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
@@ -19,7 +19,7 @@ services:
       - "traefik.http.routers.erugo-https.middlewares=gzip"
       - "traefik.http.routers.erugo-https.rule=Host(`erugo.linuxpad.blog`)"
       - "traefik.http.services.erugo-backend.loadbalancer.server.scheme=http"
-      - "traefik.http.services.erugo-backend.loadbalancer.server.port=9998"
+      - "traefik.http.services.erugo-backend.loadbalancer.server.port=80"
       - "traefik.http.routers.erugo-https.middlewares=authelia@docker"
 
 
