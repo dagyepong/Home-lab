@@ -1,0 +1,29 @@
+services:
+  app:
+    image: wardy784/erugo:latest
+    container_name: erugo
+    restart: unless-stopped
+    volumes:
+      - ./erugo-storage:/var/www/html/storage
+    ports:
+      - "9998:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.erugo-http.entrypoints=http"
+      - "traefik.http.routers.erugo-http.middlewares=redir-https"
+      - "traefik.http.routers.erugo-http.rule=Host(`erugo.linuxpad.blog`)"
+      - "traefik.http.routers.erugo-http.service=noop@internal"
+      - "traefik.http.routers.erugo-https.entrypoints=https"
+      - "traefik.http.routers.erugo-https.tls=true"
+      - "traefik.http.routers.erugo-https.middlewares=gzip"
+      - "traefik.http.routers.erugo-https.rule=Host(`erugo.linuxpad.blog`)"
+      - "traefik.http.services.erugo-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.erugo-backend.loadbalancer.server.port=9998"
+      - "traefik.http.routers.erugo-https.middlewares=authelia@docker"
+
+
+networks:
+  traefik:
+    name: traefik
+    external: true #do not expose external for security risk
