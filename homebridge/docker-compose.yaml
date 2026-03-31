@@ -1,0 +1,34 @@
+
+services:
+  homebridge:
+    image: homebridge/homebridge:latest
+    restart: always
+    network_mode: host
+    volumes:
+      - ./volumes/homebridge:/homebridge
+    logging:
+      driver: json-file
+      options:
+        max-size: "10mb"
+        max-file: "1"
+    networks:
+          - traefik
+    labels:
+          - "traefik.enable=true"
+          - "traefik.docker.network=traefik"
+          - "traefik.http.routers.home-http.entrypoints=http"
+          - "traefik.http.routers.home-http.middlewares=redir-https"
+          - "traefik.http.routers.home-http.rule=Host(`home.linuxpad.blog`)"
+          - "traefik.http.routers.home-http.service=noop@internal"
+          - "traefik.http.routers.home-https.entrypoints=https"
+          - "traefik.http.routers.home-https.tls=true"
+          - "traefik.http.routers.home-https.middlewares=gzip"
+          - "traefik.http.routers.home-https.rule=Host(`home.linuxpad.blog`)"
+          - "traefik.http.services.home-backend.loadbalancer.server.scheme=http"
+          - "traefik.http.services.home-backend.loadbalancer.server.port=8581"
+          - "traefik.http.routers.home-https.middlewares=authelia@docker"
+
+
+networks:
+  traefik:
+    external: true
