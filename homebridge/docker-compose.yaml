@@ -3,7 +3,7 @@ services:
   homebridge:
     image: homebridge/homebridge:latest
     restart: always
-    network_mode: host
+    #network_mode: host
     volumes:
       - ./volumes/homebridge:/homebridge
     logging:
