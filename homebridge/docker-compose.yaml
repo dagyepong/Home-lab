@@ -26,7 +26,7 @@ services:
           - "traefik.http.routers.home-https.rule=Host(`home.linuxpad.blog`)"
           - "traefik.http.services.home-backend.loadbalancer.server.scheme=http"
           - "traefik.http.services.home-backend.loadbalancer.server.port=8581"
-          - "traefik.http.routers.home-https.middlewares=authelia@docker"
+         # - "traefik.http.routers.home-https.middlewares=authelia@docker" ##disable this to get access to scriptable ios widget ui
 
 
 networks:
