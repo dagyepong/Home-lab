@@ -1,0 +1,80 @@
+version: '3.8'
+
+networks:
+  traefik:
+    external: true
+  opencloud-net:
+    driver: bridge
+
+services:
+  opencloud:
+    image: opencloudeu/opencloud:latest
+    container_name: opencloud
+    networks:
+      - opencloud-net
+      - traefik
+    environment:
+      - OC_DOMAIN=cloud.linuxpad.blog
+      - COLLABORA_DOMAIN=collabora.linuxpad.blog
+      - WOPISERVER_DOMAIN=wopiserver.linuxpad.blog
+      - INITIAL_ADMIN_PASSWORD=YourSecurePassword
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.opencloud-http.entrypoints=http"
+      - "traefik.http.routers.opencloud-http.middlewares=redir-https"
+      - "traefik.http.routers.opencloud-http.rule=Host(`cloud.linuxpad.blog`)"
+      - "traefik.http.routers.opencloud-http.service=noop@internal"
+      - "traefik.http.routers.opencloud-https.entrypoints=https"
+      - "traefik.http.routers.opencloud-https.tls=true"
+      - "traefik.http.routers.opencloud-https.middlewares=gzip,authelia@docker"
+      - "traefik.http.routers.opencloud-https.rule=Host(`cloud.linuxpad.blog`)"
+      - "traefik.http.services.opencloud.loadbalancer.server.scheme=https"
+      - "traefik.http.services.opencloud.loadbalancer.server.port=9200"
+
+  collabora:
+    image: collabora/code:latest
+    container_name: collabora
+    networks:
+      - opencloud-net
+      - traefik
+    cap_add:
+      - MKNOD
+    environment:
+      - domain=cloud\\.linuxpad\\.blog
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.collabora-http.entrypoints=http"
+      - "traefik.http.routers.collabora-http.middlewares=redir-https"
+      - "traefik.http.routers.collabora-http.rule=Host(`collabora.linuxpad.blog`)"
+      - "traefik.http.routers.collabora-http.service=noop@internal"
+      - "traefik.http.routers.collabora-https.entrypoints=https"
+      - "traefik.http.routers.collabora-https.tls=true"
+      - "traefik.http.routers.collabora-https.middlewares=gzip,authelia@docker"
+      - "traefik.http.routers.collabora-https.rule=Host(`collabora.linuxpad.blog`)"
+      - "traefik.http.services.collabora.loadbalancer.server.scheme=https"
+      - "traefik.http.services.collabora.loadbalancer.server.port=9980"
+
+  wopiserver:
+    image: opencloudeu/wopiserver:latest
+    container_name: wopiserver
+    networks:
+      - opencloud-net
+      - traefik
+    environment:
+      - WOPI_HOST=collabora.linuxpad.blog
+      - WOPI_DISABLE_SSL=true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.wopiserver-http.entrypoints=http"
+      - "traefik.http.routers.wopiserver-http.middlewares=redir-https"
+      - "traefik.http.routers.wopiserver-http.rule=Host(`wopiserver.linuxpad.blog`)"
+      - "traefik.http.routers.wopiserver-http.service=noop@internal"
+      - "traefik.http.routers.wopiserver-https.entrypoints=https"
+      - "traefik.http.routers.wopiserver-https.tls=true"
+      - "traefik.http.routers.wopiserver-https.middlewares=gzip,authelia@docker"
+      - "traefik.http.routers.wopiserver-https.rule=Host(`wopiserver.linuxpad.blog`)"
+      - "traefik.http.services.wopiserver.loadbalancer.server.scheme=http"
+      - "traefik.http.services.wopiserver.loadbalancer.server.port=9300"   
