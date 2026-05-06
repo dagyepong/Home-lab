@@ -40,6 +40,7 @@ services:
       - traefik
     cap_add:
       - MKNOD
+      - SYS_ADMIN
     environment:
       - domain=cloud\\.linuxpad\\.blog
     labels:
