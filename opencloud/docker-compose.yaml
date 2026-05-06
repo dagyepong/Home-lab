@@ -1,23 +1,76 @@
-version: '3.8'
-
-networks:
-  traefik:
-    external: true
-  opencloud-net:
-    driver: bridge
-
 services:
+  # --- OpenCloud Core ---
   opencloud:
-    image: opencloudeu/opencloud:latest
+    image: opencloudeu/opencloud-rolling:latest
     container_name: opencloud
+    profiles:
+      - apps
     networks:
-      - opencloud-net
       - traefik
+    entrypoint:
+      - /bin/sh
+    command: ['-c', 'opencloud init || true; opencloud server']
     environment:
-      - OC_DOMAIN=cloud.linuxpad.blog
-      - COLLABORA_DOMAIN=collabora.linuxpad.blog
-      - WOPISERVER_DOMAIN=wopiserver.linuxpad.blog
-      - INITIAL_ADMIN_PASSWORD=YourSecurePassword
+      # --- Core Config ---
+      OC_URL: https://cloud.linuxpad.blog
+      OC_LOG_LEVEL: warn
+      OC_LOG_COLOR: true
+      OC_LOG_PRETTY: true
+      OC_LOG_TIMEZONE: ${TZ}
+      OC_EXCLUDE_RUN_SERVICES: idp
+      GATEWAY_GRPC_ADDR: 0.0.0.0:9142
+      OC_INSECURE: false
+      PROXY_ENABLE_BASIC_AUTH: false
+      IDM_CREATE_DEMO_USERS: false
+      FRONTEND_OCS_ENABLE_DENIALS: false
+      MICRO_REGISTRY_ADDRESS: 127.0.0.1:9233
+      NATS_NATS_HOST: 0.0.0.0
+      NATS_NATS_PORT: 9233
+      PROXY_CSP_CONFIG_FILE_LOCATION: /etc/opencloud/csp.yaml
+      OC_GRPC_MAX_RECEIVED_MESSAGE_SIZE: 102400000
+      OC_SHARING_PUBLIC_SHARE_MUST_HAVE_PASSWORD: false
+      OC_PASSWORD_POLICY_MIN_CHARACTERS: '5'
+      
+      # --- Notifications (SMTP) ---
+      OC_ADD_RUN_SERVICES: 'notifications'
+      NOTIFICATIONS_SMTP_HOST: ${NOTIFICATIONS_SMTP_HOST}
+      NOTIFICATIONS_SMTP_PORT: ${NOTIFICATIONS_SMTP_PORT}
+      NOTIFICATIONS_SMTP_SENDER: ${NOTIFICATIONS_SMTP_SENDER}
+      NOTIFICATIONS_SMTP_USERNAME: ${NOTIFICATIONS_SMTP_USERNAME}
+      NOTIFICATIONS_SMTP_PASSWORD: ${NOTIFICATIONS_SMTP_PASSWORD}
+      NOTIFICATIONS_SMTP_INSECURE: "false"
+      NOTIFICATIONS_SMTP_AUTHENTICATION: login
+      NOTIFICATIONS_SMTP_ENCRYPTION: starttls
+      NOTIFICATIONS_EMAIL_TEMPLATE_PATH: ${OC_NOTIFICATIONS_EMAIL_TEMPLATE_PATH}
+
+      # --- OIDC (PocketID) ---
+      OC_OIDC_ISSUER: https://id.pocket.auth
+      PROXY_OIDC_REWRITE_WELLKNOWN: true
+      PROXY_USER_OIDC_CLAIM: preferred_username
+      PROXY_USER_CS3_CLAIM: username
+      PROXY_AUTOPROVISION_ACCOUNTS: true
+      PROXY_OIDC_ACCESS_TOKEN_VERIFY_METHOD: none
+      PROXY_ROLE_ASSIGNMENT_DRIVER: oidc
+      PROXY_TLS: false 
+      GRAPH_ASSIGN_DEFAULT_USER_ROLE: false
+      
+      WEB_OIDC_CLIENT_ID: ${WEB_OIDC_CLIENT_ID}
+      WEB_OIDC_METADATA_URL: https://id.pocket.auth/.well-known/openid-configuration
+
+      # --- Integrations ---
+      WOPI_URL: https://wopi.linuxpad.blog
+      COLLABORA_URL: https://collabora.linuxpad.blog
+      TIKA_URL: http://tika:9998
+      
+      START_ADDITIONAL_SERVICES: 'notifications,tika'
+
+    volumes:
+      - ${CONFIGDIR}/opencloud/config:/etc/opencloud
+      - ${CONFIGDIR}/opencloud/config/csp.yaml:/etc/opencloud/csp.yaml
+      - ${STUFF}/opencloud:/var/lib/opencloud
+    restart: unless-stopped
+    depends_on:
+      - tika
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
@@ -32,17 +85,19 @@ services:
       - "traefik.http.services.opencloud.loadbalancer.server.scheme=https"
       - "traefik.http.services.opencloud.loadbalancer.server.port=9200"
 
+  # --- Collabora Online ---
   collabora:
     image: collabora/code:latest
     container_name: collabora
-    networks:
-      - opencloud-net
-      - traefik
-    cap_add:
-      - MKNOD
-      - SYS_ADMIN
     environment:
-      - domain=cloud\\.linuxpad\\.blog
+      - aliasgroup1=https://cloud.linuxpad.blog
+      - aliasgroup2=https://wopi.linuxpad.blog
+      - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.level=warning
+      - username=admin
+      - password=${COLLABORA_ADMIN_PASSWORD}
+    restart: unless-stopped
+    networks:
+      - traefik
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
@@ -52,33 +107,20 @@ services:
       - "traefik.http.routers.collabora-http.service=noop@internal"
       - "traefik.http.routers.collabora-https.entrypoints=https"
       - "traefik.http.routers.collabora-https.tls=true"
-      - "traefik.http.routers.collabora-https.middlewares=gzip,authelia@docker"
       - "traefik.http.routers.collabora-https.rule=Host(`collabora.linuxpad.blog`)"
-      - "traefik.http.services.collabora.loadbalancer.server.scheme=https"
+      - "traefik.http.routers.collabora-https.middlewares=gzip"
       - "traefik.http.services.collabora.loadbalancer.server.port=9980"
+      - "traefik.http.services.collabora.loadbalancer.server.scheme=http"
+      - "traefik.http.middlewares.collabora-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
 
-  wopiserver:
-    image: opencloudeu/opencloud:latest
-    container_name: wopiserver
-    command: opencloud collaboration server
+  # --- Tika (Full Text Search) ---
+  tika:
+    image: apache/tika:latest
+    container_name: tika
+    restart: unless-stopped
     networks:
-      - opencloud-net
       - traefik
-    depends_on:
-      - opencloud
-    environment:
-      - WOPI_HOST=collabora.linuxpad.blog
-      - WOPI_DISABLE_SSL=true
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik"
-      - "traefik.http.routers.wopiserver-http.entrypoints=http"
-      - "traefik.http.routers.wopiserver-http.middlewares=redir-https"
-      - "traefik.http.routers.wopiserver-http.rule=Host(`wopiserver.linuxpad.blog`)"
-      - "traefik.http.routers.wopiserver-http.service=noop@internal"
-      - "traefik.http.routers.wopiserver-https.entrypoints=https"
-      - "traefik.http.routers.wopiserver-https.tls=true"
-      - "traefik.http.routers.wopiserver-https.middlewares=gzip,authelia@docker"
-      - "traefik.http.routers.wopiserver-https.rule=Host(`wopiserver.linuxpad.blog`)"
-      - "traefik.http.services.wopiserver.loadbalancer.server.scheme=http"
-      - "traefik.http.services.wopiserver.loadbalancer.server.port=9300"   
+
+networks:
+  traefik:
+    external: true
