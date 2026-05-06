@@ -57,11 +57,14 @@ services:
       - "traefik.http.services.collabora.loadbalancer.server.port=9980"
 
   wopiserver:
-    image: opencloudeu/wopiserver:latest
+    image: opencloudeu/opencloud:latest
     container_name: wopiserver
+    command: opencloud collaboration server
     networks:
       - opencloud-net
       - traefik
+    depends_on:
+      - opencloud
     environment:
       - WOPI_HOST=collabora.linuxpad.blog
       - WOPI_DISABLE_SSL=true
