@@ -33,11 +33,8 @@ services:
       DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
       # Use socket-proxy instead of direct Docker socket (much safer)
       DOCKER_HOST: tcp://socket-proxy:2375
-      # Optional: override any other vars
-      # SKIP_MIGRATIONS: "false"
     volumes:
       - dockhand_data:/app/data
-      #- /var/run/docker.sock:/var/run/docker.sock:ro ## REPLACE WITH SOCKET-PROXY for access and security
     networks:
       - internal
       - traefik
@@ -48,18 +45,18 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
 
-      # HTTP → HTTPS redirect
+      # HTTP → HTTPS redirect (use @file)
       - "traefik.http.routers.dockhand-http.entrypoints=http"
-      - "traefik.http.routers.dockhand-http.middlewares=redir-https"
+      - "traefik.http.routers.dockhand-http.middlewares=redir-https@file"
       - "traefik.http.routers.dockhand-http.rule=Host(`${DOCKHAND_DOMAIN}`)"
       - "traefik.http.routers.dockhand-http.service=noop@internal"
 
-      # HTTPS router with Authelia and GZIP
+      # HTTPS router with Authelia and GZIP (use @file for gzip)
       - "traefik.http.routers.dockhand-https.entrypoints=https"
       - "traefik.http.routers.dockhand-https.tls=true"
       - "traefik.http.routers.dockhand-https.tls.certresolver=le"
       - "traefik.http.routers.dockhand-https.rule=Host(`${DOCKHAND_DOMAIN}`)"
-      - "traefik.http.routers.dockhand-https.middlewares=gzip,authelia@docker"
+      - "traefik.http.routers.dockhand-https.middlewares=gzip@file,authelia@docker"
       - "traefik.http.routers.dockhand-https.service=dockhand-backend"
 
       # Service definition (port 3000 inside container)
