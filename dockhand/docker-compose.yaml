@@ -37,6 +37,7 @@ services:
       # SKIP_MIGRATIONS: "false"
     volumes:
       - dockhand_data:/app/data
+      #- /var/run/docker.sock:/var/run/docker.sock:ro ## REPLACE WITH SOCKET-PROXY for access and security
     networks:
       - internal
       - traefik
