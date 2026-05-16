@@ -50,7 +50,7 @@ services:
       - "--certificatesresolvers.le.acme.storage=/data/ssl/acme.json"
       - "--certificatesresolvers.le.acme.dnsChallenge.resolvers=1.1.1.1:53,8.8.8.8:53"
       - "--certificatesresolvers.le.acme.dnsChallenge.provider=${ACME_PROVIDER}"
-      - "--certificatesresolvers.le.acme.dnsChallenge.delayBeforeCheck=30"
+      - "--certificatesresolvers.le.acme.dnsChallenge.propagation.delayBeforeChecks=30"
     environment:
       - TZ=Asia/Shanghai
       - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
@@ -59,29 +59,24 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
-      # GZIP
-      - "traefik.http.middlewares.gzip.compress=true"
-      # HTTPS Redirect
-      - "traefik.http.middlewares.redir-https.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.redir-https.redirectscheme.permanent=false"
-      # Dashboard Secure (fixed TLS domain labels – array syntax)
+      # Dashboard Secure (using file-based middlewares)
       - "traefik.http.routers.traefik-dashboard-secure.tls.certresolver=le"
       - "traefik.http.routers.traefik-dashboard-secure.tls.domains[0].main=${DNS_MAIN}"
       - "traefik.http.routers.traefik-dashboard-secure.tls.domains[0].sans=${DNS_LIST}"
       - "traefik.http.routers.traefik-dashboard-secure.tls=true"
       - "traefik.http.routers.traefik-dashboard-secure.entrypoints=https"
-      - "traefik.http.routers.traefik-dashboard-secure.middlewares=gzip"
+      - "traefik.http.routers.traefik-dashboard-secure.middlewares=gzip@file"
       - "traefik.http.routers.traefik-dashboard-secure.rule=Host(`${SERVICE_DOMAIN}`)"
       - "traefik.http.routers.traefik-dashboard-secure.service=dashboard@internal"
       # Dashboard Redirect (HTTP -> HTTPS)
       - "traefik.http.routers.traefik-dashboard-nosecure.entrypoints=http"
-      - "traefik.http.routers.traefik-dashboard-nosecure.middlewares=redir-https"
+      - "traefik.http.routers.traefik-dashboard-nosecure.middlewares=redir-https@file"
       - "traefik.http.routers.traefik-dashboard-nosecure.rule=Host(`${SERVICE_DOMAIN}`)"
       - "traefik.http.routers.traefik-dashboard-nosecure.service=noop@internal"
       # API Access
       - "traefik.http.routers.traefik-dashboard-api.tls=true"
       - "traefik.http.routers.traefik-dashboard-api.entrypoints=https"
-      - "traefik.http.routers.traefik-dashboard-api.middlewares=gzip"
+      - "traefik.http.routers.traefik-dashboard-api.middlewares=gzip@file"
       - "traefik.http.routers.traefik-dashboard-api.rule=Host(`${SERVICE_DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
       - "traefik.http.routers.traefik-dashboard-api.service=api@internal"
     volumes:
@@ -121,8 +116,7 @@ services:
       - 'traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/verify?rd=https://auth.linuxpad.blog'
       - 'traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader=true'
       - 'traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
-      # Fixed: Added maxResponseBodySize to silence warning
-      - 'traefik.http.middlewares.authelia.forwardAuth.maxResponseBodySize=10485760'   # 10 MB
+      - 'traefik.http.middlewares.authelia.forwardAuth.maxResponseBodySize=10485760'
       - 'traefik.http.middlewares.authelia-basic.forwardAuth.address=http://authelia:9091/api/verify?auth=basic'
       - 'traefik.http.middlewares.authelia-basic.forwardAuth.trustForwardHeader=true'
       - 'traefik.http.middlewares.authelia-basic.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
