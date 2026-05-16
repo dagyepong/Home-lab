@@ -27,8 +27,6 @@ services:
       - "--entryPoints.https.http3"
       - "--entryPoints.https.http3.advertisedport=${SERVICE_HTTPS_PORT}"
       - "--serverstransport.insecureskipverify=true"
-      # Uncomment if strictly internal testing
-      # - "--entryPoints.https.forwardedHeaders.insecure"
       - "--entryPoints.http.forwardedHeaders.trustedIPs=127.0.0.1/32,172.18.0.1/24"
       - "--entryPoints.https.forwardedHeaders.trustedIPs=127.0.0.1/32,172.18.0.1/24"
       - "--api=true"
@@ -66,10 +64,10 @@ services:
       # HTTPS Redirect
       - "traefik.http.middlewares.redir-https.redirectscheme.scheme=https"
       - "traefik.http.middlewares.redir-https.redirectscheme.permanent=false"
-      # Dashboard Secure
+      # Dashboard Secure (fixed TLS domain labels – array syntax)
       - "traefik.http.routers.traefik-dashboard-secure.tls.certresolver=le"
-      - "traefik.http.routers.traefik-dashboard-secure.tls.domains.main=${DNS_MAIN}"
-      - "traefik.http.routers.traefik-dashboard-secure.tls.domains.sans=${DNS_LIST}"
+      - "traefik.http.routers.traefik-dashboard-secure.tls.domains[0].main=${DNS_MAIN}"
+      - "traefik.http.routers.traefik-dashboard-secure.tls.domains[0].sans=${DNS_LIST}"
       - "traefik.http.routers.traefik-dashboard-secure.tls=true"
       - "traefik.http.routers.traefik-dashboard-secure.entrypoints=https"
       - "traefik.http.routers.traefik-dashboard-secure.middlewares=gzip"
@@ -123,6 +121,8 @@ services:
       - 'traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/verify?rd=https://auth.linuxpad.blog'
       - 'traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader=true'
       - 'traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
+      # Fixed: Added maxResponseBodySize to silence warning
+      - 'traefik.http.middlewares.authelia.forwardAuth.maxResponseBodySize=10485760'   # 10 MB
       - 'traefik.http.middlewares.authelia-basic.forwardAuth.address=http://authelia:9091/api/verify?auth=basic'
       - 'traefik.http.middlewares.authelia-basic.forwardAuth.trustForwardHeader=true'
       - 'traefik.http.middlewares.authelia-basic.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
@@ -184,8 +184,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     restart: unless-stopped
-    # REMOVED: ports: - 2375:2375 (Security Risk: Do not expose socket to host network)
-    # Access socket-proxy internally via http://socket-proxy:2375 from other containers on the 'traefik' network
     tmpfs:
       - /run
     networks:
