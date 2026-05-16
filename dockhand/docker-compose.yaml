@@ -32,9 +32,11 @@ services:
       # Database
       DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
       # Use socket-proxy instead of direct Docker socket (much safer)
-      DOCKER_HOST: tcp://socket-proxy:2375
+      #DOCKER_HOST: tcp://socket-proxy:2375
     volumes:
       - dockhand_data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro ## REPLACE WITH SOCKET-PROXY for access and security
+
     networks:
       - internal
       - traefik
