@@ -22,18 +22,17 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
-      - "traefik.http.routers.wordpress-http.entrypoints=http"
-      - "traefik.http.routers.wordpress-http.middlewares=redir-https"
-      - "traefik.http.routers.wordpress-http.rule=Host(`tech.nanaoware.online`)"
-      - "traefik.http.routers.wordpress-http.service=noop@internal"
-      - "traefik.http.routers.wordpress-https.entrypoints=https"
-      - "traefik.http.routers.wordpress-https.tls=true"
-      - "traefik.http.routers.wordpress-https.middlewares=gzip"
-      - "traefik.http.routers.wordpress-https.rule=Host(`tech.nanaoware.online`)"
-      - "traefik.http.services.wordpress-backend.loadbalancer.server.scheme=http"
-      - "traefik.http.services.wordpress-backend.loadbalancer.server.port=5010"
-      - "traefik.http.routers.wordpress-https.middlewares=authelia@docker"
-
+      - "traefik.http.routers.tech-http.entrypoints=http"
+      - "traefik.http.routers.tech-http.middlewares=redir-https@file"
+      - "traefik.http.routers.tech-http.rule=Host(`tech.nanaoware.online`)"
+      - "traefik.http.routers.tech-http.service=noop@internal"
+      - "traefik.http.routers.tech-https.entrypoints=https"
+      - "traefik.http.routers.tech-https.tls=true"
+      - "traefik.http.routers.tech-https.tls.certresolver=le"
+      - "traefik.http.routers.tech-https.rule=Host(`tech.nanaoware.online`)"
+      - "traefik.http.routers.tech-https.middlewares=gzip@file,authelia@docker"
+      - "traefik.http.routers.tech-https.service=tech-backend"
+      - "traefik.http.services.tech-backend.loadbalancer.server.port=5010"
 
 
 
