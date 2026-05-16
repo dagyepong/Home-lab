@@ -23,17 +23,17 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
-      - "traefik.http.routers.vaultwarden-http.entrypoints=http"
-      - "traefik.http.routers.vaultwarden-http.middlewares=redir-https"
-      - "traefik.http.routers.vaultwarden-http.rule=Host(`vaultwarden.linuxpad.blog`)"
-      - "traefik.http.routers.vaultwarden-http.service=noop@internal"
-      - "traefik.http.routers.vaultwarden-https.entrypoints=https"
-      - "traefik.http.routers.vaultwarden-https.tls=true"
-      - "traefik.http.routers.vaultwarden-https.middlewares=gzip"
-      - "traefik.http.routers.vaultwarden-https.rule=Host(`vaultwarden.linuxpad.blog`)"
-      - "traefik.http.services.vaultwarden-backend.loadbalancer.server.scheme=http"
-      - "traefik.http.services.vaultwarden-backend.loadbalancer.server.port=4044"
-      - "traefik.http.routers.vaultwarden-https.middlewares=authelia@docker"
+      - "traefik.http.routers.vault-http.entrypoints=http"
+      - "traefik.http.routers.vault-http.middlewares=redir-https@file"
+      - "traefik.http.routers.vault-http.rule=Host(`vault.linuxpad.blog`)"
+      - "traefik.http.routers.vault-http.service=noop@internal"
+      - "traefik.http.routers.vault-https.entrypoints=https"
+      - "traefik.http.routers.vault-https.tls=true"
+      - "traefik.http.routers.vault-https.tls.certresolver=le"
+      - "traefik.http.routers.vault-https.rule=Host(`vault.linuxpad.blog`)"
+      - "traefik.http.routers.vault-https.middlewares=gzip@file,authelia@docker"
+      - "traefik.http.routers.vault-https.service=vault-backend"
+      - "traefik.http.services.vault-backend.loadbalancer.server.port=4044"
 
     volumes:
       - /opt/vaultwarden/data:/data
