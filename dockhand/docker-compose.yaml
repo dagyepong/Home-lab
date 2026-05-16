@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dockhand
+      POSTGRES_PASSWORD: changeme
+      POSTGRES_DB: dockhand
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  dockhand:
+    image: fnsys/dockhand:latest
+    environment:
+      DATABASE_URL: postgres://dockhand:changeme@postgres:5432/dockhand
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - dockhand_data:/app/data
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.dockhand-http.entrypoints=http"
+      - "traefik.http.routers.dockhand-http.middlewares=redir-https"
+      - "traefik.http.routers.dockhand-http.rule=Host(`dockhand.linuxpad.blog`)"
+      - "traefik.http.routers.dockhand-http.service=noop@internal"
+      - "traefik.http.routers.dockhand-https.entrypoints=https"
+      - "traefik.http.routers.dockhand-https.tls=true"
+      - "traefik.http.routers.dockhand-https.middlewares=gzip"
+      - "traefik.http.routers.dockhand-https.rule=Host(`dockhand.linuxpad.blog`)"
+      - "traefik.http.services.dockhand-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.dockhand-backend.loadbalancer.server.port=3000"
+      - "traefik.http.routers.dockhand-https.middlewares=authelia@docker"
+
+
+volumes:
+  postgres_data:
+  dockhand_data:
+
+networks:
+    traefik:
+        external: true
