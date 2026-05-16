@@ -19,6 +19,8 @@ services:
     depends_on:
       - postgres
     restart: unless-stopped
+    networks:
+      - traefik
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
