@@ -24,7 +24,8 @@ curl -H "Host: immich.linuxpad.blog" http://localhost/api/server-info
 🚀 Deployment & Configuration Steps
 1. Create the Pocket ID data directory
 ```bash
-mkdir -p pocket-id-data
+mkdir -p /media/dfr pocket-id-data
+sudo chown -R 1000:1000 /media/dfr   # Immich UID
 ```
 
 
@@ -34,7 +35,7 @@ docker compose up -d
 ```
 
 . Set up Pocket ID admin account
-Visit https://pocketid.linuxpad.blog/login/setup
+Visit https://pocketid.linuxpad.blog/setup
 
 Create your admin account and register a passkey (you can use your computer’s biometrics – no physical key required).
 

@@ -1,6 +1,6 @@
 #
-# Immich + Pocket ID (OIDC) behind Traefik
-# Assumes external network 'traefik' exists.
+# Immich + Pocket ID behind Traefik
+# All services on external network 'traefik'
 #
 
 name: immich
@@ -20,7 +20,7 @@ services:
     env_file:
       - .env
     environment:
-      # Force binding to all interfaces (fixes 502)
+      # Force binding to all interfaces
       - HOST=0.0.0.0
       - IMMICH_HOST=0.0.0.0
       - IMMICH_SERVER_HOST=0.0.0.0
@@ -43,21 +43,19 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
-
-      # HTTP → HTTPS redirect (no auth middleware)
+      # HTTP → HTTPS redirect
       - "traefik.http.routers.immich-http.entrypoints=http"
       - "traefik.http.routers.immich-http.middlewares=redir-https@file"
-      - "traefik.http.routers.immich-http.rule=Host(`immich.linuxpad.blog`)"   # ← change to your domain
+      - "traefik.http.routers.immich-http.rule=Host(`immich.linuxpad.blog`)"
       - "traefik.http.routers.immich-http.service=noop@internal"
-
-      # HTTPS router – no Authelia, only gzip
+      # HTTPS router (no Authelia, just gzip)
       - "traefik.http.routers.immich-https.entrypoints=https"
       - "traefik.http.routers.immich-https.tls=true"
       - "traefik.http.routers.immich-https.tls.certresolver=le"
-      - "traefik.http.routers.immich-https.rule=Host(`immich.linuxpad.blog`)"   # ← change to your domain
+      - "traefik.http.routers.immich-https.rule=Host(`immich.linuxpad.blog`)"
       - "traefik.http.routers.immich-https.middlewares=gzip@file"
       - "traefik.http.routers.immich-https.service=immich-backend"
-
+      # Backend service
       - "traefik.http.services.immich-backend.loadbalancer.server.port=2283"
 
   # ========== IMMICH MACHINE LEARNING ==========
@@ -125,37 +123,26 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-    # Remove host port – Traefik handles routing
-    # ports:
-    #   - 3000:80
     volumes:
       - ./pocket-id-data:/app/backend/data
-    healthcheck:
-      test: "curl -f http://localhost/health"
-      interval: 1m30s
-      timeout: 5s
-      retries: 2
-      start_period: 10s
     networks:
       - traefik
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
-
       # HTTP → HTTPS redirect
       - "traefik.http.routers.pocketid-http.entrypoints=http"
       - "traefik.http.routers.pocketid-http.middlewares=redir-https@file"
-      - "traefik.http.routers.pocketid-http.rule=Host(`pocketid.linuxpad.blog`)"   # ← change to your domain
+      - "traefik.http.routers.pocketid-http.rule=Host(`pocketid.linuxpad.blog`)"
       - "traefik.http.routers.pocketid-http.service=noop@internal"
-
-      # HTTPS router – no Authelia (Pocket ID is the auth provider)
+      # HTTPS router
       - "traefik.http.routers.pocketid-https.entrypoints=https"
       - "traefik.http.routers.pocketid-https.tls=true"
       - "traefik.http.routers.pocketid-https.tls.certresolver=le"
-      - "traefik.http.routers.pocketid-https.rule=Host(`pocketid.linuxpad.blog`)"   # ← change to your domain
+      - "traefik.http.routers.pocketid-https.rule=Host(`pocketid.linuxpad.blog`)"
       - "traefik.http.routers.pocketid-https.middlewares=gzip@file"
       - "traefik.http.routers.pocketid-https.service=pocketid-backend"
-
+      # Backend service
       - "traefik.http.services.pocketid-backend.loadbalancer.server.port=80"
 
 volumes:
