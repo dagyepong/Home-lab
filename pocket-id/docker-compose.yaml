@@ -19,17 +19,18 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
-      - "traefik.http.routers.pocket-id-http.entrypoints=http"
-      - "traefik.http.routers.pocket-id-http.middlewares=redir-https"
-      - "traefik.http.routers.pocket-id-http.rule=Host(`pocket-id.linuxpad.blog`)"
-      - "traefik.http.routers.pocket-id-http.service=noop@internal"
-      - "traefik.http.routers.pocket-id-https.entrypoints=https"
-      - "traefik.http.routers.pocket-id-https.tls=true"
-      - "traefik.http.routers.pocket-id-https.middlewares=gzip"
-      - "traefik.http.routers.pocket-id-https.rule=Host(`pocket-id.linuxpad.blog`)"
-      - "traefik.http.services.pocket-id-backend.loadbalancer.server.scheme=http"
-      - "traefik.http.services.pocket-id-backend.loadbalancer.server.port=80"
-      - "traefik.http.routers.pocket-id-https.middlewares=authelia@docker"
+      - "traefik.http.routers.pocketid-http.entrypoints=http"
+      - "traefik.http.routers.pocketid-http.middlewares=redir-https@file"
+      - "traefik.http.routers.pocketid-http.rule=Host(`pocketid.linuxpad.blog`)"
+      - "traefik.http.routers.pocketid-http.service=noop@internal"
+      - "traefik.http.routers.pocketid-https.entrypoints=https"
+      - "traefik.http.routers.pocketid-https.tls=true"
+      - "traefik.http.routers.pocketid-https.tls.certresolver=le"
+      - "traefik.http.routers.pocketid-https.rule=Host(`pocketid.linuxpad.blog`)"
+      - "traefik.http.routers.pocketid-https.middlewares=gzip@file,authelia@docker"
+      - "traefik.http.routers.pocketid-https.service=pocketid-backend"
+      - "traefik.http.services.pocketid-backend.loadbalancer.server.port=80"
+
 
 
 
