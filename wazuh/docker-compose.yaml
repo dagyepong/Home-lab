@@ -101,16 +101,16 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
       - "traefik.http.routers.wazuh-http.entrypoints=http"
-      - "traefik.http.routers.wazuh-http.middlewares=redir-https"
+      - "traefik.http.routers.wazuh-http.middlewares=redir-https@file"
       - "traefik.http.routers.wazuh-http.rule=Host(`wazuh.linuxpad.blog`)"
       - "traefik.http.routers.wazuh-http.service=noop@internal"
       - "traefik.http.routers.wazuh-https.entrypoints=https"
       - "traefik.http.routers.wazuh-https.tls=true"
-      - "traefik.http.routers.wazuh-https.middlewares=gzip"
+      - "traefik.http.routers.wazuh-https.tls.certresolver=le"
       - "traefik.http.routers.wazuh-https.rule=Host(`wazuh.linuxpad.blog`)"
-      - "traefik.http.services.wazuh-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.wazuh-https.middlewares=gzip@file,authelia@docker"
+      - "traefik.http.routers.wazuh-https.service=wazuh-backend"
       - "traefik.http.services.wazuh-backend.loadbalancer.server.port=5601"
-      - "traefik.http.routers.wazuh-https.middlewares=authelia@docker"
 
 
 
