@@ -13,16 +13,17 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
       - "traefik.http.routers.portainer-http.entrypoints=http"
-      - "traefik.http.routers.portainer-http.middlewares=redir-https"
+      - "traefik.http.routers.portainer-http.middlewares=redir-https@file"
       - "traefik.http.routers.portainer-http.rule=Host(`portainer.linuxpad.blog`)"
       - "traefik.http.routers.portainer-http.service=noop@internal"
       - "traefik.http.routers.portainer-https.entrypoints=https"
       - "traefik.http.routers.portainer-https.tls=true"
-      - "traefik.http.routers.portainer-https.middlewares=gzip"
+      - "traefik.http.routers.portainer-https.tls.certresolver=le"
       - "traefik.http.routers.portainer-https.rule=Host(`portainer.linuxpad.blog`)"
-      - "traefik.http.services.portainer-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.portainer-https.middlewares=gzip@file,authelia@docker"
+      - "traefik.http.routers.portainer-https.service=portainer-backend"
       - "traefik.http.services.portainer-backend.loadbalancer.server.port=9000"
-      - "traefik.http.routers.portainer-https.middlewares=authelia@docker"
+
 
 volumes:
   portainer_data:
