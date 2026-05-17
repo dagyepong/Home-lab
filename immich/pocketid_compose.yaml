@@ -1,0 +1,162 @@
+#
+# Immich + Pocket ID (OIDC) behind Traefik
+# Assumes external network 'traefik' exists.
+#
+
+name: immich
+
+networks:
+  traefik:
+    external: true
+
+services:
+  # ========== IMMICH SERVER ==========
+  immich-server:
+    container_name: immich_server
+    image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
+    volumes:
+      - ${UPLOAD_LOCATION}:/usr/src/app/upload
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - .env
+    environment:
+      # Force binding to all interfaces (fixes 502)
+      - HOST=0.0.0.0
+      - IMMICH_HOST=0.0.0.0
+      - IMMICH_SERVER_HOST=0.0.0.0
+      - IMMICH_SERVER__HOST=0.0.0.0
+      - NESTJS_HOST=0.0.0.0
+      # OIDC with Pocket ID
+      - IMMICH__OAUTH__ENABLED=true
+      - IMMICH__OAUTH__ISSUER_URL=${POCKET_ID_ISSUER}
+      - IMMICH__OAUTH__CLIENT_ID=${POCKET_ID_CLIENT_ID}
+      - IMMICH__OAUTH__CLIENT_SECRET=${POCKET_ID_CLIENT_SECRET}
+      - IMMICH__OAUTH__SCOPE=openid email profile
+      - IMMICH__OAUTH__BUTTON_TEXT=Login with Pocket ID
+      - IMMICH__OAUTH__AUTO_REGISTER=true
+    depends_on:
+      - redis
+      - database
+    restart: always
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+
+      # HTTP → HTTPS redirect (no auth middleware)
+      - "traefik.http.routers.immich-http.entrypoints=http"
+      - "traefik.http.routers.immich-http.middlewares=redir-https@file"
+      - "traefik.http.routers.immich-http.rule=Host(`immich.linuxpad.blog`)"   # ← change to your domain
+      - "traefik.http.routers.immich-http.service=noop@internal"
+
+      # HTTPS router – no Authelia, only gzip
+      - "traefik.http.routers.immich-https.entrypoints=https"
+      - "traefik.http.routers.immich-https.tls=true"
+      - "traefik.http.routers.immich-https.tls.certresolver=le"
+      - "traefik.http.routers.immich-https.rule=Host(`immich.linuxpad.blog`)"   # ← change to your domain
+      - "traefik.http.routers.immich-https.middlewares=gzip@file"
+      - "traefik.http.routers.immich-https.service=immich-backend"
+
+      - "traefik.http.services.immich-backend.loadbalancer.server.port=2283"
+
+  # ========== IMMICH MACHINE LEARNING ==========
+  immich-machine-learning:
+    container_name: immich_machine_learning
+    image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}
+    volumes:
+      - model-cache:/cache
+    env_file:
+      - .env
+    restart: always
+    networks:
+      - traefik
+
+  # ========== REDIS ==========
+  redis:
+    container_name: immich_redis
+    image: docker.io/redis:6.2-alpine@sha256:2ba50e1ac3a0ea17b736ce9db2b0a9f6f8b85d4c27d5f5accc6a416d8f42c6d5
+    healthcheck:
+      test: redis-cli ping || exit 1
+    restart: always
+    networks:
+      - traefik
+
+  # ========== POSTGRES (with pgvecto.rs) ==========
+  database:
+    container_name: immich_postgres
+    image: docker.io/tensorchord/pgvecto-rs:pg14-v0.2.0@sha256:90724186f0a3517cf6914295b5ab410db9ce23190a2d9d0b9dd6463e3fa298f0
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_DB: ${DB_DATABASE_NAME}
+      POSTGRES_INITDB_ARGS: '--data-checksums'
+    volumes:
+      - ${DB_DATA_LOCATION}:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready --dbname='${DB_DATABASE_NAME}' --username='${DB_USERNAME}' || exit 1; Chksum="$$(psql --dbname='${DB_DATABASE_NAME}' --username='${DB_USERNAME}' --tuples-only --no-align --command='SELECT COALESCE(SUM(checksum_failures), 0) FROM pg_stat_database')"; echo "checksum failure count is $$Chksum"; [ "$$Chksum" = '0' ] || exit 1
+      interval: 5m
+      start_interval: 30s
+      start_period: 5m
+    command:
+      [
+        'postgres',
+        '-c',
+        'shared_preload_libraries=vectors.so',
+        '-c',
+        'search_path="$$user", public, vectors',
+        '-c',
+        'logging_collector=on',
+        '-c',
+        'max_wal_size=2GB',
+        '-c',
+        'shared_buffers=512MB',
+        '-c',
+        'wal_compression=on',
+      ]
+    restart: always
+    networks:
+      - traefik
+
+  # ========== POCKET ID (OIDC Provider) ==========
+  pocket-id:
+    image: ghcr.io/pocket-id/pocket-id:latest
+    container_name: pocket_id
+    restart: unless-stopped
+    env_file:
+      - .env
+    # Remove host port – Traefik handles routing
+    # ports:
+    #   - 3000:80
+    volumes:
+      - ./pocket-id-data:/app/backend/data
+    healthcheck:
+      test: "curl -f http://localhost/health"
+      interval: 1m30s
+      timeout: 5s
+      retries: 2
+      start_period: 10s
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+
+      # HTTP → HTTPS redirect
+      - "traefik.http.routers.pocketid-http.entrypoints=http"
+      - "traefik.http.routers.pocketid-http.middlewares=redir-https@file"
+      - "traefik.http.routers.pocketid-http.rule=Host(`pocketid.linuxpad.blog`)"   # ← change to your domain
+      - "traefik.http.routers.pocketid-http.service=noop@internal"
+
+      # HTTPS router – no Authelia (Pocket ID is the auth provider)
+      - "traefik.http.routers.pocketid-https.entrypoints=https"
+      - "traefik.http.routers.pocketid-https.tls=true"
+      - "traefik.http.routers.pocketid-https.tls.certresolver=le"
+      - "traefik.http.routers.pocketid-https.rule=Host(`pocketid.linuxpad.blog`)"   # ← change to your domain
+      - "traefik.http.routers.pocketid-https.middlewares=gzip@file"
+      - "traefik.http.routers.pocketid-https.service=pocketid-backend"
+
+      - "traefik.http.services.pocketid-backend.loadbalancer.server.port=80"
+
+volumes:
+  model-cache:
