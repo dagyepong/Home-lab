@@ -14,19 +14,19 @@ services:
     networks:
           - traefik
     labels:
-          - "traefik.enable=true"
-          - "traefik.docker.network=traefik"
-          - "traefik.http.routers.home-http.entrypoints=http"
-          - "traefik.http.routers.home-http.middlewares=redir-https"
-          - "traefik.http.routers.home-http.rule=Host(`home.linuxpad.blog`)"
-          - "traefik.http.routers.home-http.service=noop@internal"
-          - "traefik.http.routers.home-https.entrypoints=https"
-          - "traefik.http.routers.home-https.tls=true"
-          - "traefik.http.routers.home-https.middlewares=gzip"
-          - "traefik.http.routers.home-https.rule=Host(`home.linuxpad.blog`)"
-          - "traefik.http.services.home-backend.loadbalancer.server.scheme=http"
-          - "traefik.http.services.home-backend.loadbalancer.server.port=8581"
-         # - "traefik.http.routers.home-https.middlewares=authelia@docker" ##disable this to get access to scriptable ios widget ui
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.home-http.entrypoints=http"
+      - "traefik.http.routers.home-http.middlewares=redir-https@file"
+      - "traefik.http.routers.home-http.rule=Host(`home.linuxpad.blog`)"
+      - "traefik.http.routers.home-http.service=noop@internal"
+      - "traefik.http.routers.home-https.entrypoints=https"
+      - "traefik.http.routers.home-https.tls=true"
+      - "traefik.http.routers.home-https.tls.certresolver=le"
+      - "traefik.http.routers.home-https.rule=Host(`home.linuxpad.blog`)"
+      - "traefik.http.routers.home-https.middlewares=gzip@file,authelia@docker"
+      - "traefik.http.routers.home-https.service=home-backend"
+      - "traefik.http.services.home-backend.loadbalancer.server.port=8581"
 
 
 networks:
