@@ -15,20 +15,19 @@ services:
       # 指定你自己的账号密码，如未设置 `FLARE_USER`，则会默认生成密码并展示在应用启动日志中
       - FLARE_PASS=akwasi123
     labels:
-      - "wud.watch=false"
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
-      - "traefik.http.routers.flare-http.entrypoints=http"
-      - "traefik.http.routers.flare-http.middlewares=redir-https"
-      - "traefik.http.routers.flare-http.rule=Host(`flare.linuxpad.blog`)"
-      - "traefik.http.routers.flare-http.service=noop@internal"
-      - "traefik.http.routers.flare-https.entrypoints=https"
-      - "traefik.http.routers.flare-https.tls=true"
-      - "traefik.http.routers.flare-https.middlewares=gzip"
-      - "traefik.http.routers.flare-https.rule=Host(`flare.linuxpad.blog`)"
-      - "traefik.http.services.flare-backend.loadbalancer.server.scheme=http"
-      - "traefik.http.services.flare-backend.loadbalancer.server.port=5005"
-      - "traefik.http.routers.flare-https.middlewares=authelia@docker"
+      - "traefik.http.routers.wazuh-http.entrypoints=http"
+      - "traefik.http.routers.wazuh-http.middlewares=redir-https@file"
+      - "traefik.http.routers.wazuh-http.rule=Host(`wazuh.linuxpad.blog`)"
+      - "traefik.http.routers.wazuh-http.service=noop@internal"
+      - "traefik.http.routers.wazuh-https.entrypoints=https"
+      - "traefik.http.routers.wazuh-https.tls=true"
+      - "traefik.http.routers.wazuh-https.tls.certresolver=le"
+      - "traefik.http.routers.wazuh-https.rule=Host(`wazuh.linuxpad.blog`)"
+      - "traefik.http.routers.wazuh-https.middlewares=gzip@file,authelia@docker"
+      - "traefik.http.routers.wazuh-https.service=wazuh-backend"
+      - "traefik.http.services.wazuh-backend.loadbalancer.server.port=5005"
 
 
 networks:
