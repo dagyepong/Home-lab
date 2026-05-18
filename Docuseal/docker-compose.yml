@@ -1,4 +1,4 @@
-version: '3'
+
 
 services:
 
@@ -13,21 +13,23 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    ports:
-      - 3060:3000
-    expose:
-      - 3060
+
     networks:
-      - proxy
+      - traefik
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.docuseal.rule=Host(`docuseal.nanaoware.online`) || Host(`www.docuseal.nanaoware.online`)
-      - traefik.http.services.docuseal.loadbalancer.server.port=3060
-      - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.mydocuseal.middlewares=mywwwredirect
-      - traefik.http.routers.mydocuseal.middlewares=myauth
-      - traefik.http.routers.mydocuseal.service=api@internal
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.doc-http.entrypoints=http"
+      - "traefik.http.routers.doc-http.middlewares=redir-https@file"
+      - "traefik.http.routers.doc-http.rule=Host(`linuxpad.blog`)"
+      - "traefik.http.routers.doc-http.service=noop@internal"
+      - "traefik.http.routers.doc-https.entrypoints=https"
+      - "traefik.http.routers.doc-https.tls=true"
+      - "traefik.http.routers.doc-https.tls.certresolver=le"
+      - "traefik.http.routers.doc-https.rule=Host(`linuxpad.blog`)"
+      - "traefik.http.routers.doc-https.middlewares=gzip@file,authelia@docker"
+      - "traefik.http.routers.doc-https.service=doc-backend"
+      - "traefik.http.services.doc-backend.loadbalancer.server.port=3060"
 
 
   postgres:
@@ -48,8 +50,8 @@ services:
     expose:
       - 5432
     networks:
-      - proxy
+      - traefik
 
 networks:
-  proxy:
+  traefik:
     external: true
