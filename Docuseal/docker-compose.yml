@@ -13,7 +13,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-
+    
     networks:
       - traefik
     labels:
@@ -21,15 +21,15 @@ services:
       - "traefik.docker.network=traefik"
       - "traefik.http.routers.doc-http.entrypoints=http"
       - "traefik.http.routers.doc-http.middlewares=redir-https@file"
-      - "traefik.http.routers.doc-http.rule=Host(`linuxpad.blog`)"
+      - "traefik.http.routers.doc-http.rule=Host(`doc.linuxpad.blog`)"
       - "traefik.http.routers.doc-http.service=noop@internal"
       - "traefik.http.routers.doc-https.entrypoints=https"
       - "traefik.http.routers.doc-https.tls=true"
       - "traefik.http.routers.doc-https.tls.certresolver=le"
-      - "traefik.http.routers.doc-https.rule=Host(`linuxpad.blog`)"
+      - "traefik.http.routers.doc-https.rule=Host(`doc.linuxpad.blog`)"
       - "traefik.http.routers.doc-https.middlewares=gzip@file,authelia@docker"
       - "traefik.http.routers.doc-https.service=doc-backend"
-      - "traefik.http.services.doc-backend.loadbalancer.server.port=3060"
+      - "traefik.http.services.doc-backend.loadbalancer.server.port=3000"
 
 
   postgres:
