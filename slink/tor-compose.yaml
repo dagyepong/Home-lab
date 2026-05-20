@@ -8,6 +8,11 @@ services:
       - USER_APPROVAL_REQUIRED=false
       - STORAGE_PROVIDER=local
       - TRUSTED_DOMAINS=slink.linuxpad.blog,www.slink.linuxpad.blog,replace_address.onion
+      - ORIGIN=https://your-actual-domain.com # Replace with your real domain[reference:0]
+      - ADMIN_EMAIL=owarenana06@gmail.com
+      - ADMIN_USERNAME=your_preferred_username
+      - ADMIN_PASSWORD=your_secure_password
+
 
     volumes:
       - /srv/appdata/slink/var/data:/app/var/data
