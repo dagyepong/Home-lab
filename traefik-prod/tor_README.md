@@ -72,3 +72,28 @@ docker run --rm dperson/torproxy curl --socks5-hostname localhost:9050 http://ab
 ```
 
 Or simply open the .onion address in Tor Browser.
+
+
+
+
+
+What if you want multiple services (each with its own .onion address)?
+You would add more blocks to torrc:
+
+```bash
+# For slink
+HiddenServiceDir /var/lib/tor/slink/
+HiddenServicePort 80 traefik:8081
+
+# For another service
+HiddenServiceDir /var/lib/tor/otherservice/
+HiddenServicePort 80 traefik:8081
+```
+
+Then you would get each address with:
+
+```bash
+docker exec tor cat /var/lib/tor/slink/hostname
+docker exec tor cat /var/lib/tor/otherservice/hostname
+```
+
