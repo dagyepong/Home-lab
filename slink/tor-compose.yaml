@@ -1,0 +1,52 @@
+version: '3.9'
+services:
+  slink:
+    image: anirdev/slink:latest
+    container_name: slink
+    environment:
+      - ORIGIN=https://slink.nanaoware.online          # Change to your actual domain
+      - USER_APPROVAL_REQUIRED=false
+      - STORAGE_PROVIDER=local
+    volumes:
+      - /srv/appdata/slink/var/data:/app/var/data
+      - /srv/appdata/slink/images:/app/slink/images
+    # No 'ports' – Traefik will route traffic directly
+    networks:
+      - traefik                                         # <-- changed from 'proxy'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"               # <-- important
+
+      # ===== CLEARNET ROUTERS =====
+      # HTTP → HTTPS redirect (using file middleware 'redir-https')
+      - "traefik.http.routers.slink-http.entrypoints=http"
+      - "traefik.http.routers.slink-http.rule=Host(`slink.nanaoware.online`) || Host(`www.slink.nanaoware.online`)"
+      - "traefik.http.routers.slink-http.middlewares=redir-https@file"
+      - "traefik.http.routers.slink-http.service=noop@internal"
+
+      # HTTPS router (with Authelia)
+      - "traefik.http.routers.slink-https.entrypoints=https"
+      - "traefik.http.routers.slink-https.rule=Host(`slink.nanaoware.online`) || Host(`www.slink.nanaoware.online`)"
+      - "traefik.http.routers.slink-https.tls=true"
+      - "traefik.http.routers.slink-https.tls.certresolver=le"
+      - "traefik.http.routers.slink-https.middlewares=authelia@docker"
+      
+      # Optional: WWW redirect middleware
+      - "traefik.http.middlewares.slink-wwwredirect.redirectregex.regex=^https://www\\.(.*)"
+      - "traefik.http.middlewares.slink-wwwredirect.redirectregex.replacement=https://$${1}"
+      - "traefik.http.routers.slink-https.middlewares=authelia@docker,slink-wwwredirect"
+
+      # Backend service (shared by both routers)
+      - "traefik.http.services.slink.loadbalancer.server.port=3000"   # container internal port
+
+      # ===== TOR ROUTER (anonymous, plain HTTP) =====
+      # Replace 'abcdef1234567890.onion' with your actual onion address
+      - "traefik.http.routers.slink-tor.entrypoints=tor"
+      - "traefik.http.routers.slink-tor.rule=Host(`abcdef1234567890.onion`)"
+      - "traefik.http.routers.slink-tor.tls=false"
+      - "traefik.http.routers.slink-tor.service=slink"
+      # No 'middlewares' → bypasses Authelia → anonymous Tor access
+
+networks:
+  traefik:
+    external: true
