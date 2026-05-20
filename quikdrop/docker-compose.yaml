@@ -1,17 +1,48 @@
-#version: '3.9'
 services:
   quickdrop:
     image: roastslav/quickdrop:latest
     container_name: quickdrop
-    volumes:
-      - ./files:/files
-      - ./log:/app/log
-      - ./db:/app/db
-    environment:
-      - max_upload_file_size=2GB   
-      - app_enable_password=false
-      #- app_basic_password=test
-      #- file_deletion_cron=0 0 2 * * *
-    ports:
-      - 8556:8080
     restart: unless-stopped
+    volumes:
+      - /srv/appdata/quickdrop/files:/files      # adjust host path as needed
+      - /srv/appdata/quickdrop/log:/app/log
+      - /srv/appdata/quickdrop/db:/app/db
+    environment:
+      - max_upload_file_size=2GB
+      - app_enable_password=false
+      # - app_basic_password=test
+      # - file_deletion_cron=0 0 2 * * *
+      # Optional: force the app to trust the forwarded host header
+      - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true   # if QuickDrop uses .NET
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+
+      # ===== CLEARNET ROUTER (HTTPS + Authelia) =====
+      - "traefik.http.routers.quickdrop-http.entrypoints=http"
+      - "traefik.http.routers.quickdrop-http.rule=Host(`quickdrop.yourdomain.com`)"
+      - "traefik.http.routers.quickdrop-http.middlewares=redir-https@file"
+      - "traefik.http.routers.quickdrop-http.service=noop@internal"
+
+      - "traefik.http.routers.quickdrop-https.entrypoints=https"
+      - "traefik.http.routers.quickdrop-https.rule=Host(`quickdrop.yourdomain.com`)"
+      - "traefik.http.routers.quickdrop-https.tls=true"
+      - "traefik.http.routers.quickdrop-https.tls.certresolver=le"
+      - "traefik.http.routers.quickdrop-https.middlewares=authelia@docker"
+
+      # Shared backend service definition
+      - "traefik.http.services.quickdrop.loadbalancer.server.port=8080"
+
+      # ===== TOR ROUTER (anonymous, plain HTTP) =====
+      # Replace YOUR_QUICKDROP_ONION.onion with the address from step 2 below
+      - "traefik.http.routers.quickdrop-tor.entrypoints=tor"
+      - "traefik.http.routers.quickdrop-tor.rule=Host(`YOUR_QUICKDROP_ONION.onion`)"
+      - "traefik.http.routers.quickdrop-tor.tls=false"
+      - "traefik.http.routers.quickdrop-tor.service=quickdrop"
+      # No 'middlewares' → bypass Authelia → anonymous Tor access
+
+networks:
+  traefik:
+    external: true
