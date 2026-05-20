@@ -4,9 +4,11 @@ services:
     image: anirdev/slink:latest
     container_name: slink
     environment:
-      - ORIGIN=https://slink.nanaoware.online          # Change to your actual domain
+      - ORIGIN=https://slink.linuxpad.blog          # Change to your actual domain
       - USER_APPROVAL_REQUIRED=false
       - STORAGE_PROVIDER=local
+      - TRUSTED_DOMAINS=slink.linuxpad.blog,www.slink.linuxpad.blog,replace_address.onion
+
     volumes:
       - /srv/appdata/slink/var/data:/app/var/data
       - /srv/appdata/slink/images:/app/slink/images
@@ -20,13 +22,13 @@ services:
       # ===== CLEARNET ROUTERS =====
       # HTTP → HTTPS redirect (using file middleware 'redir-https')
       - "traefik.http.routers.slink-http.entrypoints=http"
-      - "traefik.http.routers.slink-http.rule=Host(`slink.nanaoware.online`) || Host(`www.slink.nanaoware.online`)"
+      - "traefik.http.routers.slink-http.rule=Host(`slink.linuxpad.blog`) || Host(`www.slink.linuxpad.blog`)"
       - "traefik.http.routers.slink-http.middlewares=redir-https@file"
       - "traefik.http.routers.slink-http.service=noop@internal"
 
       # HTTPS router (with Authelia)
       - "traefik.http.routers.slink-https.entrypoints=https"
-      - "traefik.http.routers.slink-https.rule=Host(`slink.nanaoware.online`) || Host(`www.slink.nanaoware.online`)"
+      - "traefik.http.routers.slink-https.rule=Host(`slink.linuxpad.blog`) || Host(`www.slink.linuxpad.blog`)"
       - "traefik.http.routers.slink-https.tls=true"
       - "traefik.http.routers.slink-https.tls.certresolver=le"
       - "traefik.http.routers.slink-https.middlewares=authelia@docker"
