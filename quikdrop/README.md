@@ -7,11 +7,11 @@ mkdir -p /srv/appdata/quickdrop/{files,log,db}
 2. Get a dedicated .onion address for QuickDrop
 Edit your Tor container’s torrc (e.g., ./tor/torrc) and add:
 
-conf
+```bash
 # QuickDrop hidden service
 HiddenServiceDir /var/lib/tor/quickdrop/
 HiddenServicePort 80 traefik:8081
-
+```
 Restart Tor:
 
 ```bash
