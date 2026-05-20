@@ -39,3 +39,10 @@ Clearnet (protected by Authelia): https://quickdrop.yourdomain.com
 
 Tor (anonymous): http://abcdef1234567890.onion in Tor Browser
 
+
+🧪 Testing Tor access
+After starting, test from inside your homelab using a Tor proxy container:
+
+```bash
+docker run --rm dperson/torproxy curl --socks5-hostname localhost:9050 http://YOUR_QUICKDROP_ONION.onion
+```
