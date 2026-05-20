@@ -81,3 +81,10 @@ docker exec tor cat /var/lib/tor/slink/hostname
 docker exec tor cat /var/lib/tor/otherservice/hostname
 ```
 
+🧹 Redis warning (optional fix)
+On your host (not inside containers), run:
+
+```bash
+echo 'vm.overcommit_memory = 1' | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+```
