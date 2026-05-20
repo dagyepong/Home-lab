@@ -1,72 +1,101 @@
-services:
-  nextcloud:
-    image: nextcloud
-    container_name: nextcloud
-    restart: unless-stopped
-    network_mode: service:tailscale
-    depends_on:
-      - nextclouddb
-      - redis
-    volumes:
-      - /srv/appdata/nextcloud/html:/var/www/html
-      - /srv/appdata/nextcloud/custom_apps:/var/www/html/custom_apps
-      - /srv/appdata/nextcloud/config:/var/www/html/config
-      - /srv/appdata/nextcloud/data:/var/www/html/data
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Brussels
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-      - MYSQL_PASSWORD=dbpassword
-      - MYSQL_HOST=nextclouddb
-      - REDIS_HOST=redis
+version: "3.9"
 
-  nextclouddb:
-    image: mariadb
+services:
+  nextcloud-db:
+    image: postgres:16-alpine
     container_name: nextcloud-db
     restart: unless-stopped
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
-    networks:
-      - cloud
     volumes:
-      - /srv/appdata/nextcloud/nextclouddb:/var/lib/mysql
+      - /srv/appdata/nextcloud/db:/var/lib/postgresql/data
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Brussels
-      - MYSQL_RANDOM_ROOT_PASSWORD=true
-      - MYSQL_PASSWORD=dbpassword
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
+      - POSTGRES_DB=nextcloud
+      - POSTGRES_USER=nextcloud
+      - POSTGRES_PASSWORD=${NEXTCLOUD_DB_PASSWORD}   # set in .env
+    networks:
+      - nextcloud-backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nextcloud"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  redis:
-    image: redis:alpine
-    container_name: redis
+  nextcloud-redis:
+    image: redis:7-alpine
+    container_name: nextcloud-redis
+    restart: unless-stopped
     volumes:
       - /srv/appdata/nextcloud/redis:/data
     networks:
-      - cloud
+      - nextcloud-backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  tailscale:
-    image: tailscale/tailscale:latest
-    container_name: tailscale
-    cap_add:
-      - NET_ADMIN
-      - SYS_MODULE
-    devices:
-      - /dev/net/tun:/dev/net/tun
-    volumes:
-      - /var/lib/tailscale:/var/lib/tailscale
-    environment:
-      - TS_AUTHKEY=tskey-auth-XXXXXXXXXXXXX  # Replace with your key
-      - TS_HOSTNAME=nextcloud
-      - TS_STATE_DIR=/var/lib/tailscale
+  nextcloud:
+    image: nextcloud:30-fpm-alpine
+    container_name: nextcloud
     restart: unless-stopped
+    volumes:
+      - /srv/appdata/nextcloud/html:/var/www/html
+      - /srv/appdata/nextcloud/data:/var/www/html/data
+      - /srv/appdata/nextcloud/config:/var/www/html/config
+      - /srv/appdata/nextcloud/custom_apps:/var/www/html/custom_apps
+      - /srv/appdata/nextcloud/themes:/var/www/html/themes
+    environment:
+      - POSTGRES_HOST=nextcloud-db
+      - POSTGRES_DB=nextcloud
+      - POSTGRES_USER=nextcloud
+      - POSTGRES_PASSWORD=${NEXTCLOUD_DB_PASSWORD}
+      - REDIS_HOST=nextcloud-redis
+      - REDIS_PORT=6379
+      - NEXTCLOUD_TRUSTED_DOMAINS=nextcloud.nanaoware.online www.nextcloud.nanaoware.online YOUR_NEXTCLOUD_ONION.onion
+      - NEXTCLOUD_OVERWRITE_PROTOCOL=https
+      - NEXTCLOUD_OVERWRITE_WEBROOT=/
+      - PHP_MEMORY_LIMIT=1G
+      - PHP_UPLOAD_LIMIT=10G
+    networks:
+      - traefik            # for Traefik to reach Nextcloud
+      - nextcloud-backend  # internal db/redis
+    depends_on:
+      nextcloud-db:
+        condition: service_healthy
+      nextcloud-redis:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+
+      # ===== CLEARNET (HTTPS + Authelia) =====
+      - "traefik.http.routers.nextcloud-http.entrypoints=http"
+      - "traefik.http.routers.nextcloud-http.rule=Host(`nextcloud.nanaoware.online`) || Host(`www.nextcloud.nanaoware.online`)"
+      - "traefik.http.routers.nextcloud-http.middlewares=redir-https@file"
+      - "traefik.http.routers.nextcloud-http.service=noop@internal"
+
+      - "traefik.http.routers.nextcloud-https.entrypoints=https"
+      - "traefik.http.routers.nextcloud-https.rule=Host(`nextcloud.nanaoware.online`) || Host(`www.nextcloud.nanaoware.online`)"
+      - "traefik.http.routers.nextcloud-https.tls=true"
+      - "traefik.http.routers.nextcloud-https.tls.certresolver=le"
+      - "traefik.http.routers.nextcloud-https.middlewares=authelia@docker"
+
+      # Optional WWW redirect
+      - "traefik.http.middlewares.nextcloud-wwwredirect.redirectregex.regex=^https://www\\.(.*)"
+      - "traefik.http.middlewares.nextcloud-wwwredirect.redirectregex.replacement=https://$${1}"
+      - "traefik.http.routers.nextcloud-https.middlewares=authelia@docker,nextcloud-wwwredirect"
+
+      # Backend service (shared by both routers)
+      - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
+
+      # ===== TOR ROUTER (anonymous, plain HTTP) =====
+      - "traefik.http.routers.nextcloud-tor.entrypoints=tor"
+      - "traefik.http.routers.nextcloud-tor.rule=Host(`YOUR_NEXTCLOUD_ONION.onion`)"
+      - "traefik.http.routers.nextcloud-tor.tls=false"
+      - "traefik.http.routers.nextcloud-tor.service=nextcloud"
+      # No middleware → bypass Authelia → anonymous Tor access
 
 networks:
-  cloud:
-    name: cloud
-    driver: bridge
   traefik:
     external: true
+  nextcloud-backend:
+    internal: true     # no external access, only between nextcloud, db, redis
