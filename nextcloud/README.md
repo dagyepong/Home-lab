@@ -64,3 +64,10 @@ Testing
 Clearnet (authenticated): https://nextcloud.nanaoware.online – requires Authelia login.
 
 Tor (anonymous): http://YOUR_NEXTCLOUD_ONION.onion in Tor Browser – no Authelia, but Nextcloud itself will ask you to log in (you can create a public share or guest account if you want truly anonymous access).
+
+
+Set up the Nextcloud cron job for background tasks (instead of AJAX):
+
+```bash
+docker exec --user www-data nextcloud php cron.php
+```
