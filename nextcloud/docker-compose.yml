@@ -50,7 +50,7 @@ services:
       - POSTGRES_PASSWORD=${NEXTCLOUD_DB_PASSWORD}
       - REDIS_HOST=nextcloud-redis
       - REDIS_PORT=6379
-      - NEXTCLOUD_TRUSTED_DOMAINS=nextcloud.nanaoware.online www.nextcloud.nanaoware.online YOUR_NEXTCLOUD_ONION.onion
+      - NEXTCLOUD_TRUSTED_DOMAINS=nextcloud.linuxpad.blog www.nextcloud.linuxpad.blog YOUR_NEXTCLOUD_ONION.onion
       - NEXTCLOUD_OVERWRITE_PROTOCOL=https
       - NEXTCLOUD_OVERWRITE_WEBROOT=/
       - PHP_MEMORY_LIMIT=1G
@@ -69,12 +69,12 @@ services:
 
       # ===== CLEARNET (HTTPS + Authelia) =====
       - "traefik.http.routers.nextcloud-http.entrypoints=http"
-      - "traefik.http.routers.nextcloud-http.rule=Host(`nextcloud.nanaoware.online`) || Host(`www.nextcloud.nanaoware.online`)"
+      - "traefik.http.routers.nextcloud-http.rule=Host(`nextcloud.linuxpad.blog`) || Host(`www.nextcloud.linuxpad.blog`)"
       - "traefik.http.routers.nextcloud-http.middlewares=redir-https@file"
       - "traefik.http.routers.nextcloud-http.service=noop@internal"
 
       - "traefik.http.routers.nextcloud-https.entrypoints=https"
-      - "traefik.http.routers.nextcloud-https.rule=Host(`nextcloud.nanaoware.online`) || Host(`www.nextcloud.nanaoware.online`)"
+      - "traefik.http.routers.nextcloud-https.rule=Host(`nextcloud.linuxpad.blog`) || Host(`www.nextcloud.linuxpad.blog`)"
       - "traefik.http.routers.nextcloud-https.tls=true"
       - "traefik.http.routers.nextcloud-https.tls.certresolver=le"
       - "traefik.http.routers.nextcloud-https.middlewares=authelia@docker"
