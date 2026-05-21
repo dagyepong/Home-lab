@@ -40,12 +40,22 @@ www.nextcloud.nanaoware.online → if needed
 YOUR_NEXTCLOUD_ONION.onion → the address from step 3
 
 Also add that same .onion address to NEXTCLOUD_TRUSTED_DOMAINS in the environment.
+🔧 Quick fix
+Run these commands on the Docker host:
 
-5. Start Nextcloud
 
+# 2. Set correct ownership (www-data uid 33) for all Nextcloud mounted directories
 ```bash
-docker-compose up -d
+sudo chown -R 33:33 /srv/appdata/nextcloud/{config,data,html,custom_apps,themes}
+
+# 3. (Optional) ensure directories are writable for group
+sudo chmod -R 755 /srv/appdata/nextcloud/config
+sudo chmod -R 775 /srv/appdata/nextcloud/data   # data needs write for uploads
+
+# 4. start the container
+docker compose up -d nextcloud
 ```
+
 
 6. Complete installation
 Visit https://nextcloud.nanaoware.online – Authelia will prompt you. Then follow Nextcloud setup wizard. The database credentials will be auto‑filled from environment variables. Create an admin account when prompted.
