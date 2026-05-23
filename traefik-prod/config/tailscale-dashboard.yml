@@ -1,0 +1,10 @@
+# config/tailscale-dashboard.yml
+http:
+  routers:
+    tailscale-dashboard:
+      rule: "Host(`homelab.tail9f20b.ts.net`)"
+      entrypoints:
+        - "http"
+      service: "dashboard@internal"
+      middlewares:
+        - "gzip@file"
