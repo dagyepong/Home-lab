@@ -1,0 +1,15 @@
+http:
+  routers:
+    technitium-doh:
+      rule: "Host(`doh.linuxpad.blog`)"
+      entrypoints:
+        - "https"
+      tls:
+        certResolver: "le"
+      service: "technitium-doh@file"
+
+  services:
+    technitium-doh:
+      loadBalancer:
+        servers:
+          - url: "http://technitium:8053"

@@ -1,0 +1,17 @@
+http:
+  routers:
+    wireguard-ui:
+      rule: "Host(`wg.linuxpad.blog`)"
+      entrypoints:
+        - "https"
+      tls:
+        certResolver: "le"
+      service: "wireguard-ui@file"
+      middlewares:
+        - "authelia@docker"
+
+  services:
+    wireguard-ui:
+      loadBalancer:
+        servers:
+          - url: "http://wireguard:51821"

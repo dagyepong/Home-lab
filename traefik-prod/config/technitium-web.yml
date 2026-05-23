@@ -1,0 +1,18 @@
+http:
+  routers:
+    technitium-web:
+      rule: "Host(`dns.linuxpad.blog`)"
+      entrypoints:
+        - "https"
+      tls:
+        certResolver: "le"
+      service: "technitium-web@file"
+      middlewares:
+        - "authelia@docker"
+        - "gzip@file"
+
+  services:
+    technitium-web:
+      loadBalancer:
+        servers:
+          - url: "http://technitium:5380"
