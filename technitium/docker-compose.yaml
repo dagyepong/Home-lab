@@ -1,0 +1,45 @@
+version: "3.9"
+
+# ========================
+# Technitium DNS Server
+# Integrated with existing Traefik & Authelia stack
+# ========================
+services:
+  technitium:
+    image: technitium/dns-server:latest
+    container_name: technitium
+    restart: unless-stopped
+    hostname: dns-server
+
+    environment:
+      - TZ=Asia/Shanghai
+      # Optional initial domain and admin password (only used if no config exists)
+      # - DNS_SERVER_DOMAIN=dns.linuxpad.blog
+      # - DNS_SERVER_ADMIN_PASSWORD=ChangeMe!
+
+    volumes:
+      - technitium_config:/etc/dns/config  # persistent configuration & data
+
+    networks:
+      - traefik
+
+    ports:
+      # Standard DNS
+      - "53:53/udp"
+      - "53:53/tcp"
+      # Optional secure DNS protocols (uncomment as needed)
+      # - "853:853/tcp"         # DNS-over-TLS
+      # - "443:443/udp"         # DNS-over-HTTPS (HTTP/3)
+      # - "80:80/tcp"           # DNS-over-HTTP
+      # - "8053:8053/tcp"       # DNS-over-HTTP for reverse proxy
+      # - "67:67/udp"           # DHCP server
+
+
+volumes:
+  technitium_config:
+    driver: local
+
+networks:
+  traefik:
+    external: true
+    name: traefik   # must match your existing Traefik network name
