@@ -1,0 +1,54 @@
+# docker-compose.yml
+services:
+  maintenant:
+    image: ghcr.io/kolapsis/maintenant:latest
+    networks:
+      - traefik
+    ports:
+      # Maps your custom host port to the app's default internal port
+      - "9080:8080"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    group_add:
+      - "967"  # Your verified host Docker GID
+    tmpfs:
+      - /tmp:noexec,nosuid,size=64m
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc:/host/proc:ro
+      - maintenant-data:/data
+    environment:
+      # Reverted back to the official default internal port address
+      MAINTENANT_ADDR: "0.0.0.0:8080"
+      MAINTENANT_DB: "/data/maintenant.db"
+      # MISSING PIECE: The app needs this to authorize Traefik's incoming headers!
+      MAINTENANT_BASE_URL: "https://maintenant.linuxpad.blog"
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      
+      # HTTP Router (Redirect to HTTPS)
+      - "traefik.http.routers.maintenant-http.entrypoints=http"
+      - "traefik.http.routers.maintenant-http.middlewares=redir-https@file"
+      - "traefik.http.routers.maintenant-http.rule=Host(`maintenant.linuxpad.blog`)"
+      - "traefik.http.routers.maintenant-http.service=noop@internal"
+      
+      # HTTPS Router
+      - "traefik.http.routers.maintenant-https.entrypoints=https"
+      - "traefik.http.routers.maintenant-https.tls=true"
+      - "traefik.http.routers.maintenant-https.tls.certresolver=le"
+      - "traefik.http.routers.maintenant-https.rule=Host(`maintenant.linuxpad.blog`)"
+      - "traefik.http.routers.maintenant-https.middlewares=gzip@file,authelia@docker"
+      - "traefik.http.routers.maintenant-https.service=maintenant-backend"
+      
+      # Load Balancer targeting the app's real internal 8080 port
+      - "traefik.http.services.maintenant-backend.loadbalancer.server.port=8080"
+
+volumes:
+  maintenant-data:
+
+networks:
+  traefik:
+    external: true
