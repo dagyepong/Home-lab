@@ -1,0 +1,76 @@
+# DockProbe — Docker Hub Quick Start
+# Usage:
+#   1. cp .env.example .env && vi .env
+#   2. docker compose -f docker-compose.hub.yaml up -d
+#   3. Open https://dockprobe.linuxpad.blog
+
+services:
+  monitor:
+    image: deeponinc/dockprobe:latest
+    container_name: dockprobe
+    restart: unless-stopped
+    # Connect DockProbe to your Traefik proxy network
+    networks:
+      - traefik
+    ports:
+      - "${MONITOR_PORT:-9090}:9090"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/host_sys:ro
+      - /proc:/host_proc:ro
+      - /:/host_root:ro
+      - monitor_data:/data
+      - ./certs:/certs:ro
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - CPU_THRESHOLD=${CPU_THRESHOLD:-80}
+      - AUTH_USER=${AUTH_USER}
+      - AUTH_PASS=${AUTH_PASS}
+      - MAX_CONNECTIONS=${MAX_CONNECTIONS:-3}
+      - TRUSTED_PROXIES=${TRUSTED_PROXIES}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,ssl; c=ssl._create_unverified_context(); urllib.request.urlopen('https://localhost:9090/api/health',context=c) if __import__('os').path.exists('/certs/cert.pem') else urllib.request.urlopen('http://localhost:9090/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      
+      # HTTP Router (Redirect to HTTPS)
+      - "traefik.http.routers.dockprobe-http.entrypoints=http"
+      - "traefik.http.routers.dockprobe-http.middlewares=redir-https@file"
+      - "traefik.http.routers.dockprobe-http.rule=Host(`dockprobe.linuxpad.blog`)"
+      - "traefik.http.routers.dockprobe-http.service=noop@internal"
+      
+      # HTTPS Router
+      - "traefik.http.routers.dockprobe-https.entrypoints=https"
+      - "traefik.http.routers.dockprobe-https.tls=true"
+      - "traefik.http.routers.dockprobe-https.tls.certresolver=le"
+      - "traefik.http.routers.dockprobe-https.rule=Host(`dockprobe.linuxpad.blog`)"
+      - "traefik.http.routers.dockprobe-https.middlewares=gzip@file,authelia@docker"
+      - "traefik.http.routers.dockprobe-https.service=dockprobe-backend"
+      
+      # Load Balancer pointing to DockProbe's internal port
+      - "traefik.http.services.dockprobe-backend.loadbalancer.server.port=9090"
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: dockprobe-tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN}
+    depends_on:
+      - monitor
+    profiles:
+      - tunnel
+
+volumes:
+  monitor_data:
+
+# Define the external Traefik network
+networks:
+  traefik:
+    external: true
