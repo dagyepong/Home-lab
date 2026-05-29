@@ -1,4 +1,5 @@
 version: "3"
+
 services:
   gluetun:
     image: qmcgaw/gluetun
@@ -8,12 +9,14 @@ services:
       - NET_ADMIN
     devices:
       - /dev/net/tun:/dev/net/tun
+    # Crucial: All Traefik routing labels for the other services must live here on Gluetun!
+    networks:
+      - traefik
     ports:
       - 8888:8888/tcp # HTTP proxy
       - 8388:8388/tcp # Shadowsocks
       - 8388:8388/udp # Shadowsocks
-      #- 6881:6881
-      #- 6881:6881/udp
+      # Local port exposures (optional if only accessing via Traefik, but kept for your config)
       - 8085:8085 # qbittorrent
       - 9117:9117 # Jackett
       - 8989:8989 # Sonarr
@@ -26,16 +29,63 @@ services:
       - OPENVPN_USER=HGvikqBPST9jlZnN
       - OPENVPN_PASSWORD=jNKG2SucxFdMBMe5orYufDV6fu76HOkI
       - SERVER_COUNTRIES=Netherlands
-      # Wireguard:
-      # - WIREGUARD_PRIVATE_KEY=wOEI9rqqbDwnN8/Bpp22sVz48T71vJ4fYmFWujulwUU=
-      # - WIREGUARD_ADDRESSES=10.64.222.21/32
-      # Timezone for accurate log times
       - TZ=America/Chicago
-      # Server list updater
-      # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/servers.md#update-the-vpn-servers-list
       - UPDATER_PERIOD=24h
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
 
+      # --- QB_TORRENT LABELS (Port 8085) ---
+      - "traefik.http.routers.qbit-http.entrypoints=http"
+      - "traefik.http.routers.qbit-http.middlewares=redir-https@file"
+      - "traefik.http.routers.qbit-http.rule=Host(`qbit.linuxpad.blog`)"
+      - "traefik.http.routers.qbit-http.service=noop@internal"
+      - "traefik.http.routers.qbit-https.entrypoints=https"
+      - "traefik.http.routers.qbit-https.tls=true"
+      - "traefik.http.routers.qbit-https.tls.certresolver=le"
+      - "traefik.http.routers.qbit-https.rule=Host(`qbit.linuxpad.blog`)"
+      - "traefik.http.routers.qbit-https.middlewares=gzip@file,authelia@docker"
+      - "traefik.http.routers.qbit-https.service=qbit-backend"
+      - "traefik.http.services.qbit-backend.loadbalancer.server.port=8085"
 
+      # --- JACKETT LABELS (Port 9117) ---
+      - "traefik.http.routers.jackett-http.entrypoints=http"
+      - "traefik.http.routers.jackett-http.middlewares=redir-https@file"
+      - "traefik.http.routers.jackett-http.rule=Host(`jackett.linuxpad.blog`)"
+      - "traefik.http.routers.jackett-http.service=noop@internal"
+      - "traefik.http.routers.jackett-https.entrypoints=https"
+      - "traefik.http.routers.jackett-https.tls=true"
+      - "traefik.http.routers.jackett-https.tls.certresolver=le"
+      - "traefik.http.routers.jackett-https.rule=Host(`jackett.linuxpad.blog`)"
+      - "traefik.http.routers.jackett-https.middlewares=gzip@file,authelia@docker"
+      - "traefik.http.routers.jackett-https.service=jackett-backend"
+      - "traefik.http.services.jackett-backend.loadbalancer.server.port=9117"
+
+      # --- SONARR LABELS (Port 8989) ---
+      - "traefik.http.routers.sonarr-http.entrypoints=http"
+      - "traefik.http.routers.sonarr-http.middlewares=redir-https@file"
+      - "traefik.http.routers.sonarr-http.rule=Host(`sonarr.linuxpad.blog`)"
+      - "traefik.http.routers.sonarr-http.service=noop@internal"
+      - "traefik.http.routers.sonarr-https.entrypoints=https"
+      - "traefik.http.routers.sonarr-https.tls=true"
+      - "traefik.http.routers.sonarr-https.tls.certresolver=le"
+      - "traefik.http.routers.sonarr-https.rule=Host(`sonarr.linuxpad.blog`)"
+      - "traefik.http.routers.sonarr-https.middlewares=gzip@file,authelia@docker"
+      - "traefik.http.routers.sonarr-https.service=sonarr-backend"
+      - "traefik.http.services.sonarr-backend.loadbalancer.server.port=8989"
+
+      # --- PROWLARR LABELS (Port 9696) ---
+      - "traefik.http.routers.prowlarr-http.entrypoints=http"
+      - "traefik.http.routers.prowlarr-http.middlewares=redir-https@file"
+      - "traefik.http.routers.prowlarr-http.rule=Host(`prowlarr.linuxpad.blog`)"
+      - "traefik.http.routers.prowlarr-http.service=noop@internal"
+      - "traefik.http.routers.prowlarr-https.entrypoints=https"
+      - "traefik.http.routers.prowlarr-https.tls=true"
+      - "traefik.http.routers.prowlarr-https.tls.certresolver=le"
+      - "traefik.http.routers.prowlarr-https.rule=Host(`prowlarr.linuxpad.blog`)"
+      - "traefik.http.routers.prowlarr-https.middlewares=gzip@file,authelia@docker"
+      - "traefik.http.routers.prowlarr-https.service=prowlarr-backend"
+      - "traefik.http.services.prowlarr-backend.loadbalancer.server.port=9696"
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent
@@ -61,8 +111,8 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
-      - AUTO_UPDATE=true #optional
-      - RUN_OPTS= #optional
+      - AUTO_UPDATE=true
+      - RUN_OPTS=
     volumes:
       - /home/docker/arr-stack/jackett/data:/config
       - /home/docker/arr-stack/jackett/blackhole:/downloads
@@ -78,8 +128,8 @@ services:
       - TZ=Etc/UTC
     volumes:
       - /home/docker/arr-stack/sonarr/data:/config
-      - /home/docker/arr-stack/sonarr/tvseries:/tv #optional
-      - /home/docker/arr-stack/sonarr/downloadclient-downloads:/downloads #optional
+      - /home/docker/arr-stack/sonarr/tvseries:/tv
+      - /home/docker/arr-stack/sonarr/downloadclient-downloads:/downloads
     restart: unless-stopped
 
   prowlarr:
@@ -93,3 +143,7 @@ services:
     volumes:
       - /home/docker/arr-stack/prowlarr/data:/config
     restart: unless-stopped
+
+networks:
+  traefik:
+    external: true
