@@ -27,14 +27,19 @@ services:
         networks:
             - proxy
         labels:
-            - traefik.enable=true
-            - traefik.http.routers.forte.rule=Host(`forte.nanaoware.online`) || Host(`www.forte.nanaoware.online`)
-            - traefik.http.services.forte.loadbalancer.server.port=3000
-            - traefik.http.middlewares.mywwwredirect.redirectregex.regex=^https://www\.(.*)
-            - traefik.http.middlewares.mywwwredirect.redirectregex.replacement=https://$${1}
-            - traefik.http.routers.myforte.middlewares=mywwwredirect
-            - traefik.http.routers.myforte.middlewares=myauth
-            - traefik.http.routers.myforte.service=api@internal
+            - "traefik.enable=true"
+            - "traefik.docker.network=traefik"
+            - "traefik.http.routers.forte-http.entrypoints=http"
+            - "traefik.http.routers.forte-http.middlewares=redir-https@file"
+            - "traefik.http.routers.forte-http.rule=Host(`forte.linuxpad.blog`)"
+            - "traefik.http.routers.forte-http.service=noop@internal"
+            - "traefik.http.routers.forte-https.entrypoints=https"
+            - "traefik.http.routers.forte-https.tls=true"
+            - "traefik.http.routers.forte-https.tls.certresolver=le"
+            - "traefik.http.routers.forte-https.rule=Host(`forte.linuxpad.blog`)"
+            - "traefik.http.routers.forte-https.middlewares=gzip@file,authelia@docker"
+            - "traefik.http.routers.forte-https.service=forte-backend"
+            - "traefik.http.services.forte-backend.loadbalancer.server.port=3000"
 
     postgres:
         image: kaangiray26/postgres:2.0
