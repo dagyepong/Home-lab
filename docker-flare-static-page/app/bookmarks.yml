@@ -11,8 +11,8 @@ categories:
     title: 新分类
 
 links:
-  - name: "Gotify"
-    link: "https://gotify.linuxpad.blog"
+  - name: "Dockhand"
+    link: "https://dockhand.linuxpad.blog"
     icon: "nuke"
     category: 1
 
@@ -21,13 +21,13 @@ links:
     icon: "owl"
     category: 1
     
-  - name: "Uptime-Kuma"
-    link: "https://uptime-kuma.linuxpad.blog"
+  - name: "Maintenant"
+    link: "https://maintenant.linuxpad.blog"
     icon: "uptime-kuma"
     category: 1
 
-  - name: "Linuxpad IT Tools" 
-    link: "https://it-tools.linuxpad.blog"
+  - name: "DockProbe" 
+    link: "https://dockprobe.linuxpad.blog"
     icon: "owl"
     category: 1
 
