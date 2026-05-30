@@ -34,9 +34,6 @@ services:
       - "traefik.http.services.speed-backend.loadbalancer.server.port=3021"
 
 
-
-
-
 networks:
   traefik:
     external: true
