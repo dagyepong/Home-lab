@@ -56,15 +56,15 @@ pages:
               - title: Traefik Proxy
                 url: https://traefik.linuxpad.blog
                 icon: /assets/svg/traefik.svg
-              - title: Authelia Auth
+              - title: Flare
                 url: https://auth.linuxpad.blog
-                icon: /assets/svg/shield.svg
+                icon: /assets/svg/application-gateway-container.svg
               - title: Tailscale Admin
                 url: https://login.tailscale.com
-                icon: /assets/svg/network.svg
+                icon: /assets/svg/tailscale-light.svg
               - title: Vaultwarden
-                url: https://vaultwarden.linuxpad.blog
-                icon: /assets/svg/lock.svg
+                url: https://vault.linuxpad.blog/#/login
+                icon: /assets/svg/vaultwarden.svg
 
           - type: monitor
             cache: 45s
@@ -78,10 +78,10 @@ pages:
                 icon: /assets/svg/git.svg
               - title: Immich Photos
                 url: https://immich.linuxpad.blog
-                icon: /assets/svg/image.svg
-              - title: Code-Server
-                url: http://10.0.0.16:8443
-                icon: /assets/svg/code.svg
+                icon: /assets/svg/immich.svg
+              - title: Dockhand Container Dashboard
+                url: https://dockhand.linuxpad.blog
+                icon: /assets/svg/docker.svg
 
       # Right Column: Entertainment, Feeds, and Communities
       - size: full
