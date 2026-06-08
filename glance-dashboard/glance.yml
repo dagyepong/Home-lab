@@ -43,10 +43,10 @@ pages:
             assets-path: /app/assets/svg
             sites:
               - title: Jellyfin
-                url: http://10.0.0.14:8096
+                url: https://jellyfin.linuxpad.blog
                 icon: /assets/svg/jellyfin.svg
               - title: Traefik
-                url: https://traefik.nanaoware.online
+                url: https://traefik.linuxpad.blog
                 icon: /assets/svg/traefik.svg
               - title: Code-Server
                 url: http://10.0.0.16:8443

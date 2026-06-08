@@ -6,6 +6,24 @@ services:
       - ./assets:/app/assets
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-    ports:
-      - 8085:8080
+    
+    networks:
+      - traefik
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.glance-http.entrypoints=http"
+      - "traefik.http.routers.glance-http.middlewares=redir-https@file"
+      - "traefik.http.routers.glance-http.rule=Host(`linuxpad.blog`)"
+      - "traefik.http.routers.glance-http.service=noop@internal"
+      - "traefik.http.routers.glance-https.entrypoints=https"
+      - "traefik.http.routers.glance-https.tls=true"
+      - "traefik.http.routers.glance-https.tls.certresolver=le"
+      - "traefik.http.routers.glance-https.rule=Host(`linuxpad.blog`)"
+      - "traefik.http.routers.glance-https.middlewares=gzip@file,authelia@docker"
+      - "traefik.http.routers.glance-https.service=glance-backend"
+      - "traefik.http.services.glance-backend.loadbalancer.server.port=8085"
+networks:
+  traefik:
+    external: true   
