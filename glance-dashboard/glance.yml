@@ -74,6 +74,9 @@ pages:
               - title: Dockprobe Container Dashboard
                 url: https://dockprobe.linuxpad.blog/
                 icon: /assets/svg/healthchecks.svg  
+              - title: Pi-Hole DNS
+                url: http://100.99.187.98/admin/
+                icon: /assets/svg/pi-hole.svg
 
           - type: monitor
             cache: 45s
@@ -82,6 +85,9 @@ pages:
               - title: Jellyfin Media
                 url: https://jellyfin.linuxpad.blog
                 icon: /assets/svg/jellyfin.svg
+              - title: Plex Media
+                url: http://192.168.1.179:32400
+                icon: /assets/svg/plex.svg
               - title: Forgejo Git
                 url: https://git.linuxpad.blog
                 icon: /assets/svg/git.svg
