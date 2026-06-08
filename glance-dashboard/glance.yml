@@ -1,129 +1,125 @@
-#Début du bloc pour les assets#
-
 server:
-  assets-path: ./assets
-
-#Début du bloc pour le thème#
+  assets-path: /app/assets
 
 theme:
-  background-color: 50 1 6
-  primary-color: 24 97 58
-  negative-color: 209 88 54
-
-#Début du bloc pour la page Home#
+  # Premium Deep Space / Cyberpunk theme
+  background-color: 220 20 10   # Deep slate charcoal/navy
+  primary-color: 180 80 55     # Electric Cyan/Teal accents
+  negative-color: 15 85 55     # Sunset Amber / Muted Orange warnings
 
 pages:
   - name: Home
     columns:
+      # Left Column: System utility, system metrics, and quick tracking
       - size: small
         widgets:
           - type: clock
+            time-format: 24h
+            show-date: true
+
           - type: calendar
 
-#Début du bloc pour Twitch#
-
-          - type: twitch-channels
-            channels:
-              - mrchonks
-
-#Début du bloc pour la partie des releases GitHub#
-
-          - type: releases
-            repositories:
-              - immich-app/immich
-              - go-gitea/gitea
-              - dani-garcia/vaultwarden
-              - jellyfin/jellyfin
-
-#Début du bloc pour la partie monitoring de vos applications Docker#
-
-          - type: monitor
-            cache: 1m
-            title: Services
-            assets-path: /app/assets/svg
-            sites:
-              - title: Jellyfin
-                url: https://jellyfin.linuxpad.blog
-                icon: /assets/svg/jellyfin.svg
-              - title: Traefik
-                url: https://traefik.linuxpad.blog
-                icon: /assets/svg/traefik.svg
-              - title: Code-Server
-                url: http://10.0.0.16:8443
-                icon: /assets/svg/code.svg
-
-#Début du bloc pour le réglage d'apparence de la partie RSS#
-
-      - size: full
-        widgets:
-
-#Début du bloc pour la barre de recherche#
-
-          - type: search
-            search-engine: duckduckgo
-
-#Début du bloc pour la partie RSS#
-
-          - type: rss
-            limit: 10
-            collapse-after: 3
-            cache: 3h
-            style: horizontal-cards
-            feeds:
-              - url: https://belginux.com/rss
-                title: belginux
-              - url: https://ciechanow.ski/atom.xml
-              - url: https://www.joshwcomeau.com/rss.xml
-                title: Josh Comeau
-              - url: https://samwho.dev/rss.xml
-              - url: https://awesomekling.github.io/feed.xml
-              - url: https://ishadeed.com/feed.xml
-                title: Ahmad Shadeed
-
-          - type: twitch-channels
-            channels:
-              - theprimeagen
-              - cohhcarnage
-              - christitustech
-              - blurbs
-              - asmongold
-              - jembawls
-
-#Début du bloc pour la partie des vidéos de YouTube#
-
-          - type: videos
-            channels:
-              - UCS-NkJiYhYku2YtKi2W4p3w # La chaîne de P.A.U.L
-              - UC_yP2DpIgs5Y1uWC0T03Chw # Joueur Du Grenier
-              - UCR-DXc1voovS8nhAvccRZhg # Jeff Geerling
-              - UCOk-gHyjcWZNj3Br4oxwh0A # Techno Tim
-
-#Début du bloc pour la partie des subreddit#
-
-          - type: reddit
-            style: horizontal-cards
-            subreddit: belginux
-
-#Début du bloc pour la partie météo#
-
-      - size: small
-        widgets:
           - type: weather
             location: Chicago, USA
-
-#Début du bloc pour la partie bourse#
+            unit: F
 
           - type: markets
+            title: Tech & Crypto Watch
             markets:
               - symbol: BTC-USD
                 name: Bitcoin
               - symbol: NVDA
-                name: NVIDIA
+                name: NVIDIA Corp
               - symbol: AMD
-                name: AMD
-              - symbol: RDDT
-                name: Reddit
-              - symbol: SPY
-                name: S&P 500
-              - symbol: AAPL
-                name: Apple
+                name: AMD Hardware
+
+          - type: releases
+            title: Software Tracking
+            repositories:
+              - immich-app/immich
+              - forgejo/forgejo
+              - dani-garcia/vaultwarden
+              - jellyfin/jellyfin
+              - traefik/traefik
+
+      # Middle Column: The Command Center (Search, Services Status Dashboard)
+      - size: small
+        widgets:
+          - type: search
+            search-engine: duckduckgo
+            placeholder: Search the matrix...
+
+          - type: monitor
+            cache: 30s
+            title: Infrastructure & Security
+            sites:
+              - title: Traefik Proxy
+                url: https://traefik.linuxpad.blog
+                icon: /assets/svg/traefik.svg
+              - title: Authelia Auth
+                url: https://auth.linuxpad.blog
+                icon: /assets/svg/shield.svg
+              - title: Tailscale Admin
+                url: https://login.tailscale.com
+                icon: /assets/svg/network.svg
+              - title: Vaultwarden
+                url: https://vaultwarden.linuxpad.blog
+                icon: /assets/svg/lock.svg
+
+          - type: monitor
+            cache: 45s
+            title: Media & Apps
+            sites:
+              - title: Jellyfin Media
+                url: https://jellyfin.linuxpad.blog
+                icon: /assets/svg/jellyfin.svg
+              - title: Forgejo Git
+                url: https://git.linuxpad.blog
+                icon: /assets/svg/git.svg
+              - title: Immich Photos
+                url: https://immich.linuxpad.blog
+                icon: /assets/svg/image.svg
+              - title: Code-Server
+                url: http://10.0.0.16:8443
+                icon: /assets/svg/code.svg
+
+      # Right Column: Entertainment, Feeds, and Communities
+      - size: full
+        widgets:
+          - type: rss
+            title: Linux & Homelab Intelligence
+            limit: 8
+            collapse-after: 3
+            cache: 1h
+            style: horizontal-cards
+            feeds:
+              - url: https://www.phoronix.com/phoronix-rss.php
+                title: Phoronix (Linux Hardware)
+              - url: https://www.linuxtoday.com/feed/
+                title: Linux Today
+              - url: https://selfhosted.show/rss
+                title: Self-Hosted Show
+              - url: https://news.ycombinator.com/rss
+                title: Hacker News
+
+          - type: reddit
+            title: Homelab Communities
+            style: horizontal-cards
+            subreddit: homelab+selfhosted+linux+proxmox
+
+          - type: videos
+            title: Homelab Creator Network
+            cache: 2h
+            channels:
+              - UCR-DXc1voovS8nhAvccRZhg # Jeff Geerling
+              - UCOk-gHyjcWZNj3Br4oxwh0A # Techno Tim
+              - UCS-NkJiYhYku2YtKi2W4p3w # La chaîne de P.A.U.L
+              - UC_yP2DpIgs5Y1uWC0T03Chw # Joueur Du Grenier
+
+          - type: twitch-channels
+            title: Live Streams
+            channels:
+              - theprimeagen
+              - christitustech
+              - mrchonks
+              - blurbs
