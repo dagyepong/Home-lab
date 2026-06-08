@@ -2,7 +2,8 @@ services:
   glance:
     image: glanceapp/glance
     volumes:
-      - ./glance.yml:/app/glance.yml
+      # FIX: Mount the config to the correct location the app expects
+      - ./glance.yml:/app/config/glance.yml
       - ./assets:/app/assets
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
@@ -23,7 +24,9 @@ services:
       - "traefik.http.routers.glance-https.rule=Host(`linuxpad.blog`)"
       - "traefik.http.routers.glance-https.middlewares=gzip@file,authelia@docker"
       - "traefik.http.routers.glance-https.service=glance-backend"
-      - "traefik.http.services.glance-backend.loadbalancer.server.port=8085"
+      # FIX: Default internal container port is 8080
+      - "traefik.http.services.glance-backend.loadbalancer.server.port=8080"
+
 networks:
   traefik:
-    external: true   
+    external: true
