@@ -66,7 +66,7 @@ pages:
                 url: https://vault.linuxpad.blog/#/login
                 icon: /assets/svg/vaultwarden.svg
               - title: Proxmox VE
-                url: https://https://pve.tail9f20b.ts.net/
+                url: https://pve.tail9f20b.ts.net/
                 icon: /assets/svg/proxmox.svg
               - title: Maintenant Dashboard
                 url: https://maintenant.linuxpad.blog/dashboard
