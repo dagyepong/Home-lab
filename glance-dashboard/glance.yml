@@ -57,7 +57,7 @@ pages:
                 url: https://traefik.linuxpad.blog
                 icon: /assets/svg/traefik.svg
               - title: Flare
-                url: https://auth.linuxpad.blog
+                url: https://flare.linuxpad.blog
                 icon: /assets/svg/application-gateway-container.svg
               - title: Tailscale Admin
                 url: https://login.tailscale.com
@@ -65,6 +65,15 @@ pages:
               - title: Vaultwarden
                 url: https://vault.linuxpad.blog/#/login
                 icon: /assets/svg/vaultwarden.svg
+              - title: Proxmox VE
+                url: https://https://pve.tail9f20b.ts.net/
+                icon: /assets/svg/proxmox.svg
+              - title: Maintenant Dashboard
+                url: https://maintenant.linuxpad.blog/dashboard
+                icon: /assets/svg/uptimerobot.svg
+              - title: Dockprobe Container Dashboard
+                url: https://dockprobe.linuxpad.blog/
+                icon: /assets/svg/healthchecks.svg  
 
           - type: monitor
             cache: 45s
