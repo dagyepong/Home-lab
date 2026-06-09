@@ -1,0 +1,42 @@
+services:
+  monitoring:
+    image: checkmk/check-mk-community:2.5.0p6
+    container_name: monitoring
+    restart: always
+    networks:
+      - traefik
+    ports:
+      # Port 8000 is used by Checkmk for agent-receiver communication
+      - "9000:9000"
+    tmpfs:
+      - /opt/omd/sites/cmk/tmp:uid=1000,gid=1000
+    volumes:
+      - monitoring:/omd/sites
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+
+      # HTTP → HTTPS redirect
+      - "traefik.http.routers.monitoring-http.entrypoints=http"
+      - "traefik.http.routers.monitoring-http.middlewares=redir-https@file"
+      - "traefik.http.routers.monitoring-http.rule=Host(`monitor.linuxpad.blog`) && PathPrefix(`/cmk/`)"
+      - "traefik.http.routers.monitoring-http.service=noop@internal"
+
+      # HTTPS router (Corrected to /cmk/ path)
+      - "traefik.http.routers.monitoring-https.entrypoints=https"
+      - "traefik.http.routers.monitoring-https.tls=true"
+      - "traefik.http.routers.monitoring-https.tls.certresolver=le"
+      - "traefik.http.routers.monitoring-https.rule=Host(`monitor.linuxpad.blog`) && PathPrefix(`/cmk/`)"
+      - "traefik.http.routers.monitoring-https.middlewares=gzip@file,authelia@docker"
+      - "traefik.http.routers.monitoring-https.service=monitoring-backend"
+
+      # Service definition for web UI
+      - "traefik.http.services.monitoring-backend.loadbalancer.server.port=5000"
+
+networks:
+  traefik:
+    external: true
+
+volumes:
+  monitoring:
