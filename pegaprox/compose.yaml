@@ -1,0 +1,48 @@
+# PegaProx Multi-Cluster Dashboard
+# Deployed cleanly onto your existing Traefik Architecture
+
+services:
+  pegaprox:
+    image: ghcr.io/pegaprox/pegaprox:latest
+    container_name: pegaprox
+    restart: unless-stopped
+    
+    # Joins your established external proxy network mesh
+    networks:
+      - traefik
+
+    volumes:
+      - pegaprox-config:/app/config
+      - pegaprox-logs:/app/logs
+
+    environment:
+      # Keeps the app dual-stack bound (0.0.0.0) so Traefik can see it instantly
+      - PEGAPROX_BEHIND_PROXY=false
+      # Trusting localhost, your Traefik network ranges, and local subnets
+      - PEGAPROX_TRUSTED_PROXIES=127.0.0.1,172.18.0.0/16,100.64.0.0/10,10.0.0.0/24
+      - PEGAPROX_ALLOWED_ORIGINS=https://pve.linuxpad.blog
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      
+      # 1. Main HTTPS Ingress Router
+      - "traefik.http.routers.pegaprox.entrypoints=https"
+      - "traefik.http.routers.pegaprox.rule=Host(`pve.linuxpad.blog`)"
+      - "traefik.http.routers.pegaprox.tls=true"
+      - "traefik.http.routers.pegaprox.tls.certresolver=le"
+      
+      # 2. Native Middlewares (Gzip applied, Authelia disabled initially to test boot)
+      - "traefik.http.routers.pegaprox.middlewares=gzip@file"
+      
+      # 3. Explicit Backend Load Balancer Routing Hooks
+      - "traefik.http.services.pegaprox.loadbalancer.server.port=5000"
+      - "traefik.http.services.pegaprox.loadbalancer.server.scheme=https"
+
+volumes:
+  pegaprox-config:
+  pegaprox-logs:
+
+networks:
+  traefik:
+    external: true
