@@ -1,0 +1,26 @@
+services:
+  monkeytype:
+    image: themythologist/monkeytype:frontend-latest
+    container_name: monkeytype
+    restart: unless-stopped
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.type-http.entrypoints=http"
+      - "traefik.http.routers.type-http.middlewares=redir-https@file"
+      - "traefik.http.routers.type-http.rule=Host(`link.linuxpad.blog`)"
+      - "traefik.http.routers.type-http.service=noop@internal"
+      - "traefik.http.routers.type-https.entrypoints=https"
+      - "traefik.http.routers.type-https.tls=true"
+      - "traefik.http.routers.type-https.tls.certresolver=le"
+      - "traefik.http.routers.type-https.rule=Host(`type.linuxpad.blog`)"
+      - "traefik.http.routers.type-https.middlewares=gzip@file,authelia@docker"
+      - "traefik.http.routers.type-https.service=type-backend"
+      - "traefik.http.services.type-backend.loadbalancer.server.port=5000"
+
+networks:
+  traefik:
+    name: traefik
+    external: true
