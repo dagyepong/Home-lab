@@ -3,13 +3,17 @@
 # Ensure required tools are available
 command -v jq >/dev/null 2>&1 || { echo "Error: jq is required but not installed."; exit 1; }
 
-MANIFEST="manifest.json"
+# Set working directory to the location of the script
+SERVICE_DIR=$(pwd)
+MANIFEST="$SERVICE_DIR/manifest.json"
+BASE_COMPOSE="$SERVICE_DIR/compose.base.yml"
+
 if [ ! -f "$MANIFEST" ]; then
     echo "Error: manifest.json not found in the current directory."
     exit 1
 fi
 
-if [ ! -f "compose.base.yml" ]; then
+if [ ! -f "$BASE_COMPOSE" ]; then
     echo "Error: Core config template 'compose.base.yml' is missing."
     exit 1
 fi
@@ -52,15 +56,14 @@ if [ ! -z "$OPTIONS" ]; then
     done
 fi
 
+# Secure the environment file
+chmod 600 .env
+
 # 3. Dynamic Docker Compose Assembly Engine
-# We build an array of composition flags rather than modifying text files directly
 COMPOSE_ARGS=("-f" "compose.base.yml")
 
 for opt in "${!ANSWERS[@]}"; do
     VAL="${ANSWERS[$opt]}"
-    
-    # Looks for snippets matching the pattern: snippets/option_name.value.yml
-    # For example: snippets/use_traefik.true.yml or snippets/database.postgres.yml
     SNIPPET="snippets/${opt}.${VAL}.yml"
     
     if [ -f "$SNIPPET" ]; then
@@ -69,9 +72,19 @@ for opt in "${!ANSWERS[@]}"; do
     fi
 done
 
+# 4. Preview and Confirm
+echo "--- Final Configuration Preview ---"
+docker compose "${COMPOSE_ARGS[@]}" config
+echo "=========================================="
+read -p "Deploy this configuration? (y/n) " confirm
+if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+    echo "Deployment aborted."
+    exit 1
+fi
+
 echo "=========================================="
 echo "  Launching Container Stack via Docker    "
 echo "=========================================="
 
-# Run Docker Compose utilizing the gathered compilation layers
+# Run Docker Compose
 docker compose "${COMPOSE_ARGS[@]}" up -d --remove-orphans
