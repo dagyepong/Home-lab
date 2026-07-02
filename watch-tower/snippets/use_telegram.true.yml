@@ -1,0 +1,7 @@
+services:
+  watchtower:
+    environment:
+      - WATCHTOWER_NOTIFICATIONS=shoutrrr
+      - WATCHTOWER_NOTIFICATION_URL=telegram://${TELEGRAM_AUTH_TOKEN}@telegram?channels=${TELEGRAM_CHAT_ID}&parseMode=HTML
+      - WATCHTOWER_NOTIFICATION_TEMPLATE=📊🔔⚡️ <b>Server:</b> <code>Update</code>{{println}}{{range .}}{{.Message}}{{println}}{{end}}
+      - WATCHTOWER_NOTIFICATION_SKIP_TITLE=true

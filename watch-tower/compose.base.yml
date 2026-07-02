@@ -1,0 +1,16 @@
+services:
+  watchtower:
+    image: nickfedor/watchtower
+    container_name: watchtower
+    restart: always
+    environment:
+      - WATCHTOWER_HTTP_API_TOKEN=${API_TOKEN:-SecureApiToken}
+      - WATCHTOWER_DEBUG=true
+      - WATCHTOWER_MONITOR_ONLY=false
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_SCHEDULE=0 0 6 * * *
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "9080:8080"

@@ -1,0 +1,14 @@
+services:
+  watchtower:
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.watch-https.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.watch-https.tls=true"
+      - "traefik.http.routers.watch-https.tls.certresolver=le"
+      - "traefik.http.services.watch-backend.loadbalancer.server.port=9080"
+
+networks:
+  traefik:
+    external: true

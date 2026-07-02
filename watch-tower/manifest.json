@@ -1,0 +1,8 @@
+{
+  "name": "Watchtower",
+  "options": {
+    "use_traefik": { "type": "boolean", "description": "Expose via Traefik Proxy?" },
+    "use_telegram": { "type": "boolean", "description": "Enable Telegram notifications?" },
+    "domain": { "type": "string", "description": "Domain (e.g., watch.linuxpad.blog):" }
+  }
+}
