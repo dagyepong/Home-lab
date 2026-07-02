@@ -1,0 +1,13 @@
+services:
+  vaultwarden-backup:
+    image: bruceforce/vaultwarden-backup:latest
+    container_name: vaultwarden-backup
+    volumes:
+      - /opt/vaultwarden/data:/data/
+      - /opt/vaultwarden/backup:/vaultwarden-backup
+    environment:
+      - BACKUP_DIR=/vaultwarden-backup
+      - CRON_TIME=50 3 * * *
+    depends_on:
+      - vaultwarden
+    restart: unless-stopped

@@ -1,0 +1,13 @@
+services:
+  vaultwarden:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vault-https.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.vault-https.tls=true"
+      - "traefik.http.routers.vault-https.tls.certresolver=le"
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    external: true

@@ -1,0 +1,14 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest-alpine
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      - SIGNUPS_ALLOWED=${SIGNUPS_ALLOWED:-false}
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+      - TZ=${TZ:-America/Chicago}
+    volumes:
+      - /opt/vaultwarden/data:/data
+      - /opt/vaultwarden/logs:/data/logs
+    ports:
+      - "4044:80"

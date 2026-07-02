@@ -1,0 +1,17 @@
+{
+  "name": "Vaultwarden",
+  "options": {
+    "use_traefik": {
+      "type": "boolean",
+      "description": "Expose via Traefik Proxy?"
+    },
+    "include_backup": {
+      "type": "boolean",
+      "description": "Install automated backup container?"
+    },
+    "domain": {
+      "type": "string",
+      "description": "Domain for Traefik (e.g., vault.linuxpad.blog):"
+    }
+  }
+}
