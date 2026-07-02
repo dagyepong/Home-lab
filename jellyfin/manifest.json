@@ -1,0 +1,11 @@
+{
+  "name": "Jellyfin",
+  "requires_db": false,
+  "options": {
+    "use_traefik": { ... },
+    "gpu_acceleration": {
+      "type": "boolean",
+      "description": "Enable VAAPI/NVIDIA hardware transcoding?"
+    }
+  }
+}
