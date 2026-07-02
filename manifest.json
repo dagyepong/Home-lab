@@ -1,0 +1,19 @@
+{
+  "name": "Nextcloud",
+  "requires_db": true,
+  "options": {
+    "use_traefik": {
+      "type": "boolean",
+      "description": "Enable Traefik reverse proxy?"
+    },
+    "database": {
+      "type": "select",
+      "options": ["sqlite", "postgres"],
+      "description": "Choose your database backend:"
+    },
+    "domain": {
+      "type": "string",
+      "description": "Enter your domain name (e.g., cloud.example.com):"
+    }
+  }
+}
