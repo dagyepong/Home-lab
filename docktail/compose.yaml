@@ -44,17 +44,18 @@ services:
       - docktail.service.service-port=443
     restart: unless-stopped
 
-  stirling-pdf:
-    image: stirlingtools/stirling-pdf:latest
-    container_name: socketproxy-stirling-pdf
+  dockhand:
+    image: fnsys/dockhand:latest
+    container_name: dockhand
+    restart: unless-stopped
     labels:
       - docktail.service.enable=true
-      - docktail.service.name=pdf
-      - docktail.service.port=8080
+      - docktail.service.name=dockhand
+      - docktail.service.port=3000
       - docktail.service.service-port=443
     volumes:
-      - stirling-data:/configs
-    restart: unless-stopped
+      - /var/run/docker.sock:/var/run/docker.sock
+      - dockhand_data:/app/data
 
   filebrowser:
     image: filebrowser/filebrowser:s6
@@ -78,3 +79,4 @@ volumes:
   stirling-data:
   filebrowser-db:
   filebrowser-config:
+  dockhand_data:
