@@ -1,0 +1,21 @@
+services:
+  dozzle:
+    container_name: dozzle
+    image: amir20/dozzle:latest
+    environment:
+      - DOZZLE_AUTH_PROVIDER=simple
+      - DOZZLE_HOSTNAME=Nana's Docker Lab
+      - DOZZLE_LEVEL=info
+      - DOZZLE_TAILSIZE=300
+      - DOZZLE_FILTER="status=running"
+      # DOZZLE_FILTER: "label=log_me" # limits logs displayed to containers with this label
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./dozzle-data:/data
+
+    labels:
+      - docktail.service.enable=true
+      - docktail.service.name=dozzle
+      - docktail.service.port=8080
+      - docktail.service.service-port=443
