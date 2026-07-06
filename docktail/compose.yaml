@@ -311,11 +311,13 @@ services:
 networks:
   docker-api:
     internal: true
+  traefik:
+    external: true
 
 volumes:
   filebrowser-db:
   filebrowser-config:
   dockhand_data:
   picoshare_data:
-  vaultwarden_data:
+
 
