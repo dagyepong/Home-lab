@@ -1,21 +1,4 @@
 services:
-  socket-proxy:
-    image: tecnativa/docker-socket-proxy:latest
-    container_name: docktail-socket-proxy
-    environment:
-      - CONTAINERS=1
-      - EVENTS=1
-      - INFO=1
-      - NETWORKS=1
-      - POST=0
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    networks:
-      - docker-api
-    read_only: true
-    tmpfs:
-      - /run
-    restart: unless-stopped
 
   docktail:
     image: ghcr.io/marvinvr/docktail:latest
@@ -106,60 +89,209 @@ services:
     volumes:
       - ./data:/data
       - picoshare_data:/data
- 
- 
-  vaultwarden:
-    container_name: vaultwarden
-    image: vaultwarden/server:latest-alpine
+
+  # ========================
+  # Traefik Reverse Proxy
+  # ========================
+  traefik:
+    container_name: ${SERVICE_NAME}
+    image: ${DOCKER_IMAGE}
+    restart: always
+    ports:
+      - target: ${SERVICE_HTTP_PORT}
+        published: ${SERVICE_HTTP_PORT}
+        protocol: tcp
+        mode: host
+      - target: ${SERVICE_HTTPS_PORT}
+        published: ${SERVICE_HTTPS_PORT}
+        protocol: tcp
+        mode: host
+      - target: ${SERVICE_HTTPS_PORT}
+        published: ${SERVICE_HTTPS_PORT}
+        protocol: udp
+        mode: host
+    command:
+      - "--global.sendanonymoususage=false"
+      - "--global.checknewversion=false"
+      - "--entrypoints.http.address=:${SERVICE_HTTP_PORT}"
+      - "--entrypoints.https.address=:${SERVICE_HTTPS_PORT}"
+      - "--entryPoints.https.asDefault=true"
+      - "--entryPoints.https.http3"
+      - "--entryPoints.https.http3.advertisedport=${SERVICE_HTTPS_PORT}"
+      - "--entrypoints.tor.address=:8081"
+      - "--serverstransport.insecureskipverify=true"
+      # Trusted IPs: localhost, Docker network, Tailscale, WireGuard
+      - "--entryPoints.http.forwardedHeaders.trustedIPs=127.0.0.1/32,172.18.0.1/24,100.64.0.0/10,10.0.0.0/24"
+      - "--entryPoints.https.forwardedHeaders.trustedIPs=127.0.0.1/32,172.18.0.1/24,100.64.0.0/10,10.0.0.0/24"
+      - "--api=true"
+      - "--api.dashboard=true"
+      - "--ping=true"
+      - "--log.level=INFO"
+      - "--log.maxsize=100"
+      - "--log.format=common"
+      - "--accesslog=false"
+      - "--providers.docker=true"
+      - "--providers.docker.watch=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.useBindPortIP=false"
+      - "--providers.docker.network=traefik"
+      - "--providers.file=true"
+      - "--providers.file.watch=true"
+      - "--providers.file.directory=/etc/traefik/config"
+      - "--providers.file.debugloggeneratedtemplate=true"
+      - "--certificatesresolvers.le.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.le.acme.storage=/data/ssl/acme.json"
+      - "--certificatesresolvers.le.acme.dnsChallenge.resolvers=1.1.1.1:53,8.8.8.8:53"
+      - "--certificatesresolvers.le.acme.dnsChallenge.provider=${ACME_PROVIDER}"
+      - "--certificatesresolvers.le.acme.dnsChallenge.propagation.delayBeforeChecks=30"
     environment:
-      - LOG_FILE=/data/logs/access.log
-      - WEBSOCKET_ENABLED=true
-      - SIGNUPS_ALLOWED=true
-      - ADMIN_TOKEN=#sPqDJ!WxJAkA
-      - I_REALLY_WANT_VOLATILE_STORAGE=true
-      - ROCKET_ENV=prod
-      - ROCKET_WORKERS=10
-      - TZ=America/Chicago
-      - LOG_LEVEL=error
-      - EXTENDED_LOGGING=true
-    restart: unless-stopped
+      - TZ=Asia/Shanghai
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+    networks:
+      - traefik
     labels:
-      - docktail.service.enable=true
-      - docktail.service.name=vaultwarden
-      - docktail.service.port=4044
-      - docktail.service.service-port=443
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.traefik-dashboard-secure.tls.certresolver=le"
+      - "traefik.http.routers.traefik-dashboard-secure.tls.domains[0].main=${DNS_MAIN}"
+      - "traefik.http.routers.traefik-dashboard-secure.tls.domains[0].sans=${DNS_LIST}"
+      - "traefik.http.routers.traefik-dashboard-secure.tls=true"
+      - "traefik.http.routers.traefik-dashboard-secure.entrypoints=https"
+      - "traefik.http.routers.traefik-dashboard-secure.middlewares=gzip@file"
+      - "traefik.http.routers.traefik-dashboard-secure.rule=Host(`${SERVICE_DOMAIN}`)"
+      - "traefik.http.routers.traefik-dashboard-secure.service=dashboard@internal"
+      - "traefik.http.routers.traefik-dashboard-nosecure.entrypoints=http"
+      - "traefik.http.routers.traefik-dashboard-nosecure.middlewares=redir-https@file"
+      - "traefik.http.routers.traefik-dashboard-nosecure.rule=Host(`${SERVICE_DOMAIN}`)"
+      - "traefik.http.routers.traefik-dashboard-nosecure.service=noop@internal"
+      - "traefik.http.routers.traefik-dashboard-api.tls=true"
+      - "traefik.http.routers.traefik-dashboard-api.entrypoints=https"
+      - "traefik.http.routers.traefik-dashboard-api.middlewares=gzip@file"
+      - "traefik.http.routers.traefik-dashboard-api.rule=Host(`${SERVICE_DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+      - "traefik.http.routers.traefik-dashboard-api.service=api@internal"
+      - "docktail.service.enable=true"
+      - "docktail.service.name=app"
+      - "docktail.service.port=${SERVICE_HTTP_PORT}"
+      - "docktail.service.service-port=${SERVICE_HTTPS_PORT}"
+      - "docktail.service.network=traefik"
     volumes:
-      - /opt/vaultwarden/data:/data
-      - /opt/vaultwarden/logs:/data/logs
-
-
-  vaultwarden-backup:
-    container_name: vaultwarden-backup
-    hostname: vaultwarden-backup
-    image: bruceforce/vaultwarden-backup:latest
-    init: true
-
-    volumes:
-      - /opt/vaultwarden/data:/data/
-      - /opt/vaultwarden/backup:/vaultwarden-backup
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-    environment:
-      - TIMESTAMP=true
-      - DELETE_AFTER=30
-      - UID=0
-      - GID=0
-      - TZ=America/Chicago
-      - BACKUP_DIR=/vaultwarden-backup
-      - CRON_TIME=50 3 * * *
-    restart: unless-stopped
-    depends_on:
-      - vaultwarden
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config/:/etc/traefik/config/:ro
+      - ./ssl/:/data/ssl/
+    extra_hosts:
+      - "update.traefik.io:127.0.0.1"
+      - "collect.traefik.io:127.0.0.1"
+      - "stats.g.doubleclick.net:127.0.0.1"
+      - "${SERVICE_DOMAIN}:127.0.0.1"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider --proxy off localhost:8080/ping || exit 1"]
+      interval: 3s
+      retries: 10
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+ 
+   # ========================
+  # Authelia SSO
+  # ========================
+  authelia:
+    image: authelia/authelia
+    container_name: authelia
+    volumes:
+      - /home/nana/docker/authelia/config:/config
+    networks:
+      - traefik
+    security_opt:
+      - no-new-privileges:true
     labels:
-      - docktail.service.enable=true
-      - docktail.service.name=vaultwarden-backup
-      - docktail.service.port=4000
-      - docktail.service.service-port=443
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.authelia.rule=Host(`auth.linuxpad.blog`)'
+      - 'traefik.http.routers.authelia.entrypoints=https'
+      - 'traefik.http.routers.authelia.tls=true'
+      - 'traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/verify?rd=https://auth.linuxpad.blog'
+      - 'traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader=true'
+      - 'traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
+      - 'traefik.http.middlewares.authelia.forwardAuth.maxResponseBodySize=10485760'
+      - 'traefik.http.middlewares.authelia-basic.forwardAuth.address=http://authelia:9091/api/verify?auth=basic'
+      - 'traefik.http.middlewares.authelia-basic.forwardAuth.trustForwardHeader=true'
+      - 'traefik.http.middlewares.authelia-basic.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
+      - 'traefik.http.services.authelia.loadbalancer.server.port=9091'
+    ports:
+      - 9091:9091
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/London
+    healthcheck:
+      disable: true
+  # ========================
+  # Redis (for Authelia)
+  # ========================
+  redis:
+    image: redis:alpine
+    container_name: redis
+    volumes:
+      - /home/nana/docker/authelia/redis:/data
+    networks:
+      - traefik
+    expose:
+      - 6379
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/London
+  
+
+  # ========================
+  # Docker Socket Proxy
+  # ========================
+  socket-proxy:
+    image: lscr.io/linuxserver/socket-proxy:latest
+    container_name: socket-proxy
+    environment:
+      - ALLOW_START=1
+      - ALLOW_STOP=1
+      - ALLOW_RESTARTS=1
+      - AUTH=1
+      - BUILD=1
+      - COMMIT=1
+      - CONFIGS=1
+      - CONTAINERS=1
+      - DISABLE_IPV6=1
+      - DISTRIBUTION=1
+      - EVENTS=1
+      - EXEC=1
+      - IMAGES=1
+      - INFO=1
+      - LOG_LEVEL=info
+      - NETWORKS=1
+      - NODES=1
+      - PING=1
+      - PLUGINS=1
+      - POST=1
+      - SECRETS=1
+      - SERVICES=1
+      - SESSION=1
+      - SWARM=1
+      - SYSTEM=1
+      - TASKS=1
+      - TZ=Etc/UTC
+      - VERSION=1
+      - VOLUMES=1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - traefik
+      - docker-api
+    read_only: true
+    tmpfs:
+      - /run
+    restart: unless-stopped
+
+
+
 
 
   filebrowser:
