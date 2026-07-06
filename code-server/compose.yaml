@@ -1,0 +1,21 @@
+services:
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    container_name: code-server
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+      - PASSWORD=akwasi123
+      - SUDO_PASSWORD=akwasi123 #optional
+      #- SUDO_PASSWORD_HASH= #optional
+      - PROXY_DOMAIN=vscode.example.com #optional
+      - DEFAULT_WORKSPACE=/config/workspace #optional
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/vscode/config:/config
+    restart: unless-stopped
+    labels:
+      - docktail.service.enable=true
+      - docktail.service.name=code-server
+      - docktail.service.port=8443
+      - docktail.service.service-port=443

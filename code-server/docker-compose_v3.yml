@@ -1,4 +1,4 @@
-version: "3.8"
+
 
 services:
 
@@ -9,8 +9,8 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Berlin
-      - PASSWORD=akosua123
-      - SUDO_PASSWORD=akosua123 #optional
+      - PASSWORD=akwasi123
+      - SUDO_PASSWORD=akwasi123 #optional
       #- SUDO_PASSWORD_HASH= #optional
       - PROXY_DOMAIN=vscode.example.com #optional
       - DEFAULT_WORKSPACE=/config/workspace #optional
