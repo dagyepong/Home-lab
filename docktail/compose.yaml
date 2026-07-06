@@ -171,7 +171,7 @@ services:
       - "traefik.http.routers.traefik-dashboard-api.rule=Host(`${SERVICE_DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
       - "traefik.http.routers.traefik-dashboard-api.service=api@internal"
       - "docktail.service.enable=true"
-      - "docktail.service.name=app"
+      - "docktail.service.name=traefik"
       - "docktail.service.port=${SERVICE_HTTP_PORT}"
       - "docktail.service.service-port=${SERVICE_HTTPS_PORT}"
       - "docktail.service.network=traefik"
