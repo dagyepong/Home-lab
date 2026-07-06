@@ -57,6 +57,94 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - dockhand_data:/app/data
 
+  flare:
+    image: soulteary/flare
+    restart: always
+    command: flare
+    container_name: socketproxy-flare
+    environment:
+      - FLARE_DISABLE_LOGIN=0
+      - FLARE_USER=flare
+      - FLARE_PASS=akwasi123
+    labels:
+      - docktail.service.enable=true
+      - docktail.service.name=flare
+      - docktail.service.port=5005
+      - docktail.service.service-port=443
+    volumes:
+      - ./app:/app
+
+  picoshare:
+    image: mtlynch/picoshare
+    environment:
+      - PS_SHARED_SECRET=dummypass 
+    command: -db /data/store.db
+    container_name: socketproxy-picoshare
+    labels:
+      - docktail.service.enable=true
+      - docktail.service.name=picoshare
+      - docktail.service.port=4001
+      - docktail.service.service-port=443
+    restart: unless-stopped
+    volumes:
+      - ./data:/data
+      - picoshare_data:/data
+ 
+ 
+  vaultwarden:
+    container_name: vaultwarden
+    image: vaultwarden/server:latest-alpine
+    environment:
+      - LOG_FILE=/data/logs/access.log
+      - WEBSOCKET_ENABLED=true
+      - SIGNUPS_ALLOWED=true
+      - ADMIN_TOKEN=#sPqDJ!WxJAkA
+      - I_REALLY_WANT_VOLATILE_STORAGE=true
+      - ROCKET_ENV=prod
+      - ROCKET_WORKERS=10
+      - TZ=America/Chicago
+      - LOG_LEVEL=error
+      - EXTENDED_LOGGING=true
+    restart: unless-stopped
+    labels:
+      - docktail.service.enable=true
+      - docktail.service.name=vaultwarden
+      - docktail.service.port=4044
+      - docktail.service.service-port=443
+    volumes:
+      - /opt/vaultwarden/data:/data
+      - /opt/vaultwarden/logs:/data/logs
+
+
+  vaultwarden-backup:
+    container_name: vaultwarden-backup
+    hostname: vaultwarden-backup
+    image: bruceforce/vaultwarden-backup:latest
+    init: true
+
+    volumes:
+      - /opt/vaultwarden/data:/data/
+      - /opt/vaultwarden/backup:/vaultwarden-backup
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      - TIMESTAMP=true
+      - DELETE_AFTER=30
+      - UID=0
+      - GID=0
+      - TZ=America/Chicago
+      - BACKUP_DIR=/vaultwarden-backup
+      - CRON_TIME=50 3 * * *
+    restart: unless-stopped
+    depends_on:
+      - vaultwarden
+    labels:
+      - docktail.service.enable=true
+      - docktail.service.name=vaultwarden-backup
+      - docktail.service.port=4000
+      - docktail.service.service-port=443
+
+
   filebrowser:
     image: filebrowser/filebrowser:s6
     container_name: socketproxy-filebrowser
@@ -76,7 +164,9 @@ networks:
     internal: true
 
 volumes:
-  stirling-data:
   filebrowser-db:
   filebrowser-config:
   dockhand_data:
+  picoshare_data:
+  vaultwarden_data:
+
