@@ -64,7 +64,6 @@ services:
     image: jocxfin/pwgen:latest
     environment:
       - NO_API_CHECK=true
-    command: -l 12 -n 1
     restart: unless-stopped
     labels:
       - docktail.service.enable=true
