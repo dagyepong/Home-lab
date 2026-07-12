@@ -22,7 +22,7 @@ services:
     labels:
       - docktail.service.enable=true
       - docktail.service.name=vaultwarden
-      - docktail.service.port=4044
+      - docktail.service.port=80
       - docktail.service.service-port=443
     volumes:
       - /opt/vaultwarden/data:/data
@@ -34,7 +34,6 @@ services:
     hostname: vaultwarden-backup
     image: bruceforce/vaultwarden-backup:latest
     init: true
-
     volumes:
       - /opt/vaultwarden/data:/data/
       - /opt/vaultwarden/backup:/vaultwarden-backup
