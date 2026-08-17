@@ -44,7 +44,7 @@ services:
       # - GHOST=https://linuxpad.blog
       - TWITTER=https://twitter.com/
       - INSTAGRAM=https://instagram.com/oware84?igsh=cjhxOXZwanRiMmhj
-      - REDDIT=https://www.reddit.com/user/nanaoware/
+      - REDDIT=https://www.reddit.com/user/Forward-Magician-261/
       - LINKED_IN=https://www.linkedin.com/in/nana-oware-944bba282/
       #- YOUTUBE=https://youtube.com
       #- TWITCH=https://twich.com
