@@ -59,6 +59,22 @@ services:
   
 
 
+  traefik-manager:
+    image: ghcr.io/chr0nzz/traefik-manager:latest
+    container_name: traefik-manager
+    restart: unless-stopped
+    environment:
+      - COOKIE_SECURE=false
+    labels:
+      - docktail.service.enable=true
+      - docktail.service.name=traefik-manager
+      - docktail.service.port=5000
+      - docktail.service.service-port=443
+    volumes:
+      - ./config:/app/config
+      - ./backups:/app/backups
+
+
   pwgen:
     container_name: pwgen
     image: jocxfin/pwgen:latest
