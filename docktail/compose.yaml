@@ -63,17 +63,16 @@ services:
     restart: unless-stopped
     environment:
       - COOKIE_SECURE=false
+      - TM_TRAEFIK_URL=http://traefik:8080 # <--- Tells Traefik Manager where to reach Traefik's API
     networks:
       - traefik
     labels:
-      # Enable Traefik discovery for traefik-manager
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
-      - "traefik.http.routers.traefik-manager.rule=Host(`manager.linuxpad.blog`)" # Update Host rule if needed
+      - "traefik.http.routers.traefik-manager.rule=Host(`manager.linuxpad.blog`)"
       - "traefik.http.routers.traefik-manager.entrypoints=https"
       - "traefik.http.routers.traefik-manager.tls=true"
       - "traefik.http.services.traefik-manager.loadbalancer.server.port=5000"
-      # Docktail tailnet labels
       - "docktail.service.enable=true"
       - "docktail.service.name=traefik-manager"
       - "docktail.service.port=5000"
@@ -81,6 +80,9 @@ services:
     volumes:
       - ./config:/app/config
       - ./backups:/app/backups
+      - /var/run/docker.sock:/var/run/docker.sock:ro # <--- Optional: helps it inspect Docker providers directly if needed
+      ####  When prompted for the Traefik API URL, ensure it points to http://traefik:8080 (since they are both on the shared traefik network).
+      #### Traefik Manager URL: traefik-manager.tail9f20b.ts.net
 
   pwgen:
     container_name: pwgen
