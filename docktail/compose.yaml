@@ -1,5 +1,4 @@
 services:
-
   docktail:
     image: ghcr.io/marvinvr/docktail:latest
     container_name: docktail-socketproxy
@@ -15,6 +14,7 @@ services:
     networks:
       - default
       - docker-api
+      - traefik
     restart: unless-stopped
 
   it-tools:
@@ -56,8 +56,6 @@ services:
       - docktail.service.service-port=443
     volumes:
       - ./app:/app
-  
-
 
   traefik-manager:
     image: ghcr.io/chr0nzz/traefik-manager:latest
@@ -65,15 +63,24 @@ services:
     restart: unless-stopped
     environment:
       - COOKIE_SECURE=false
+    networks:
+      - traefik
     labels:
-      - docktail.service.enable=true
-      - docktail.service.name=traefik-manager
-      - docktail.service.port=5000
-      - docktail.service.service-port=443
+      # Enable Traefik discovery for traefik-manager
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.traefik-manager.rule=Host(`manager.linuxpad.blog`)" # Update Host rule if needed
+      - "traefik.http.routers.traefik-manager.entrypoints=https"
+      - "traefik.http.routers.traefik-manager.tls=true"
+      - "traefik.http.services.traefik-manager.loadbalancer.server.port=5000"
+      # Docktail tailnet labels
+      - "docktail.service.enable=true"
+      - "docktail.service.name=traefik-manager"
+      - "docktail.service.port=5000"
+      - "docktail.service.service-port=443"
     volumes:
       - ./config:/app/config
       - ./backups:/app/backups
-
 
   pwgen:
     container_name: pwgen
@@ -86,8 +93,6 @@ services:
       - docktail.service.name=pwgen
       - docktail.service.port=5069
       - docktail.service.service-port=443
-
-
 
   picoshare:
     image: mtlynch/picoshare
@@ -135,11 +140,11 @@ services:
       - "--entryPoints.https.http3.advertisedport=${SERVICE_HTTPS_PORT}"
       - "--entrypoints.tor.address=:8081"
       - "--serverstransport.insecureskipverify=true"
-      # Trusted IPs: localhost, Docker network, Tailscale, WireGuard
       - "--entryPoints.http.forwardedHeaders.trustedIPs=127.0.0.1/32,172.18.0.1/24,100.64.0.0/10,10.0.0.0/24"
       - "--entryPoints.https.forwardedHeaders.trustedIPs=127.0.0.1/32,172.18.0.1/24,100.64.0.0/10,10.0.0.0/24"
       - "--api=true"
       - "--api.dashboard=true"
+      - "--api.insecure=true"
       - "--ping=true"
       - "--log.level=INFO"
       - "--log.maxsize=100"
@@ -173,22 +178,20 @@ services:
       - "traefik.http.routers.traefik-dashboard-secure.tls.domains[0].sans=${DNS_LIST}"
       - "traefik.http.routers.traefik-dashboard-secure.tls=true"
       - "traefik.http.routers.traefik-dashboard-secure.entrypoints=https"
-      - "traefik.http.routers.traefik-dashboard-secure.middlewares=gzip@file"
       - "traefik.http.routers.traefik-dashboard-secure.rule=Host(`${SERVICE_DOMAIN}`)"
       - "traefik.http.routers.traefik-dashboard-secure.service=dashboard@internal"
       - "traefik.http.routers.traefik-dashboard-nosecure.entrypoints=http"
-      - "traefik.http.routers.traefik-dashboard-nosecure.middlewares=redir-https@file"
       - "traefik.http.routers.traefik-dashboard-nosecure.rule=Host(`${SERVICE_DOMAIN}`)"
       - "traefik.http.routers.traefik-dashboard-nosecure.service=noop@internal"
       - "traefik.http.routers.traefik-dashboard-api.tls=true"
       - "traefik.http.routers.traefik-dashboard-api.entrypoints=https"
-      - "traefik.http.routers.traefik-dashboard-api.middlewares=gzip@file"
       - "traefik.http.routers.traefik-dashboard-api.rule=Host(`${SERVICE_DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
       - "traefik.http.routers.traefik-dashboard-api.service=api@internal"
+      # Docktail labels pointing to Traefik's internal API/Dashboard port (8080)
       - "docktail.service.enable=true"
       - "docktail.service.name=traefik"
-      - "docktail.service.port=${SERVICE_HTTP_PORT}"
-      - "docktail.service.service-port=${SERVICE_HTTPS_PORT}"
+      - "docktail.service.port=8080"
+      - "docktail.service.service-port=443"
       - "docktail.service.network=traefik"
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -210,7 +213,7 @@ services:
       options:
         max-size: "1m"
  
-   # ========================
+  # ========================
   # Authelia SSO
   # ========================
   authelia:
@@ -242,6 +245,7 @@ services:
       - TZ=Europe/London
     healthcheck:
       disable: true
+
   # ========================
   # Redis (for Authelia)
   # ========================
@@ -257,7 +261,6 @@ services:
     restart: unless-stopped
     environment:
       - TZ=Europe/London
-  
 
   # ========================
   # Docker Socket Proxy
@@ -305,10 +308,6 @@ services:
       - /run
     restart: unless-stopped
 
-
-
-
-
   filebrowser:
     image: filebrowser/filebrowser:s6
     container_name: socketproxy-filebrowser
@@ -334,5 +333,3 @@ volumes:
   filebrowser-config:
   dockhand_data:
   picoshare_data:
-
-
