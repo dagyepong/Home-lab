@@ -1,0 +1,35 @@
+services:
+
+  gokapi:
+    image: f0rc3/gokapi:latest
+    container_name: gokapi
+    restart: unless-stopped
+    ports:
+      - 53842:53842
+    expose:
+      - 53842
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/gokapi/data:/app/data
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/gokapi/config:/app/config
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.gokapi-http.entrypoints=http"
+      - "traefik.http.routers.gokapi-http.middlewares=redir-https"
+      - "traefik.http.routers.gokapi-http.rule=Host(`gokapi.linuxpad.blog`)"
+      - "traefik.http.routers.gokapi-http.service=noop@internal"
+      - "traefik.http.routers.gokapi-https.entrypoints=https"
+      - "traefik.http.routers.gokapi-https.tls=true"
+      - "traefik.http.routers.gokapi-https.middlewares=gzip"
+      - "traefik.http.routers.gokapi-https.rule=Host(`gokapi.linuxpad.blog`)"
+      - "traefik.http.services.gokapi-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.gokapi-backend.loadbalancer.server.port=53842"
+      - "traefik.http.routers.gokapi-https.middlewares=authelia@docker"
+
+
+networks:
+  traefik:
+    name: traefik
+    external: true 
