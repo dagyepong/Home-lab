@@ -1,0 +1,54 @@
+services:
+
+  casdoor:
+    image: casbin/casdoor:2.353.0
+    container_name: casdoor
+    restart: unless-stopped
+    depends_on:
+      - db
+
+    environment:
+      - GIN_MODE=release
+      - RUNNING_IN_DOCKER=true
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/casdoor/conf:/conf # config file `app.conf` must be created manually with postgres connection
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/casdoor/logs:/logs
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.casdoor-http.entrypoints=http"
+      - "traefik.http.routers.casdoor-http.middlewares=redir-https"
+      - "traefik.http.routers.casdoor-http.rule=Host(`casdoor.linuxpad.blog`)"
+      - "traefik.http.routers.casdoor-http.service=noop@internal"
+      - "traefik.http.routers.casdoor-https.entrypoints=https"
+      - "traefik.http.routers.casdoor-https.tls=true"
+      - "traefik.http.routers.casdoor-https.middlewares=gzip"
+      - "traefik.http.routers.casdoor-https.rule=Host(`casdoor.linuxpad.blog`)"
+      - "traefik.http.services.casdoor-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.casdoor-backend.loadbalancer.server.port=8080"
+      - "traefik.http.routers.casdoor-https.middlewares=authelia@docker"
+
+
+
+  db:
+    image: postgres:18-alpine
+    container_name: casdoor-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=casdoor
+      - POSTGRES_PASSWORD=pls-changeme-to-strong-pw
+      - POSTGRES_DB=casdoor
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/casdoor/db:/var/lib/postgresql
+    networks:
+      - casdoor_net
+
+
+networks:
+  traefik:
+    name: traefik
+    external: true 
+  casdoor_net:
+    internal: true
