@@ -1,0 +1,34 @@
+services:
+
+  answer:
+    image: answerdev/answer:latest
+    container_name: answer
+    ports:
+      - 9080:80
+    expose:
+      - 80
+    restart: unless-stopped
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/answer/data:/data
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.answer-http.entrypoints=http"
+      - "traefik.http.routers.answer-http.middlewares=redir-https"
+      - "traefik.http.routers.answer-http.rule=Host(`answer.linuxpad.blog`)"
+      - "traefik.http.routers.answer-http.service=noop@internal"
+      - "traefik.http.routers.answer-https.entrypoints=https"
+      - "traefik.http.routers.answer-https.tls=true"
+      - "traefik.http.routers.answer-https.middlewares=gzip"
+      - "traefik.http.routers.answer-https.rule=Host(`answer.linuxpad.blog`)"
+      - "traefik.http.services.answer-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.answer-backend.loadbalancer.server.port=8080"
+      - "traefik.http.routers.answer-https.middlewares=authelia@docker"
+
+
+networks:
+  traefik:
+    name: traefik
+    external: true 
