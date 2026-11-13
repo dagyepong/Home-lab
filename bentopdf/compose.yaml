@@ -1,0 +1,34 @@
+services:
+
+  bentopdf:
+    image: ghcr.io/alam00000/bentopdf-simple:latest
+    container_name: bentopdf
+    restart: unless-stopped
+    expose:
+      - 8080
+    ports:
+      - 8080:8080/tcp
+    environment:
+      - DISABLE_IPV6=true
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.bentopdf-http.entrypoints=http"
+      - "traefik.http.routers.bentopdf-http.middlewares=redir-https"
+      - "traefik.http.routers.bentopdf-http.rule=Host(`bentopdf.linuxpad.blog`)"
+      - "traefik.http.routers.bentopdf-http.service=noop@internal"
+      - "traefik.http.routers.bentopdf-https.entrypoints=https"
+      - "traefik.http.routers.bentopdf-https.tls=true"
+      - "traefik.http.routers.bentopdf-https.middlewares=gzip"
+      - "traefik.http.routers.bentopdf-https.rule=Host(`bentopdf.linuxpad.blog`)"
+      - "traefik.http.services.bentopdf-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.bentopdf-backend.loadbalancer.server.port=8080"
+      - "traefik.http.routers.bentopdf-https.middlewares=authelia@docker"
+
+
+networks:
+  traefik:
+    name: traefik
+    external: true 
