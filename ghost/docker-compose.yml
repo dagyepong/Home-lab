@@ -1,6 +1,6 @@
-#Create the host backup directories before bringing the stack up:
+#Save it in your Ghost project directory, then create the folders from that same directory:
 
-# mkdir -p ../backups/ghost_db ../backups/ghost_content
+# mkdir -p ./backups/ghost_db ./backups/ghost_content
 
 
 services:
@@ -63,7 +63,9 @@ services:
     security_opt:
       - no-new-privileges:true
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$${MYSQL_ROOT_PASSWORD}\""]
+      test:
+        - CMD-SHELL
+        - 'mysqladmin ping -h 127.0.0.1 -u root -p"$${MYSQL_ROOT_PASSWORD}"'
       interval: 10s
       timeout: 20s
       retries: 10
@@ -91,8 +93,8 @@ services:
         condition: service_healthy
     volumes:
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/ghost/content:/var/lib/ghost/content:ro
-      - ../backups/ghost_db:/srv/ghost-mysql/backups
-      - ../backups/ghost_content:/srv/ghost-content/backups
+      - ./backups/ghost_db:/srv/ghost-mysql/backups
+      - ./backups/ghost_content:/srv/ghost-content/backups
     environment:
       DB_NAME: ${DB_NAME:-ghost}
       DB_USER: ${DB_USER:-ghost}
@@ -138,6 +140,7 @@ services:
             find "$$MYSQL_BACKUPS_PATH" -type f -name 'ghost-db-*' \
               -mtime "+$$MYSQL_BACKUP_PRUNE_DAYS" -delete
           fi
+
           if [ "$$DATA_BACKUP_PRUNE_DAYS" -ge 1 ]; then
             find "$$DATA_BACKUPS_PATH" -type f -name 'ghost-content-*' \
               -mtime "+$$DATA_BACKUP_PRUNE_DAYS" -delete
