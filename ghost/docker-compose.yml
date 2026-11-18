@@ -1,30 +1,35 @@
-version: '3.8'
+#Create the host backup directories before bringing the stack up:
+
+# mkdir -p ../backups/ghost_db ../backups/ghost_content
+
 
 services:
-
   ghost:
-    image: ghost:5-alpine
+    image: ghost:6.78.0@sha256:985ef9f30fb897a29050a9ef956bff1737ff1f2cd955aa5b759b88251f9c8735
     container_name: ghost
-    restart: always
+    restart: unless-stopped
     depends_on:
       database:
         condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
       test: "/usr/bin/nc localhost 2368 || exit 1"
       interval: 30s
       timeout: 10s
       retries: 5
     expose:
-      - 2368
+      - "2368"
     ports:
-      - 2368:2368
+      - "2368:2368"
     volumes:
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/ghost/content:/var/lib/ghost/content
     environment:
-      database__client: ${DB_CLIENT:-mysql}
-      database__connection__host: ${DB_HOST:-database}
+      NODE_ENV: production
+      database__client: mysql
+      database__connection__host: database
       database__connection__user: ${DB_USER:-ghost}
-      database__connection__password: ${DB_USER_PASS:-DatabasePassword1234}
+      database__connection__password: ${DB_USER_PASS:?set DB_USER_PASS in .env}
       database__connection__database: ${DB_NAME:-ghost}
       url: https://linuxpad.blog
       mail__transport: "${MAIL_TRANSPORT}"
@@ -33,7 +38,7 @@ services:
       mail__options__secureConnection: "${MAIL_SECURE_CONNECTION}"
       mail__options__auth__user: "${MAIL_USER}"
       mail__options__auth__pass: "${MAIL_PASSWORD}"
-      security__staffDeviceVerification: false  
+      security__staffDeviceVerification: false
     networks:
       - traefik
     labels:
@@ -52,48 +57,97 @@ services:
       - "traefik.http.services.ghost-backend.loadbalancer.server.port=2368"
 
   database:
-    image: mysql:8
+    image: mysql:8.4-oracle@sha256:a81d043930e51745522bd5c430961cf8286f0a23f0a9a2a6e0108f7ea71b0902
     container_name: ghost_db
-    restart: always
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
-      test: ["CMD", 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-p$$DB_ROOT_PASS' ]
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$${MYSQL_ROOT_PASSWORD}\""]
+      interval: 10s
       timeout: 20s
       retries: 10
+      start_period: 60s
     volumes:
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/ghost/mysql:/var/lib/mysql
     expose:
-      - 3306
+      - "3306"
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:-DatabaseRootPassword54321}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:?set DB_ROOT_PASS in .env}
       MYSQL_DATABASE: ${DB_NAME:-ghost}
       MYSQL_USER: ${DB_USER:-ghost}
-      MYSQL_PASSWORD: ${DB_USER_PASS:-DatabasePassword1234}
+      MYSQL_PASSWORD: ${DB_USER_PASS:?set DB_USER_PASS in .env}
     networks:
       - traefik
 
-  db_backup:
-    container_name: db_backup
-    image: databack/mysql-backup:latest
+  backups:
+    image: mysql:8.4-oracle@sha256:a81d043930e51745522bd5c430961cf8286f0a23f0a9a2a6e0108f7ea71b0902
+    container_name: ghost_backups
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     volumes:
-      - ../backups/ghost_db/:/backup
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/ghost/content:/var/lib/ghost/content:ro
+      - ../backups/ghost_db:/srv/ghost-mysql/backups
+      - ../backups/ghost_content:/srv/ghost-content/backups
     environment:
-      - DB_TYPE=mysql
-      - DB_SERVER=ghost_db
-      - DB_NAME=${DB_NAME:-ghost}
-      - DB_USER=${DB_USER:-ghost}
-      - DB_PASS=${DB_USER_PASS:-DatabasePassword1234}
-      - DB_DUMP_FREQ=720
-      - DB_DUMP_BEGIN=0000
-      - DB_CLEANUP_TIME=72000
-      - DB_CHECKSUM=SHA1
-      - DB_COMPRESSION=GZ
-      - DB_DUMP_TARGET=/backup # Add this line
-      - DB_SPLIT_DB=true
-    restart: always
-    command: dump
+      DB_NAME: ${DB_NAME:-ghost}
+      DB_USER: ${DB_USER:-ghost}
+      DB_PASS: ${DB_USER_PASS:?set DB_USER_PASS in .env}
+      BACKUP_INIT_SLEEP: ${BACKUP_INIT_SLEEP:-30m}
+      BACKUP_INTERVAL: ${BACKUP_INTERVAL:-24h}
+      MYSQL_BACKUPS_PATH: /srv/ghost-mysql/backups
+      DATA_BACKUPS_PATH: /srv/ghost-content/backups
+      MYSQL_BACKUP_PRUNE_DAYS: ${MYSQL_BACKUP_PRUNE_DAYS:-7}
+      DATA_BACKUP_PRUNE_DAYS: ${DATA_BACKUP_PRUNE_DAYS:-7}
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        set -o pipefail
+        sleep "$$BACKUP_INIT_SLEEP"
+
+        while true; do
+          stamp="$$(date +%Y-%m-%d_%H-%M)"
+          dbfile="$$MYSQL_BACKUPS_PATH/ghost-db-$$stamp.sql.gz"
+          datafile="$$DATA_BACKUPS_PATH/ghost-content-$$stamp.tar.gz"
+
+          echo "Starting database backup: $$dbfile"
+          if MYSQL_PWD="$$DB_PASS" mysqldump --no-tablespaces \
+            -h database -u "$$DB_USER" "$$DB_NAME" | gzip > "$$dbfile.partial"; then
+            mv "$$dbfile.partial" "$$dbfile"
+            echo "Database backup completed: $$dbfile"
+          else
+            echo "Database backup failed: $$dbfile.partial" >&2
+            mv "$$dbfile.partial" "$$dbfile.failed" 2>/dev/null || true
+          fi
+
+          echo "Starting Ghost content backup: $$datafile"
+          if tar -czf "$$datafile.partial" -C /var/lib/ghost content &&
+            tar -tzf "$$datafile.partial" >/dev/null 2>&1; then
+            mv "$$datafile.partial" "$$datafile"
+            echo "Content backup completed: $$datafile"
+          else
+            echo "Content backup failed: $$datafile.partial" >&2
+            mv "$$datafile.partial" "$$datafile.failed" 2>/dev/null || true
+          fi
+
+          if [ "$$MYSQL_BACKUP_PRUNE_DAYS" -ge 1 ]; then
+            find "$$MYSQL_BACKUPS_PATH" -type f -name 'ghost-db-*' \
+              -mtime "+$$MYSQL_BACKUP_PRUNE_DAYS" -delete
+          fi
+          if [ "$$DATA_BACKUP_PRUNE_DAYS" -ge 1 ]; then
+            find "$$DATA_BACKUPS_PATH" -type f -name 'ghost-content-*' \
+              -mtime "+$$DATA_BACKUP_PRUNE_DAYS" -delete
+          fi
+
+          sleep "$$BACKUP_INTERVAL"
+        done
+    networks:
+      - traefik
 
 networks:
   traefik:
-    external: true   
+    external: true
