@@ -2,7 +2,6 @@
 
 # mkdir -p ./backups/ghost_db ./backups/ghost_content
 
-
 services:
   ghost:
     image: ghost:6.78.0@sha256:985ef9f30fb897a29050a9ef956bff1737ff1f2cd955aa5b759b88251f9c8735
