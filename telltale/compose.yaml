@@ -57,6 +57,10 @@ services:
 
       - "traefik.http.services.telltale-backend.loadbalancer.server.scheme=http"
       - "traefik.http.services.telltale-backend.loadbalancer.server.port=8053"
+      - "docktail.service.enable=true"
+      - "docktail.service.name=telltale"
+      - "docktail.service.port=8053"
+      - "docktail.service.service-port=443"
 
 ## mkdir -p data
 # Put your Telltale configuration in ./telltale.toml
