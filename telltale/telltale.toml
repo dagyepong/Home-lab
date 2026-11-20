@@ -1,0 +1,36 @@
+# TelltaleDNS starter config (REQ: OPS-004) — the same file the Compose bundle and install.sh use.
+# Every key is optional; see docs/configuration.md. Check edits with:
+#   telltale config check /etc/telltale/telltale.toml
+# Changes apply on reload (SIGHUP / `docker compose kill -s HUP`) without dropping queries.
+config_version = 1
+
+# DNS listens on UDP and TCP port 53 on every address (IPv4 and IPv6) unless [[listen]] is
+# set. The web UI and API listen on port 8053: open http://<this machine>:8053/ and use the
+# setup token from `telltale auth setup-token` (Compose: `docker compose exec telltale
+# telltale auth setup-token`) to create the first admin.
+
+# Where answers come from: encrypted (DNS over TLS) to Cloudflare and Quad9, whichever is
+# faster. `telltale presets list` shows other providers.
+[[upstream]]
+name = "cloudflare"
+url = "tls://1.1.1.1:853"
+tls_server_name = "cloudflare-dns.com"
+
+[[upstream]]
+name = "quad9"
+url = "tls://9.9.9.9:853"
+tls_server_name = "dns.quad9.net"
+
+[[upstream_group]]
+name = "default"
+members = ["cloudflare", "quad9"]
+strategy = "fastest"
+
+# A balanced ad and tracker blocklist (about 150k names), refreshed daily.
+[[list]]
+name = "hagezi-pro"
+url = "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/pro.txt"
+
+# On an SD-card Pi, keep the query log small (or put /var/lib/telltale on a USB SSD).
+[telemetry.qlog]
+retention_days = 7

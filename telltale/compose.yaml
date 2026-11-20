@@ -1,0 +1,63 @@
+name: telltale
+
+services:
+  telltale:
+    image: ghcr.io/paimonsoror/telltale:${TELLTALE_TAG:-latest}
+    command: ["run", "-c", "/etc/telltale/telltale.toml"]
+    network_mode: host
+    restart: unless-stopped
+
+    # Root is used only so the service can bind DNS port 53.
+    user: "0:0"
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    security_opt:
+      - no-new-privileges:true
+
+    read_only: true
+    volumes:
+      - ./telltale.toml:/etc/telltale/telltale.toml:ro
+      - ./data:/var/lib/telltale
+
+    environment:
+      TELLTALE_LOG: info
+
+    healthcheck:
+      test:
+        - CMD
+        - /usr/local/bin/telltale
+        - health
+        - --url
+        - http://127.0.0.1:8053/readyz
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.telltale-http.entrypoints=http"
+      - "traefik.http.routers.telltale-http.rule=Host(`telltale.linuxpad.blog`)"
+      - "traefik.http.routers.telltale-http.middlewares=redir-https"
+      - "traefik.http.routers.telltale-http.service=noop@internal"
+
+      - "traefik.http.routers.telltale-https.entrypoints=https"
+      - "traefik.http.routers.telltale-https.rule=Host(`telltale.linuxpad.blog`)"
+      - "traefik.http.routers.telltale-https.tls=true"
+      - "traefik.http.routers.telltale-https.middlewares=gzip,authelia@docker"
+      - "traefik.http.routers.telltale-https.service=telltale-backend"
+
+      - "traefik.http.services.telltale-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.telltale-backend.loadbalancer.server.port=8053"
+
+## mkdir -p data
+# Put your Telltale configuration in ./telltale.toml
+ # docker compose up -d
