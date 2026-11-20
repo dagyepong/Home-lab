@@ -61,3 +61,10 @@ services:
 ## mkdir -p data
 # Put your Telltale configuration in ./telltale.toml
  # docker compose up -d
+
+# sudo chown -R 0:0 ./data
+# sudo chmod -R u+rwX ./data
+# docker compose restart telltale
+# docker compose logs -f telltale
+#   docker compose exec telltale telltale auth setup-token   # then open http://<pi>:8053/
+
