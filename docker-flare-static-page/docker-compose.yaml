@@ -1,23 +1,35 @@
 
-version: '3.6'
 
 services:
   flare:
-    image: soulteary/flare
+    image: soulteary/flare:0.6.15
     restart: always
     # 默认无需添加任何参数，如有特殊需求
     # 可阅读文档 https://github.com/soulteary/docker-flare/blob/main/docs/advanced-startup.md
     command: flare
-    environment:
-      # 开启登陆
-      - FLARE_DISABLE_LOGIN=0
-      # 设置登陆账号
-      - FLARE_USER=flare
-      # 指定你自己的账号密码，如未设置 `FLARE_USER`，则会默认生成密码并展示在应用启动日志中
-      - FLARE_PASS=akwasi123
-    ports:
-      # 根据自己需求设置端口，如需调整访问端口为 8080，
-      # 可参考修改为 `- 8080:5005`
-      - 5005:5005
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+
+      - "traefik.http.routers.traefik-flare-http.middlewares=https-redirect@file"
+      - "traefik.http.routers.traefik-flare-http.entrypoints=http"
+      - "traefik.http.routers.traefik-flare-http.rule=Host(`flare.linuxpad.blog`)"
+      - "traefik.http.routers.traefik-flare-http.service=dashboard@internal"
+
+      - "traefik.http.routers.traefik-flare-https.entrypoints=https"
+      - "traefik.http.routers.traefik-flare-https.rule=Host(`flare.linuxpad.blog`) && PathPrefix(`/`)"
+      - "traefik.http.routers.traefik-flare-https.tls=true"
+
+      - "traefik.http.services.traefik-flare-backend.loadbalancer.server.scheme=http"
+      - "traefik.http.services.traefik-flare-backend.loadbalancer.server.port=5005"
+    networks:
+      - traefik
+    expose:
+      - 5005
+    # 同时持久化 YAML、隐藏安全状态及备份；不要只挂载三个 YAML 文件。
     volumes:
       - ./app:/app
+
+networks:
+  traefik:
+    external: true
