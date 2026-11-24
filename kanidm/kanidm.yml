@@ -1,0 +1,4 @@
+http:
+  serversTransports:
+    kanidm:
+      insecureSkipVerify: true

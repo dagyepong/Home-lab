@@ -1,0 +1,37 @@
+services:
+  kanidmd:
+    container_name: kanidmd
+    image: kanidm/server:latest
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /etc/kanidm/
+        target: /data/
+      - kanidm_data:/var/lib/kanidm/
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+
+      - "traefik.http.routers.kanidm-http.entrypoints=http"
+      - "traefik.http.routers.kanidm-http.rule=Host(`auth.linuxpad.blog`)"
+      - "traefik.http.routers.kanidm-http.middlewares=redir-https@file"
+      - "traefik.http.routers.kanidm-http.service=noop@internal"
+
+      - "traefik.http.routers.kanidm-https.entrypoints=https"
+      - "traefik.http.routers.kanidm-https.rule=Host(`auth.linuxpad.blog`)"
+      - "traefik.http.routers.kanidm-https.tls=true"
+      - "traefik.http.routers.kanidm-https.tls.certresolver=le"
+      - "traefik.http.routers.kanidm-https.service=kanidm-backend"
+
+      - "traefik.http.services.kanidm-backend.loadbalancer.server.scheme=https"
+      - "traefik.http.services.kanidm-backend.loadbalancer.server.port=8443"
+      - "traefik.http.services.kanidm-backend.loadbalancer.serversTransport=kanidm@file"
+
+networks:
+  traefik:
+    external: true
+
+volumes:
+  kanidm_data:

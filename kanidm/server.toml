@@ -1,0 +1,13 @@
+version = "2"
+
+bindaddress = "0.0.0.0:8443"
+
+db_path = "/data/kanidm.db"
+
+tls_chain = "/data/chain.pem"
+tls_key = "/data/key.pem"
+
+domain = "auth.linuxpad.blog"
+origin = "https://auth.linuxpad.blog"
+
+log_level = "info"
