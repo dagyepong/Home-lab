@@ -18,53 +18,53 @@ pages:
                     url: https://drop.example.com
                     icon: di:pairdrop.png
                   - title: Chat
-                    url: https://chat.example.com
+                    url: https://chat.linuxpad.blog
                     icon: di:matrix.svg
                   - title: OpenCloud
-                    url: https://drive.example.com
+                    url: https://drive.linuxpad.blog
                     icon: mdi:cloud-outline
                   - title: Photos
-                    url: https://photos.example.com
+                    url: https://photos.linuxpad.blog
                     icon: di:immich.svg
                   - title: Hister
-                    url: https://hister.example.com
+                    url: https://hister.linuxpad.blog
                     icon: mdi:magnify
                   - title: Excalidraw
-                    url: https://draw.example.com
+                    url: https://draw.linuxpad.blog
                     icon: di:excalidraw.svg
               - title: Development
                 links:
                   - title: Forgejo
-                    url: https://git.example.com
+                    url: https://git.linuxpad.blog
                     icon: di:forgejo.svg
                   - title: ArgoCD
-                    url: https://argocd.example.com
+                    url: https://argocd.linuxpad.blog
                     icon: di:argo-cd.svg
                   - title: Registry
-                    url: https://registry.example.com
+                    url: https://registry.linuxpad.blog
                     icon: di:docker.svg
               - title: Infrastructure
                 links:
                   - title: Grafana
-                    url: https://grafana.example.com
+                    url: https://grafana.linuxpad.blog
                     icon: di:grafana.svg
                   - title: SSO
-                    url: https://auth.example.com
+                    url: https://auth.linuxpad.blog
                     icon: di:kanidm.svg
                   - title: OpenBao
-                    url: https://openbao.example.com
+                    url: https://openbao.linuxpad.blog
                     icon: di:openbao.svg
                   - title: Speedtest
-                    url: https://speedtest.nanaoware.online
+                    url: https://speedtest.linuxpad.blog
                     icon: di:openspeedtest.png
                   - title: ntfy
-                    url: https://ntfy.example.com
+                    url: https://ntfy.linuxpad.blog
                     icon: di:ntfy.svg
                   - title: Kiali
-                    url: https://kiali.example.com
+                    url: https://kiali.linuxpad.blog
                     icon: mdi:graph-outline
                   - title: WireGuard
-                    url: https://vpn.example.com
+                    url: https://vpn.linuxpad.blog
                     icon: di:wireguard.svg
           - type: bookmarks
             groups:
@@ -78,7 +78,7 @@ pages:
                   - title: Cloudflare
                     url: https://dash.cloudflare.com
                     icon: di:cloudflare.svg
-                  - title: Router
+                  - title: Open-Wrt One Router
                     url: https://192.168.1.1
                     icon: di:router.svg
 
