@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  kanidm-oauth2-manager:
+    image: ghcr.io/tricked-dev/kanidm-oauth2-manager:latest
+    container_name: kanidm-oauth2-manager
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      - KANIDM_BASE_URL=https://auth1.linuxpad.blog
+      - KANIDM_USERNAME=idm_admin
+      - KANIDM_PASSWORD=your_admin_password
+    depends_on:
+      - kanidm # Optional: if running Kanidm in the same compose stack
+    networks:
+      - kanidm-network
+
+networks:
+  kanidm-network:
+    driver: bridge
