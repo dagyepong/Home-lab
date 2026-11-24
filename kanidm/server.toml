@@ -7,7 +7,7 @@ db_path = "/data/kanidm.db"
 tls_chain = "/data/chain.pem"
 tls_key = "/data/key.pem"
 
-domain = "auth.linuxpad.blog"
-origin = "https://auth.linuxpad.blog"
+domain = "auth1.linuxpad.blog"
+origin = "https://auth1.linuxpad.blog"
 
 log_level = "info"

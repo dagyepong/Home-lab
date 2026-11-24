@@ -11,8 +11,8 @@ sudo mkdir -p /etc/kanidm
 sudo openssl req -x509 -newkey rsa:3072 -sha256 -days 365 -nodes \
   -keyout /etc/kanidm/key.pem \
   -out /etc/kanidm/chain.pem \
-  -subj "/CN=auth.linuxpad.blog" \
-  -addext "subjectAltName=DNS:auth.linuxpad.blog"
+  -subj "/CN=auth1.linuxpad.blog" \
+  -addext "subjectAltName=DNS:auth1.linuxpad.blog"
 ```
 
 ```bash
@@ -20,3 +20,11 @@ sudo chmod 600 /etc/kanidm/key.pem
 ```
 Don't foget to put server.toml in /etc/kanidm
 
+
+
+Username/Password Recovery
+
+```bash
+docker exec -it kanidmd kanidmd recover-account admin
+docker exec -it kanidmd kanidmd recover-account idm_admin
+```
