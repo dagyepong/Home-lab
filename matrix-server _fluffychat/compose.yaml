@@ -1,0 +1,75 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: matrix-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: synapse
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: synapse
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - matrix-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U synapse -d synapse"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  synapse:
+    image: matrixdotorg/synapse:latest
+    container_name: synapse
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./synapse-data:/data
+    networks:
+      - matrix-internal
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.matrix-http.entrypoints=http"
+      - "traefik.http.routers.matrix-http.rule=Host(`matrix.linuxpad.blog`)"
+      - "traefik.http.routers.matrix-http.middlewares=redir-https@file"
+      - "traefik.http.routers.matrix-http.service=noop@internal"
+      - "traefik.http.routers.matrix-https.entrypoints=https"
+      - "traefik.http.routers.matrix-https.rule=Host(`matrix.linuxpad.blog`)"
+      - "traefik.http.routers.matrix-https.tls=true"
+      - "traefik.http.routers.matrix-https.tls.certresolver=le"
+      - "traefik.http.routers.matrix-https.service=matrix-backend"
+      - "traefik.http.services.matrix-backend.loadbalancer.server.port=8008"
+
+  fluffychat:
+    image: ghcr.io/krille-chan/fluffychat:latest
+    container_name: fluffychat
+    restart: unless-stopped
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.fluffychat-http.entrypoints=http"
+      - "traefik.http.routers.fluffychat-http.rule=Host(`chat.linuxpad.blog`)"
+      - "traefik.http.routers.fluffychat-http.middlewares=redir-https@file"
+      - "traefik.http.routers.fluffychat-http.service=noop@internal"
+      - "traefik.http.routers.fluffychat-https.entrypoints=https"
+      - "traefik.http.routers.fluffychat-https.rule=Host(`chat.linuxpad.blog`)"
+      - "traefik.http.routers.fluffychat-https.tls=true"
+      - "traefik.http.routers.fluffychat-https.tls.certresolver=le"
+      - "traefik.http.routers.fluffychat-https.middlewares=gzip@file"
+      - "traefik.http.routers.fluffychat-https.service=fluffychat-backend"
+      - "traefik.http.services.fluffychat-backend.loadbalancer.server.port=80"
+
+networks:
+  matrix-internal:
+    internal: true
+  traefik:
+    external: true
+
+volumes:
+  postgres-data:
