@@ -1,4 +1,4 @@
-version: "3"
+
 services:
   cadvisor:
     container_name: cadvisor
@@ -30,7 +30,8 @@ services:
 
   grafana:
     container_name: grafana
-    image: grafana/grafana:latest
+    image: grafana/grafana:latest@sha256:0615ec4fbd4072004b7d86b46ded63013a74b7d6eb1119273dd89e8fa25c13cf
+
     network_mode: "host"
     ports:
       - "3000:3000"
