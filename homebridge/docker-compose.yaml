@@ -1,7 +1,8 @@
 
 services:
   homebridge:
-    image: homebridge/homebridge:latest
+    image: homebridge/homebridge:latest@sha256:49e10e19bce69de56b0b77c724f317858dcd32e17cd9f379833660b1af26dbd5
+
     restart: always
     #network_mode: host
     volumes:
