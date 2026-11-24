@@ -1,140 +1,115 @@
-server:
-  assets-path: /app/assets
-
-theme:
-  # Premium Deep Space / Cyberpunk theme
-  background-color: 220 20 10   # Deep slate charcoal/navy
-  primary-color: 180 80 55     # Electric Cyan/Teal accents
-  negative-color: 15 85 55     # Sunset Amber / Muted Orange warnings
-
 pages:
   - name: Home
     columns:
-      # Left Column: System utility, system metrics, and quick tracking
-      - size: small
-        widgets:
-          - type: clock
-            time-format: 24h
-            show-date: true
-
-          - type: calendar
-
-          - type: weather
-            location: Chicago, USA
-            unit: F
-
-          - type: markets
-            title: Tech & Crypto Watch
-            markets:
-              - symbol: BTC-USD
-                name: Bitcoin
-              - symbol: NVDA
-                name: NVIDIA Corp
-              - symbol: AMD
-                name: AMD Hardware
-
-          - type: releases
-            title: Software Tracking
-            repositories:
-              - immich-app/immich
-              - forgejo/forgejo
-              - dani-garcia/vaultwarden
-              - jellyfin/jellyfin
-              - traefik/traefik
-
-      # Middle Column: The Command Center (Search, Services Status Dashboard)
-      - size: small
-        widgets:
-          - type: search
-            search-engine: duckduckgo
-            placeholder: Search the matrix...
-
-          - type: monitor
-            cache: 30s
-            title: Infrastructure & Security
-            sites:
-              - title: Traefik Proxy
-                url: https://traefik.linuxpad.blog
-                icon: /assets/svg/traefik.svg
-              - title: Flare
-                url: https://flare.linuxpad.blog
-                icon: /assets/svg/application-gateway-container.svg
-              - title: Tailscale Admin
-                url: https://login.tailscale.com
-                icon: /assets/svg/tailscale-light.svg
-              - title: Vaultwarden
-                url: https://vault.linuxpad.blog/#/login
-                icon: /assets/svg/vaultwarden.svg
-              - title: Proxmox VE
-                url: https://pve.tail9f20b.ts.net/
-                icon: /assets/svg/proxmox.svg
-              - title: Maintenant Dashboard
-                url: https://maintenant.linuxpad.blog/dashboard
-                icon: /assets/svg/uptimerobot.svg
-              - title: Dockprobe Container Dashboard
-                url: https://dockprobe.linuxpad.blog/
-                icon: /assets/svg/healthchecks.svg  
-              - title: Pi-Hole DNS
-                url: http://100.99.187.98/admin/
-                icon: /assets/svg/pi-hole.svg
-
-          - type: monitor
-            cache: 45s
-            title: Media & Apps
-            sites:
-              - title: Jellyfin Media
-                url: https://jellyfin.linuxpad.blog
-                icon: /assets/svg/jellyfin.svg
-              - title: Plex Media
-                url: http://192.168.1.179:32400
-                icon: /assets/svg/plex.svg
-              - title: Forgejo Git
-                url: https://git.linuxpad.blog
-                icon: /assets/svg/git.svg
-              - title: Immich Photos
-                url: https://immich.linuxpad.blog
-                icon: /assets/svg/immich.svg
-              - title: Dockhand Container Dashboard
-                url: https://dockhand.linuxpad.blog
-                icon: /assets/svg/docker.svg
-
-      # Right Column: Entertainment, Feeds, and Communities
       - size: full
         widgets:
-          - type: rss
-            title: Linux & Homelab Intelligence
-            limit: 8
-            collapse-after: 3
-            cache: 1h
-            style: horizontal-cards
-            feeds:
-              - url: https://www.phoronix.com/phoronix-rss.php
-                title: Phoronix (Linux Hardware)
-              - url: https://www.linuxtoday.com/feed/
-                title: Linux Today
-              - url: https://selfhosted.show/rss
-                title: Self-Hosted Show
-              - url: https://news.ycombinator.com/rss
-                title: Hacker News
+          - type: search
+            search-engine: google
+            new-tab: true
+          - type: bookmarks
+            title: Services
+            groups:
+              - title: Apps
+                links:
+                  - title: Actual Budget
+                    url: https://budget.example.com
+                    icon: di:actual-budget.svg
+                  - title: PairDrop
+                    url: https://drop.example.com
+                    icon: di:pairdrop.png
+                  - title: Chat
+                    url: https://chat.example.com
+                    icon: di:matrix.svg
+                  - title: OpenCloud
+                    url: https://drive.example.com
+                    icon: mdi:cloud-outline
+                  - title: Photos
+                    url: https://photos.example.com
+                    icon: di:immich.svg
+                  - title: Hister
+                    url: https://hister.example.com
+                    icon: mdi:magnify
+                  - title: Excalidraw
+                    url: https://draw.example.com
+                    icon: di:excalidraw.svg
+              - title: Development
+                links:
+                  - title: Forgejo
+                    url: https://git.example.com
+                    icon: di:forgejo.svg
+                  - title: ArgoCD
+                    url: https://argocd.example.com
+                    icon: di:argo-cd.svg
+                  - title: Registry
+                    url: https://registry.example.com
+                    icon: di:docker.svg
+              - title: Infrastructure
+                links:
+                  - title: Grafana
+                    url: https://grafana.example.com
+                    icon: di:grafana.svg
+                  - title: SSO
+                    url: https://auth.example.com
+                    icon: di:kanidm.svg
+                  - title: OpenBao
+                    url: https://openbao.example.com
+                    icon: di:openbao.svg
+                  - title: Speedtest
+                    url: https://speedtest.nanaoware.online
+                    icon: di:openspeedtest.png
+                  - title: ntfy
+                    url: https://ntfy.example.com
+                    icon: di:ntfy.svg
+                  - title: Kiali
+                    url: https://kiali.example.com
+                    icon: mdi:graph-outline
+                  - title: WireGuard
+                    url: https://vpn.example.com
+                    icon: di:wireguard.svg
+          - type: bookmarks
+            groups:
+              - links:
+                  - title: Documentation
+                    url: https://homelab.nanaoware.online
+                    icon: di:google-docs.svg
+                  - title: Public homelab repository
+                    url: https://github.com/dagyepong/Home-Lab
+                    icon: di:github.svg
+                  - title: Cloudflare
+                    url: https://dash.cloudflare.com
+                    icon: di:cloudflare.svg
+                  - title: Router
+                    url: https://192.168.1.1
+                    icon: di:router.svg
 
-          - type: reddit
-            title: Homelab Communities
-            style: horizontal-cards
-            subreddit: homelab+selfhosted+linux+proxmox
+  - name: News
+    columns:
+      - size: full
+        widgets:
+          - type: group
+            widgets:
+              - type: hacker-news
+                sort-by: best
+              - type: lobsters
+                tags:
+                  - linux
+                  - nix
+                  - rust
+                  - distributed
+                  - databases
+                  - networking
+                  - security
+                  - devops
+          - type: releases
+            title: Homelab releases
+            repositories:
+              - glanceapp/glance
+              - actualbudget/actual
+              - immich-app/immich
+              - schlagmichdoch/PairDrop
+              - opencloud-eu/opencloud
+              - asciimoo/hister
 
-          - type: videos
-            title: Homelab Creator Network
-            cache: 2h
-            channels:
-              - UCR-DXc1voovS8nhAvccRZhg # Jeff Geerling
-              - UCOk-gHyjcWZNj3Br4oxwh0A # Techno Tim
-              - UCS-NkJiYhYku2YtKi2W4p3w # La chaîne de P.A.U.L
-              - UC_yP2DpIgs5Y1uWC0T03Chw # Joueur Du Grenier
+branding:
+  custom-footer: '<p>Enjoy this homelab? <a href="https://github.com/dagyepong/Home-Lab" target="_blank" rel="noopener noreferrer">Star it on GitHub ↗</a></p>'
 
-          - type: twitch-channels
-            title: Live Streams
-            channels:
-              - theprimeagen
-              - christitustech
-              - mrchonks
-              - blurbs
