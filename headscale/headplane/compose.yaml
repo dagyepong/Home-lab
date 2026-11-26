@@ -1,0 +1,56 @@
+services:
+  headscale:
+    image: headscale/headscale:latest
+    pull_policy: always
+    container_name: headscale
+    restart: unless-stopped
+    command: ["serve"]
+    volumes:
+      - /home/nana/docker/headscale/config:/etc/headscale
+      - /home/nana/docker/headscale/data:/var/lib/headscale
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "me.tale.headplane.target=headscale"
+
+      - "traefik.http.routers.headscale-http.entrypoints=http"
+      - "traefik.http.routers.headscale-http.rule=Host(`headscale.linuxpad.blog`)"
+      - "traefik.http.routers.headscale-http.service=noop@internal"
+
+      - "traefik.http.routers.headscale-https.entrypoints=https"
+      - "traefik.http.routers.headscale-https.rule=Host(`headscale.linuxpad.blog`)"
+      - "traefik.http.routers.headscale-https.tls=true"
+      - "traefik.http.routers.headscale-https.tls.certresolver=le"
+      - "traefik.http.routers.headscale-https.service=headscale-backend"
+      - "traefik.http.services.headscale-backend.loadbalancer.server.port=8080"
+
+  headplane:
+    image: ghcr.io/tale/headplane:latest
+    container_name: headplane
+    restart: unless-stopped
+    networks:
+      - traefik
+    volumes:
+      - /home/nana/docker/headscale/headplane/config.yaml:/etc/headplane/config.yaml
+      - /home/nana/docker/headscale/headplane/data:/var/lib/headplane
+      - /home/nana/docker/headscale/config:/etc/headscale
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.headplane-http.entrypoints=http"
+      - "traefik.http.routers.headplane-http.rule=Host(`headscale.linuxpad.blog`) && PathPrefix(`/admin`)"
+      - "traefik.http.routers.headplane-http.service=noop@internal"
+      - "traefik.http.routers.headplane-https.entrypoints=https"
+      - "traefik.http.routers.headplane-https.rule=Host(`headscale.linuxpad.blog`) && PathPrefix(`/admin`)"
+      - "traefik.http.routers.headplane-https.priority=100"
+      - "traefik.http.routers.headplane-https.tls=true"
+      - "traefik.http.routers.headplane-https.tls.certresolver=le"
+      - "traefik.http.routers.headplane-https.service=headplane-backend"
+      - "traefik.http.services.headplane-backend.loadbalancer.server.port=3000"
+
+networks:
+  traefik:
+    external: true
