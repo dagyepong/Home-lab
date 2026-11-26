@@ -1,0 +1,44 @@
+services:
+  headscale:
+    # ...your existing Headscale settings
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+
+      - "traefik.http.routers.headscale-http.entrypoints=http"
+      - "traefik.http.routers.headscale-http.rule=Host(`headscale.linuxpad.blog`)"
+      - "traefik.http.routers.headscale-http.service=noop@internal"
+
+      - "traefik.http.routers.headscale-https.entrypoints=https"
+      - "traefik.http.routers.headscale-https.rule=Host(`headscale.linuxpad.blog`)"
+      - "traefik.http.routers.headscale-https.tls=true"
+      - "traefik.http.routers.headscale-https.tls.certresolver=le"
+      - "traefik.http.routers.headscale-https.service=headscale-backend"
+      - "traefik.http.routers.headscale-https.priority=10"
+      - "traefik.http.services.headscale-backend.loadbalancer.server.port=8080"
+
+  headscale-ui:
+    # ...your existing Headscale UI settings
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+
+      - "traefik.http.routers.headscale-ui-http.entrypoints=http"
+      - "traefik.http.routers.headscale-ui-http.rule=Host(`headscale.linuxpad.blog`) && PathPrefix(`/web`)"
+      - "traefik.http.routers.headscale-ui-http.service=noop@internal"
+
+      - "traefik.http.routers.headscale-ui-https.entrypoints=https"
+      - "traefik.http.routers.headscale-ui-https.rule=Host(`headscale.linuxpad.blog`) && PathPrefix(`/web`)"
+      - "traefik.http.routers.headscale-ui-https.tls=true"
+      - "traefik.http.routers.headscale-ui-https.tls.certresolver=le"
+      - "traefik.http.routers.headscale-ui-https.service=headscale-ui-backend"
+      - "traefik.http.routers.headscale-ui-https.priority=100"
+      - "traefik.http.services.headscale-ui-backend.loadbalancer.server.port=8080"
+
+networks:
+  traefik:
+    external: true
