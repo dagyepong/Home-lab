@@ -3,6 +3,9 @@ services:
     # ...your existing Headscale settings
     networks:
       - traefik
+    volumes:
+      - /home/nana/docker/headscale/config:/etc/headscale
+      - /home/nana/docker/headscale/data:/var/lib/headscale
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
