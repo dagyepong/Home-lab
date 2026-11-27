@@ -24,3 +24,12 @@ mkdir -p /home/nana/docker/headscale/headplane/data
 docker compose config
 docker compose up -d
 ```
+
+config mount paths:
+
+```bash
+
+Headscale config: /home/nana/docker/headscale/config/config.yaml → /etc/headscale/config.yaml
+Headplane config: /home/nana/docker/headscale/headplane/config.yaml → /etc/headplane/config.yaml
+
+```
