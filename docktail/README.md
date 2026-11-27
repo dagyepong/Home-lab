@@ -59,3 +59,10 @@ docktail/
 ```
 
 Keep notification data and other application files outside config/. Make sure the acquisition file mount is a file-to-file mount—or mount its containing directory—and that Traefik’s crowdsecLapiKey matches the key for a registered CrowdSec bouncer. The mode: host warning is separate; remove that setting when using regular Docker Compose rather than Swarm.
+
+CrowdSec’s LAPI port for TRaefik Manager:
+
+```bash
+http://crowdsec:8080
+```
+
