@@ -41,14 +41,11 @@ services:
       - dockhand_data:/app/data
 
   flare:
-    image: soulteary/flare
+    image: soulteary/flare:0.6.15
     restart: always
+    # 默认无需添加任何参数，如有特殊需求
+    # 可阅读文档 https://github.com/soulteary/docker-flare/blob/main/docs/advanced-startup.md
     command: flare
-    container_name: socketproxy-flare
-    environment:
-      - FLARE_DISABLE_LOGIN=0
-      - FLARE_USER=flare
-      - FLARE_PASS=akwasi123
     labels:
       - docktail.service.enable=true
       - docktail.service.name=flare
@@ -132,46 +129,63 @@ services:
         published: ${SERVICE_HTTPS_PORT}
         protocol: udp
         mode: host
+    networks:
+      - traefik
     command:
       - "--global.sendanonymoususage=false"
       - "--global.checknewversion=false"
+
       - "--entrypoints.http.address=:${SERVICE_HTTP_PORT}"
       - "--entrypoints.https.address=:${SERVICE_HTTPS_PORT}"
-      - "--entryPoints.https.asDefault=true"
-      - "--entryPoints.https.http3"
-      - "--entryPoints.https.http3.advertisedport=${SERVICE_HTTPS_PORT}"
-      - "--entrypoints.tor.address=:8081"
-      - "--serverstransport.insecureskipverify=true"
-      - "--entryPoints.http.forwardedHeaders.trustedIPs=127.0.0.1/32,172.18.0.1/24,100.64.0.0/10,10.0.0.0/24"
-      - "--entryPoints.https.forwardedHeaders.trustedIPs=127.0.0.1/32,172.18.0.1/24,100.64.0.0/10,10.0.0.0/24"
+      - "--entrypoints.https.asDefault=true"
+      - "--entrypoints.https.http3"
+      - "--entrypoints.https.http3.advertisedport=${SERVICE_HTTPS_PORT}"
+
       - "--api=true"
       - "--api.dashboard=true"
-      - "--api.insecure=true"
+      # Do not enable --api.insecure=true on an exposed server.
+
       - "--ping=true"
       - "--log.level=INFO"
-      - "--log.maxsize=100"
       - "--log.format=common"
-      - "--accesslog=false"
+
+      # CrowdSec needs JSON access logs written to the shared log directory.
+      - "--accesslog=true"
+      - "--accesslog.filepath=/var/log/traefik/access.log"
+      - "--accesslog.format=json"
+
       - "--providers.docker=true"
       - "--providers.docker.watch=true"
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.endpoint=unix:///var/run/docker.sock"
-      - "--providers.docker.useBindPortIP=false"
       - "--providers.docker.network=traefik"
+
       - "--providers.file=true"
       - "--providers.file.watch=true"
       - "--providers.file.directory=/etc/traefik/config"
-      - "--providers.file.debugloggeneratedtemplate=true"
+
+      # Plugin version is independent of the Traefik image version.
+      - "--experimental.plugins.bouncer.moduleName=github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
+      - "--experimental.plugins.bouncer.version=v1.8.2"
+
       - "--certificatesresolvers.le.acme.email=${ACME_EMAIL}"
       - "--certificatesresolvers.le.acme.storage=/data/ssl/acme.json"
-      - "--certificatesresolvers.le.acme.dnsChallenge.resolvers=1.1.1.1:53,8.8.8.8:53"
-      - "--certificatesresolvers.le.acme.dnsChallenge.provider=${ACME_PROVIDER}"
-      - "--certificatesresolvers.le.acme.dnsChallenge.propagation.delayBeforeChecks=30"
+      - "--certificatesresolvers.le.acme.dnschallenge.resolvers=1.1.1.1:53,8.8.8.8:53"
+      - "--certificatesresolvers.le.acme.dnschallenge.provider=${ACME_PROVIDER}"
+      - "--certificatesresolvers.le.acme.dnschallenge.propagation.delayBeforeChecks=30"
+
     environment:
-      - TZ=Asia/Shanghai
-      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
-    networks:
-      - traefik
+      TZ: Asia/Shanghai
+      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
+
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config/:/etc/traefik/config/:ro
+      - ./ssl/:/data/ssl/
+      - ./logs/:/var/log/traefik/
+
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
@@ -182,9 +196,13 @@ services:
       - "traefik.http.routers.traefik-dashboard-secure.entrypoints=https"
       - "traefik.http.routers.traefik-dashboard-secure.rule=Host(`${SERVICE_DOMAIN}`)"
       - "traefik.http.routers.traefik-dashboard-secure.service=dashboard@internal"
+      - "traefik.http.routers.traefik-dashboard-secure.middlewares=crowdsec@file"
+      # Redirect HTTP to HTTPS rather than serving the dashboard over HTTP.
       - "traefik.http.routers.traefik-dashboard-nosecure.entrypoints=http"
       - "traefik.http.routers.traefik-dashboard-nosecure.rule=Host(`${SERVICE_DOMAIN}`)"
-      - "traefik.http.routers.traefik-dashboard-nosecure.service=noop@internal"
+      - "traefik.http.routers.traefik-dashboard-nosecure.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+
       - "traefik.http.routers.traefik-dashboard-api.tls=true"
       - "traefik.http.routers.traefik-dashboard-api.entrypoints=https"
       - "traefik.http.routers.traefik-dashboard-api.rule=Host(`${SERVICE_DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
@@ -195,12 +213,7 @@ services:
       - "docktail.service.port=8080"
       - "docktail.service.service-port=443"
       - "docktail.service.network=traefik"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./config/:/etc/traefik/config/:ro
-      - ./ssl/:/data/ssl/
+
     extra_hosts:
       - "update.traefik.io:127.0.0.1"
       - "collect.traefik.io:127.0.0.1"
@@ -214,7 +227,28 @@ services:
       driver: "json-file"
       options:
         max-size: "1m"
- 
+
+
+
+
+  crowdsec:
+    image: crowdsecurity/crowdsec:latest
+    container_name: crowdsec
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Shanghai
+      COLLECTIONS: crowdsecurity/traefik
+    volumes:
+      - crowdsec-data:/var/lib/crowdsec/data
+      - crowdsec-config:/etc/crowdsec
+      - ./crowdsec/acquis.yaml:/etc/crowdsec/acquis.d/traefik.yaml:ro
+      - ./logs/:/var/log/traefik/:ro
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=false"
+
+
   # ========================
   # Authelia SSO
   # ========================
@@ -335,3 +369,6 @@ volumes:
   filebrowser-config:
   dockhand_data:
   picoshare_data:
+  crowdsec-data:
+  crowdsec-config:
+ 
