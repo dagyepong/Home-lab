@@ -25,6 +25,8 @@ services:
       - docktail.service.name=tools
       - docktail.service.port=80
       - docktail.service.service-port=443
+      - "traefik.http.routers.headplane.middlewares=crowdsec@file"
+
     restart: unless-stopped
 
   dockhand:
@@ -36,6 +38,8 @@ services:
       - docktail.service.name=dockhand
       - docktail.service.port=3000
       - docktail.service.service-port=443
+      - "traefik.http.routers.headplane.middlewares=crowdsec@file"
+
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - dockhand_data:/app/data
@@ -51,6 +55,8 @@ services:
       - docktail.service.name=flare
       - docktail.service.port=5005
       - docktail.service.service-port=443
+      - "traefik.http.routers.headplane.middlewares=crowdsec@file"
+
     volumes:
       - ./app:/app
 
@@ -70,6 +76,8 @@ services:
       - "traefik.http.routers.traefik-manager.entrypoints=https"
       - "traefik.http.routers.traefik-manager.tls=true"
       - "traefik.http.services.traefik-manager.loadbalancer.server.port=5000"
+      - "traefik.http.routers.headplane.middlewares=crowdsec@file"
+
       - "docktail.service.enable=true"
       - "docktail.service.name=traefik-manager"
       - "docktail.service.port=5000"
@@ -92,6 +100,8 @@ services:
       - docktail.service.name=pwgen
       - docktail.service.port=5069
       - docktail.service.service-port=443
+      - "traefik.http.routers.headplane.middlewares=crowdsec@file"
+
 
   picoshare:
     image: mtlynch/picoshare
@@ -104,6 +114,8 @@ services:
       - docktail.service.name=picoshare
       - docktail.service.port=4001
       - docktail.service.service-port=443
+      - "traefik.http.routers.headplane.middlewares=crowdsec@file"
+
     restart: unless-stopped
     volumes:
       - ./data:/data
