@@ -44,3 +44,18 @@ Attach crowdsec@file to the HTTPS routers you want protected. For example, on yo
 ```bash
 - "traefik.http.routers.headplane.middlewares=crowdsec@file"
 ```
+
+For future setups, keep Traefik’s watched directory limited to Traefik dynamic config files, such as crowdsec.yaml:
+
+```bash
+docktail/
+├── config/                 # Traefik dynamic YAML only
+│   └── crowdsec.yaml
+├── crowdsec/
+│   └── acquis.d/
+│       └── traefik.yaml
+└── logs/
+    └── access.log
+```
+
+Keep notification data and other application files outside config/. Make sure the acquisition file mount is a file-to-file mount—or mount its containing directory—and that Traefik’s crowdsecLapiKey matches the key for a registered CrowdSec bouncer. The mode: host warning is separate; remove that setting when using regular Docker Compose rather than Swarm.
