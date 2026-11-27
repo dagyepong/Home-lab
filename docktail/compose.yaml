@@ -182,9 +182,9 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./config/:/etc/traefik/config/:ro
-      - ./ssl/:/data/ssl/
-      - ./logs/:/var/log/traefik/
+      - /home/nana/docker/traefik/config/:/etc/traefik/config/:ro
+      - /home/nana/docker/traefik/ssl/:/data/ssl/
+      - /home/nana/docker/traefik/logs/:/var/log/traefik/
 
     labels:
       - "traefik.enable=true"

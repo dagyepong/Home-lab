@@ -1,0 +1,19 @@
+services:
+  dummy:
+    image: nginx:alpine
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+
+      - "traefik.http.routers.dummy.rule=Host(`dummy.example.com`)"
+      - "traefik.http.routers.dummy.entrypoints=https"
+      - "traefik.http.routers.dummy.tls=true"
+      - "traefik.http.routers.dummy.tls.certresolver=le"
+      - "traefik.http.routers.dummy.middlewares=crowdsec@file"
+      - "traefik.http.services.dummy.loadbalancer.server.port=80"
+
+networks:
+  traefik:
+    external: true
