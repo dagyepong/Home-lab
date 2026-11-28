@@ -86,7 +86,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
 
-      - "traefik.http.routers.pocketid.rule=Host(`pocketid.example.com`)"
+      - "traefik.http.routers.pocketid.rule=Host(`pocketid.linuxpad.blog`)"
       - "traefik.http.routers.pocketid.entrypoints=https"
       - "traefik.http.routers.pocketid.tls=true"
       - "traefik.http.routers.pocketid.tls.certresolver=le"
