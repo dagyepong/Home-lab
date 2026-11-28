@@ -12,5 +12,4 @@ services:
       F2B_DB_PURGE_AGE: 14d
     volumes:
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/fail2Ban/data:/data
-      - /var/log:/var/log:ro
       - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/traefik/logs:/var/log/traefik:ro
