@@ -8,15 +8,16 @@ services:
   immich-server:
     container_name: immich_server
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
-    network_mode: host
     volumes:
       - ${UPLOAD_LOCATION}:/usr/src/app/upload
       - /etc/localtime:/etc/localtime:ro
     env_file:
       - .env
     environment:
-      - DB_HOSTNAME=localhost
-      - REDIS_HOSTNAME=localhost
+      - DB_HOSTNAME=database
+      - REDIS_HOSTNAME=redis
+    networks:
+      - traefik
     depends_on:
       - redis
       - database
@@ -56,7 +57,7 @@ services:
 
   database:
     container_name: immich_postgres
-    image: docker.io/tensorchord/pgvecto-rs:pg14-v0.2.0@sha256:90724186f0a3517cf6914295b5ab410db9ce23190a2d9d0b9dd6463e3fa298f0
+    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
     ports:
       - "5432:5432"
     environment:
