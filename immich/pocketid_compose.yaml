@@ -24,17 +24,13 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
-      - "traefik.http.routers.immich-http.entrypoints=http"
-      - "traefik.http.routers.immich-http.middlewares=redir-https@file"
-      - "traefik.http.routers.immich-http.rule=Host(`immich.linuxpad.blog`)"
-      - "traefik.http.routers.immich-http.service=noop@internal"
-      - "traefik.http.routers.immich-https.entrypoints=https"
-      - "traefik.http.routers.immich-https.tls=true"
-      - "traefik.http.routers.immich-https.tls.certresolver=le"
-      - "traefik.http.routers.immich-https.rule=Host(`immich.linuxpad.blog`)"
-      - "traefik.http.routers.immich-https.middlewares=gzip@file"
-      - "traefik.http.routers.immich-https.service=immich-backend"
-      - "traefik.http.services.immich-backend.loadbalancer.server.port=2283"
+
+      - "traefik.http.routers.immich.rule=Host(`immich.linuxpad.blog`)"
+      - "traefik.http.routers.immich.entrypoints=https"
+      - "traefik.http.routers.immich.tls=true"
+      - "traefik.http.routers.immich.tls.certresolver=le"
+      - "traefik.http.routers.immich.middlewares=crowdsec@file"
+      - "traefik.http.services.immich.loadbalancer.server.port=2283"
 
   immich-machine-learning:
     container_name: immich_machine_learning
@@ -89,18 +85,13 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
-      - "traefik.http.routers.pocketid-http.entrypoints=http"
-      - "traefik.http.routers.pocketid-http.middlewares=redir-https@file"
-      - "traefik.http.routers.pocketid-http.rule=Host(`pocketid.linuxpad.blog`)"
-      - "traefik.http.routers.pocketid-http.service=noop@internal"
-      - "traefik.http.routers.pocketid-https.entrypoints=https"
-      - "traefik.http.routers.pocketid-https.tls=true"
-      - "traefik.http.routers.pocketid-https.tls.certresolver=le"
-      - "traefik.http.routers.pocketid-https.rule=Host(`pocketid.linuxpad.blog`)"
-      - "traefik.http.routers.pocketid-https.middlewares=gzip@file"
-      - "traefik.http.routers.pocketid-https.service=pocketid-backend"
-      # CRITICAL: use container's internal port (80), NOT the host port
-      - "traefik.http.services.pocketid-backend.loadbalancer.server.port=80"
+
+      - "traefik.http.routers.pocketid.rule=Host(`pocketid.example.com`)"
+      - "traefik.http.routers.pocketid.entrypoints=https"
+      - "traefik.http.routers.pocketid.tls=true"
+      - "traefik.http.routers.pocketid.tls.certresolver=le"
+      - "traefik.http.routers.pocketid.middlewares=crowdsec@file"
+      - "traefik.http.services.pocketid.loadbalancer.server.port=80"
 
 volumes:
   model-cache:
